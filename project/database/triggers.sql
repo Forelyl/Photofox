@@ -252,3 +252,28 @@ CREATE TRIGGER comment_complaint_decrease_counter_comment_delete
     ON comment
     FOR EACH ROW
     EXECUTE PROCEDURE decrease_complaint_comment_count_comment_delete();
+
+
+-----------------------------------
+-- Delete account
+-----------------------------------
+
+
+CREATE OR REPLACE FUNCTION delete_account()
+       RETURNS TRIGGER
+       LANGUAGE PLPGSQL
+       AS
+$delete_account$
+BEGIN
+    DELETE FROM comment WHERE user_id = OLD.id;
+    DELETE FROM image WHERE author_id = OLD.id;
+    RETURN OLD;
+END;
+$delete_account$;
+
+
+CREATE TRIGGER delete_account_trigger
+    BEFORE DELETE
+    ON "user"
+    FOR EACH ROW
+    EXECUTE PROCEDURE delete_account()
