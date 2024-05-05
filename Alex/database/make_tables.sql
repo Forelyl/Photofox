@@ -6,6 +6,8 @@ CREATE TABLE "user" (
     hash_and_salt VARCHAR(255) NOT NULL,
     description TEXT DEFAULT NULL,
     profile_image TEXT DEFAULT NULL,
+    subscribed BIGINT NOT NULL DEFAULT 0,
+    subscribers BIGINT NOT NULL DEFAULT 0,
     amount_of_complaints_on_profile INT CHECK (amount_of_complaints_on_profile >= 0) DEFAULT 0,
     amount_of_complaints_on_comment INT CHECK (amount_of_complaints_on_comment >= 0) DEFAULT 0,
     amount_of_complaints_on_image INT CHECK (amount_of_complaints_on_image >= 0) DEFAULT 0
