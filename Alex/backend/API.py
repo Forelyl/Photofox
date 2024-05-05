@@ -16,6 +16,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 
+import asyncio
 
 app = FastAPI()
 password_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
@@ -44,7 +45,8 @@ class Tag(BaseModel):
 #============================================
 @app.get('/tag/all', response_model=list[Tag], tags=['tag'])
 async def get_all_tags():
-    return list({"title": x[0], "id": x[1]} for x in await db.select_all_tags())
+    await db.setup()
+    return await db.select_all_tags()
 
 #============================================
 # Image
