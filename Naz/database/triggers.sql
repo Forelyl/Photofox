@@ -38,9 +38,13 @@ CREATE OR REPLACE FUNCTION increase_complaint_count_image()
        LANGUAGE PLPGSQL
        AS
 $$
+DECLARE
+    user_id BIGINT;
 BEGIN
     UPDATE image SET report_counter = report_counter+1 WHERE NEW.id_image = image.id;
-    UPDATE "user" SET amount_of_complaints_on_image = amount_of_complaints_on_image+1 WHERE NEW.id_image_author = "user".id;
+
+    SELECT image.author_id INTO user_id FROM image WHERE image.id = NEW.id_image;
+    UPDATE "user" SET amount_of_complaints_on_image = amount_of_complaints_on_image+1 WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $$;
@@ -57,9 +61,13 @@ CREATE OR REPLACE FUNCTION increase_complaint_count_comment()
        LANGUAGE PLPGSQL
        AS
 $$
+DECLARE
+    user_id BIGINT;
 BEGIN
     UPDATE comment SET report_counter = report_counter+1 WHERE NEW.id_comment = comment.id;
-    UPDATE "user" SET amount_of_complaints_on_comment = amount_of_complaints_on_comment+1 WHERE NEW.id_comment_author = "user".id;
+
+    SELECT comment.user_id INTO user_id FROM comment WHERE comment.id = NEW.id_comment;
+    UPDATE "user" SET amount_of_complaints_on_comment = amount_of_complaints_on_comment+1 WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $$;
