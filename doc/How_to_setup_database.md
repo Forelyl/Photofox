@@ -10,4 +10,7 @@
 <pre><code>local 	photofox	fox					scram-sha-256</code></pre>
 
 ## Making tables and etc.
-Use files .sql 
+Use files *.sql files:
+
+1) Add tables
+2) Grant usage
