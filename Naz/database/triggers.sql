@@ -16,6 +16,22 @@ CREATE TRIGGER like_counter
     FOR EACH ROW
     EXECUTE PROCEDURE increase_like_count();
 
+CREATE OR REPLACE FUNCTION increase_comment_count()
+       RETURNS TRIGGER
+       LANGUAGE PLPGSQL
+       AS
+$$
+BEGIN
+    UPDATE image SET comment_counter = comment_counter+1 WHERE NEW.image_id = image.id;
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER comment_counter
+    AFTER INSERT
+    ON comment
+    FOR EACH ROW
+    EXECUTE PROCEDURE increase_comment_count();
 
 CREATE OR REPLACE FUNCTION increase_complaint_count_image()
        RETURNS TRIGGER
