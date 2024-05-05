@@ -31,7 +31,7 @@ CREATE TABLE image_tag (
 
 CREATE TABLE comment (
     id BIGSERIAL PRIMARY KEY,
-    description TEXT DEFAULT NULL,
+    description TEXT NOT NULL,
     image_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     report_counter INT DEFAULT 0,

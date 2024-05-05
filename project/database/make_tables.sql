@@ -5,7 +5,7 @@ CREATE TABLE tag (
 
 CREATE TABLE "user" (
     id BIGSERIAL PRIMARY KEY,
-    is_admin BOOLEAN DEFAULT FALSE NOT NULL,
+    is_admin BOOLEANNOT NULLDEFAULT FALSE NOT NULL,
     login VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     hash_and_salt VARCHAR(255) NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE complaint_profile (
 
 CREATE TABLE comment (
     id BIGSERIAL PRIMARY KEY,
-    description TEXT DEFAULT NULL,
+    description TEXT NOT NULL,
     image_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     report_counter INT DEFAULT 0,
