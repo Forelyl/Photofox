@@ -42,9 +42,13 @@ CREATE OR REPLACE FUNCTION increase_complaint_count_image()
        LANGUAGE PLPGSQL
        AS
 $$
+DECLARE
+    user_id BIGINT;
 BEGIN
     UPDATE image SET report_counter = report_counter+1 WHERE NEW.id_image = image.id;
-    UPDATE "user" SET amount_of_complaints_on_image = amount_of_complaints_on_image+1 WHERE NEW.id_image_author = "user".id;
+
+    SELECT image.author_id INTO user_id FROM image WHERE image.id = NEW.id_image;
+    UPDATE "user" SET amount_of_complaints_on_image = amount_of_complaints_on_image+1 WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $$;
@@ -61,9 +65,13 @@ CREATE OR REPLACE FUNCTION increase_complaint_count_comment()
        LANGUAGE PLPGSQL
        AS
 $$
+DECLARE
+    user_id BIGINT;
 BEGIN
     UPDATE comment SET report_counter = report_counter+1 WHERE NEW.id_comment = comment.id;
-    UPDATE "user" SET amount_of_complaints_on_comment = amount_of_complaints_on_comment+1 WHERE NEW.id_comment_author = "user".id;
+
+    SELECT comment.user_id INTO user_id FROM comment WHERE comment.id = NEW.id_comment;
+    UPDATE "user" SET amount_of_complaints_on_comment = amount_of_complaints_on_comment+1 WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $$;
@@ -148,13 +156,15 @@ CREATE OR REPLACE FUNCTION decrease_complaint_image_count()
 $decrease_complaint$
 DECLARE
     complaint_amount INT;
+    user_id BIGINT;
 BEGIN
     SELECT report_counter INTO complaint_amount FROM image WHERE OLD.id_image = image.id;
     UPDATE image SET report_counter = GREATEST(complaint_amount - 1, 0) WHERE OLD.id_image = image.id;
 
-    SELECT amount_of_complaints_on_image INTO complaint_amount FROM "user" WHERE OLD.id_image_author = "user".id;
+    SELECT image.author_id INTO user_id FROM image WHERE image.id = OLD.id_image;
+    SELECT amount_of_complaints_on_image INTO complaint_amount FROM "user" WHERE user_id = "user".id;
     UPDATE "user" SET amount_of_complaints_on_image = GREATEST(complaint_amount - 1, 0)
-        WHERE OLD.id_image_author = "user".id;
+        WHERE user_id = "user".id;
 
     RETURN NEW;
 END;
@@ -175,13 +185,15 @@ CREATE OR REPLACE FUNCTION decrease_complaint_comment_count()
 $decrease_complaint$
 DECLARE
     complaint_amount INT;
+    user_id BIGINT;
 BEGIN
     SELECT report_counter INTO complaint_amount FROM comment WHERE OLD.id_comment = comment.id;
     UPDATE comment SET report_counter = GREATEST(complaint_amount - 1, 0) WHERE OLD.id_comment = comment.id;
 
-    SELECT amount_of_complaints_on_comment INTO complaint_amount FROM "user" WHERE OLD.id_comment_author = "user".id;
+    SELECT comment.user_id INTO user_id FROM comment WHERE comment.id = OLD.id_comment;
+    SELECT amount_of_complaints_on_comment INTO complaint_amount FROM "user" WHERE user_id = "user".id;
     UPDATE "user" SET amount_of_complaints_on_comment = GREATEST(complaint_amount - 1, 0)
-        WHERE OLD.id_comment_author = "user".id;
+        WHERE user_id = "user".id;
 
     RETURN NEW;
 END;
