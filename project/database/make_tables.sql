@@ -113,7 +113,7 @@ CREATE TABLE image_tag (
 CREATE TABLE subscribe (
     id_subscriber BIGINT NOT NULL,
     id_subscribed_on BIGINT NOT NULL,
-    CONSTRAINT fk_subscriber_to_user FOREIGN KEY (id_subscriber) REFERENCES "user"(id),
-    CONSTRAINT fk_subscribed_to_user FOREIGN KEY (id_subscribed_on) REFERENCES "user"(id),
+    CONSTRAINT fk_subscriber_to_user FOREIGN KEY (id_subscriber) REFERENCES "user"(id) ON DELETE CASCADE ,
+    CONSTRAINT fk_subscribed_to_user FOREIGN KEY (id_subscribed_on) REFERENCES "user"(id) ON DELETE CASCADE ,
     CONSTRAINT pk_subscriber PRIMARY KEY (id_subscriber, id_subscribed_on)
 );
