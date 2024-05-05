@@ -20,6 +20,28 @@ CREATE TRIGGER like_decrease_counter
 
 ------------
 
+CREATE OR REPLACE FUNCTION decrease_comment_count()
+       RETURNS TRIGGER
+       LANGUAGE PLPGSQL
+       AS
+$decrease_comment$
+DECLARE
+    comment_amount INT;
+BEGIN
+    SELECT comment_counter INTO comment_amount FROM image WHERE OLD.image_id = image.id;
+    UPDATE image SET comment_counter = GREATEST(comment_amount - 1, 0) WHERE OLD.image_id = image.id;
+    RETURN NEW;
+END;
+$decrease_comment$;
+
+CREATE TRIGGER like_decrease_counter
+    AFTER DELETE
+    ON comment
+    FOR EACH ROW
+    EXECUTE PROCEDURE decrease_comment_count();
+
+------------
+
 
 CREATE OR REPLACE FUNCTION decrease_complaint_image_count()
        RETURNS TRIGGER
