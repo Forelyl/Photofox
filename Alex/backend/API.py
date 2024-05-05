@@ -43,8 +43,8 @@ class Tag(BaseModel):
 # Tag
 #============================================
 @app.get('/tag/all', response_model=list[Tag], tags=['tag'])
-def get_all_tags():
-    return list({"title": x[0], "id": x[1]} for x in db.select_all_tags())
+async def get_all_tags():
+    return list({"title": x[0], "id": x[1]} for x in await db.select_all_tags())
 
 #============================================
 # Image
