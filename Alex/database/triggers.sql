@@ -157,6 +157,7 @@ $delete_account$
 BEGIN
     DELETE FROM comment WHERE user_id = OLD.id;
     DELETE FROM image WHERE author_id = OLD.id;
+    DELETE FROM subscribe WHERE id_subscribed_on = OLD.id OR id_subscriber = OLD.id;
     RETURN OLD;
 END;
 $delete_account$;

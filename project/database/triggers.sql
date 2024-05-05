@@ -280,10 +280,12 @@ CREATE OR REPLACE FUNCTION decrease_subscribe()
 $delete_account$
 DECLARE
     subscribe_amount BIGINT;
+    subscribe_row subscribe;
 BEGIN
     SELECT subscribers INTO subscribe_amount FROM "user" WHERE OLD.id_subscribed_on = "user".id;
     UPDATE "user" SET subscribers = GREATEST(subscribe_amount - 1, 0) WHERE OLD.id_subscribed_on = "user".id;
 
+    SELECT INTO subscribe_row 
     SELECT subscribed INTO subscribe_amount FROM "user" WHERE OLD.id_subscriber = "user".id;
     UPDATE "user" SET subscribed = GREATEST(subscribe_amount - 1, 0) WHERE OLD.id_subscriber = "user".id;
     RETURN OLD;
@@ -310,6 +312,9 @@ $delete_account$
 BEGIN
     DELETE FROM comment WHERE user_id = OLD.id;
     DELETE FROM image WHERE author_id = OLD.id;
+
+
+    DELETE FROM subscribe WHERE id_subscribed_on = OLD.id OR id_subscriber = OLD.id;
     RETURN OLD;
 END;
 $delete_account$;

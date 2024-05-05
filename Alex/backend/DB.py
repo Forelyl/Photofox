@@ -57,6 +57,7 @@ class PhotoFox:
 
     # SELECT
     # TODO:
+    # -4) email is exists
     # -3) login is exists
     # -2) is_admin for login
     # -1) hash, is_admin - user 
