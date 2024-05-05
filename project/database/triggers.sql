@@ -313,21 +313,6 @@ DECLARE
 BEGIN
     DELETE FROM comment WHERE user_id = OLD.id;
     DELETE FROM image WHERE author_id = OLD.id;
-
-
-    FOR subscribe_id IN SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = OLD.id
-        LOOP
-            SELECT subscribers INTO subscribe_amount FROM "user" WHERE subscribe_id = "user".id;
-            UPDATE "user" SET subscribers = GREATEST(subscribe_amount - 1, 0) WHERE subscribe_id = "user".id;
-        END LOOP;
-
-    FOR subscribe_id IN SELECT id_subscriber FROM subscribe WHERE id_subscribed_on = OLD.id
-        LOOP
-            SELECT subscribed INTO subscribe_amount FROM "user" WHERE subscribe_id = "user".id;
-            UPDATE "user" SET subscribed = GREATEST(subscribe_amount - 1, 0) WHERE subscribe_id = "user".id;
-        END LOOP;
-
-
     RETURN OLD;
 END;
 $delete_account$;
