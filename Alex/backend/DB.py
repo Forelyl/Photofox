@@ -61,11 +61,11 @@ class PhotoFox:
     # -3) login is exists
     # -2) is_admin for login
     # -1) hash, is_admin - user 
-    # 0)  select image with limit
+    # 0)  select image with limit - last
     # 1)  select image info without counter of reports
     # 2)  select comment with limit without counter of reports - I think that it could be tricky cause we don't neeed just offset we need to also specidfy what object was first when we get data for first time (or for last for 3-rd and so on)
     # 3)  select tag like str
-    # 4)  
+    # 4)  select image with subcribed_on
     # 5)  select image with size | None, tag | None, data | None, size_ratio | None, like | None
     # 6)  select image with author
     # 7)  select image with complaints
