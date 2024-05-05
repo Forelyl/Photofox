@@ -5,12 +5,14 @@ CREATE TABLE tag (
 
 CREATE TABLE "user" (
     id BIGSERIAL PRIMARY KEY,
-    is_admin BOOLEAN NOT NULL DEFAULT FALSE NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE NOT NULL,
     login VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     hash_and_salt VARCHAR(255) NOT NULL,
     description TEXT DEFAULT NULL,
     profile_image TEXT DEFAULT NULL,
+    subscribed BIGINT NOT NULL DEFAULT 0,
+    subscribers BIGINT NOT NULL DEFAULT 0,
     amount_of_complaints_on_profile INT CHECK (amount_of_complaints_on_profile >= 0) DEFAULT 0,
     amount_of_complaints_on_comment INT CHECK (amount_of_complaints_on_comment >= 0) DEFAULT 0,
     amount_of_complaints_on_image INT CHECK (amount_of_complaints_on_image >= 0) DEFAULT 0
@@ -106,4 +108,11 @@ CREATE TABLE image_tag (
     CONSTRAINT fk_image_tag_to_image FOREIGN KEY (image_id) REFERENCES image(id),
     CONSTRAINT fk_image_tage_to_tag FOREIGN KEY (tag_id) REFERENCES tag(id),
     CONSTRAINT pk_image_tag PRIMARY KEY (image_id, tag_id)
+);
+
+CREATE TABLE subscribe (
+    id_subscriber BIGINT NOT NULL,
+    id_subscribed_on BIGINT NOT NULL,
+    CONSTRAINT fk_subscriber_to_user FOREIGN KEY (id_subscriber) REFERENCES "user"(id),
+    CONSTRAINT fk_subscribed_to_user FOREIGN KEY (id_subscribed_on) REFERENCES "user"(id)
 );
