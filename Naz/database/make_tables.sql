@@ -4,7 +4,6 @@ CREATE TABLE tag (
     title VARCHAR(100) NOT NULL UNIQUE
 );
 
-
 CREATE TABLE image (
     id BIGSERIAL PRIMARY KEY,
     author_id BIGINT NOT NULL,
@@ -38,4 +37,11 @@ CREATE TABLE comment (
     adding_date DATE NOT NULL,
     CONSTRAINT fk_comment_to_user FOREIGN KEY (user_id) REFERENCES "user"(id),
     CONSTRAINT fk_comment_to_image FOREIGN KEY (image_id) REFERENCES image(id)
+);
+
+CREATE TABLE subscribe (
+    id_subscriber BIGINT NOT NULL,
+    id_subscribed_on BIGINT NOT NULL,
+    CONSTRAINT fk_subscriber_to_user FOREIGN KEY (id_subscriber) REFERENCES "user"(id),
+    CONSTRAINT fk_subscriber_to_user FOREIGN KEY (id_subscribed_on) REFERENCES "user"(id)
 );
