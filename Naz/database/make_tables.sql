@@ -18,7 +18,7 @@ CREATE TABLE image (
     adding_date DATE NOT NULL,
     width INT DEFAULT 0 CHECK (width > 0),
     height INT DEFAULT 0 CHECK (width > 0),
-    CONSTRAINT fk_author_id FOREIGN KEY (author_id) REFERENCES "user"(id)
+    CONSTRAINT fk_author_id FOREIGN KEY (author_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE image_tag (
