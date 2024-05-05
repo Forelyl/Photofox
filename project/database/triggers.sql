@@ -280,12 +280,10 @@ CREATE OR REPLACE FUNCTION decrease_subscribe()
 $delete_account$
 DECLARE
     subscribe_amount BIGINT;
-    subscribe_row subscribe;
 BEGIN
     SELECT subscribers INTO subscribe_amount FROM "user" WHERE OLD.id_subscribed_on = "user".id;
     UPDATE "user" SET subscribers = GREATEST(subscribe_amount - 1, 0) WHERE OLD.id_subscribed_on = "user".id;
 
-    SELECT INTO subscribe_row 
     SELECT subscribed INTO subscribe_amount FROM "user" WHERE OLD.id_subscriber = "user".id;
     UPDATE "user" SET subscribed = GREATEST(subscribe_amount - 1, 0) WHERE OLD.id_subscriber = "user".id;
     RETURN OLD;
@@ -309,12 +307,27 @@ CREATE OR REPLACE FUNCTION delete_account()
        LANGUAGE PLPGSQL
        AS
 $delete_account$
+DECLARE
+    subscribe_id BIGINT;
+    subscribe_amount BIGINT;
 BEGIN
     DELETE FROM comment WHERE user_id = OLD.id;
     DELETE FROM image WHERE author_id = OLD.id;
 
 
-    DELETE FROM subscribe WHERE id_subscribed_on = OLD.id OR id_subscriber = OLD.id;
+    FOR subscribe_id IN SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = OLD.id
+        LOOP
+            SELECT subscribers INTO subscribe_amount FROM "user" WHERE subscribe_id = "user".id;
+            UPDATE "user" SET subscribers = GREATEST(subscribe_amount - 1, 0) WHERE subscribe_id = "user".id;
+        END LOOP;
+
+    FOR subscribe_id IN SELECT id_subscriber FROM subscribe WHERE id_subscribed_on = OLD.id
+        LOOP
+            SELECT subscribed INTO subscribe_amount FROM "user" WHERE subscribe_id = "user".id;
+            UPDATE "user" SET subscribed = GREATEST(subscribe_amount - 1, 0) WHERE subscribe_id = "user".id;
+        END LOOP;
+
+
     RETURN OLD;
 END;
 $delete_account$;
