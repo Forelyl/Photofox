@@ -26,7 +26,7 @@ CREATE TABLE image_tag (
     tag_id INT NOT NULL,
     CONSTRAINT fk_image_tag_to_image FOREIGN KEY (image_id) REFERENCES image(id),
     CONSTRAINT fk_image_tage_to_tag FOREIGN KEY (tag_id) REFERENCES tag(id),
-    CONSTRAINT pk_image_tag_unique PRIMARY KEY (image_id, tag_id)
+    CONSTRAINT pk_image_tag PRIMARY KEY (image_id, tag_id)
 );
 
 CREATE TABLE comment (
