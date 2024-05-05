@@ -253,6 +253,31 @@ CREATE TRIGGER comment_complaint_decrease_counter_comment_delete
     FOR EACH ROW
     EXECUTE PROCEDURE decrease_complaint_comment_count_comment_delete();
 
+-------------
+
+CREATE OR REPLACE FUNCTION decrease_subscribe()
+       RETURNS TRIGGER
+       LANGUAGE PLPGSQL
+       AS
+$delete_account$
+DECLARE
+    subscribe_amount BIGINT;
+BEGIN
+    SELECT subscribers INTO subscribe_amount FROM "user" WHERE OLD.id_subscribed_on = "user".id;
+    UPDATE "user" SET subscribers = GREATEST(subscribe_amount - 1, 0) WHERE OLD.id_subscribed_on = "user".id;
+
+    SELECT subscribed INTO subscribe_amount FROM "user" WHERE OLD.id_subscriber = "user".id;
+    UPDATE "user" SET subscribed = GREATEST(subscribe_amount - 1, 0) WHERE OLD.id_subscriber = "user".id;
+    RETURN OLD;
+END;
+$delete_account$;
+
+
+CREATE TRIGGER decrease_subscribe_trigger
+    BEFORE DELETE
+    ON "subscribe"
+    FOR EACH ROW
+    EXECUTE PROCEDURE decrease_subscribe();
 
 -----------------------------------
 -- Delete account
@@ -276,4 +301,5 @@ CREATE TRIGGER delete_account_trigger
     BEFORE DELETE
     ON "user"
     FOR EACH ROW
-    EXECUTE PROCEDURE delete_account()
+    EXECUTE PROCEDURE delete_account();
+
