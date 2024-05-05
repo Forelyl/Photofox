@@ -100,6 +100,24 @@ CREATE TRIGGER complaint_counter_profile
     FOR EACH ROW
     EXECUTE PROCEDURE increase_complaint_count_profile();
 
+
+CREATE OR REPLACE FUNCTION increase_subscribers_count()
+        RETURNS TRIGGER
+        LANGUAGE PLPGSQL
+        AS
+$$
+BEGIN
+    UPDATE "user" SET subscribers = subscribers+1 WHERE NEW.id_subscribed_on = "user".id;
+    UPDATE "user" SET subscribed = subscribed+1 WHERE NEW.id_subscriber = "user".id;
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER subscribe_counter
+    AFTER INSERT
+    ON subscribe
+    FOR EACH ROW
+    EXECUTE PROCEDURE increase_subscribers_count();
 -----------------------------------
 -- Decreasing
 -----------------------------------
