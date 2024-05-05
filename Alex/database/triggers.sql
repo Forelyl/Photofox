@@ -93,7 +93,7 @@ BEGIN
 END;
 $decrease_complaint$;
 
-CREATE TRIGGER image_complaint_decrease_counter
+CREATE TRIGGER comment_complaint_decrease_counter
     AFTER DELETE
     ON complaint_comment
     FOR EACH ROW
@@ -120,3 +120,29 @@ CREATE TRIGGER profile_complaint_decrease_counter
     ON complaint_profile
     FOR EACH ROW
     EXECUTE PROCEDURE decrease_complaint_profile_count();
+
+-------------
+
+CREATE OR REPLACE FUNCTION decrease_complaint_comment_count_comment_delete()
+       RETURNS TRIGGER
+       LANGUAGE PLPGSQL
+       AS
+$decrease_complaint$
+DECLARE
+    complaint_amount INT;
+    user_id BIGINT;
+BEGIN
+    user_id = OLD.user_id;
+    SELECT amount_of_complaints_on_comment INTO complaint_amount FROM "user" WHERE user_id = "user".id;
+    UPDATE "user" SET amount_of_complaints_on_comment = GREATEST(complaint_amount - 1, 0)
+        WHERE user_id = "user".id;
+
+    RETURN NEW;
+END;
+$decrease_complaint$;
+
+CREATE TRIGGER comment_complaint_decrease_counter_comment_delete
+    AFTER DELETE
+    ON comment
+    FOR EACH ROW
+    EXECUTE PROCEDURE decrease_complaint_comment_count_comment_delete();
