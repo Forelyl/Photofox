@@ -18,7 +18,7 @@ CREATE TABLE "like" (
         FOREIGN KEY(id_user) REFERENCES "user"(id) ON DELETE CASCADE,
     CONSTRAINT fk_id_image
         FOREIGN KEY(id_image) REFERENCES image(id) ON DELETE CASCADE,
-    CONSTRAINT pk_id_author_id_image PRIMARY KEY (id_user, id_image)
+    CONSTRAINT pk_id_author_id_image_like PRIMARY KEY (id_user, id_image)
 );
 
 
@@ -29,7 +29,7 @@ CREATE TABLE saved (
         FOREIGN KEY(id_user) REFERENCES "user"(id) ON DELETE CASCADE,
     CONSTRAINT fk_id_image
         FOREIGN KEY(id_image) REFERENCES image(id) ON DELETE CASCADE,
-    CONSTRAINT pk_id_author_id_image PRIMARY KEY (id_user, id_image)
+    CONSTRAINT pk_id_author_id_image_saved PRIMARY KEY (id_user, id_image)
 );
 
 -- TODO: As future update, could be added prevent system for complaint bombing
@@ -68,5 +68,5 @@ CREATE TABLE complaint_comment (
         FOREIGN KEY(id_user) REFERENCES "user"(id) ON DELETE SET NULL,
     CONSTRAINT fk_id_comment
         FOREIGN KEY(id_comment) REFERENCES comment(id) ON DELETE CASCADE,
-    CONSTRAINT pk_author_user_object PRIMARY KEY (id_user, id_comment, id_comment_author)
+    CONSTRAINT pk_author_user_comment PRIMARY KEY (id_user, id_comment, id_comment_author)
 );

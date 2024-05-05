@@ -1,9 +1,20 @@
-
 CREATE TABLE tag (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL UNIQUE
 );
 
+CREATE TABLE "user" (
+    id BIGSERIAL PRIMARY KEY,
+    is_admin BOOLEAN DEFAULT FALSE NOT NULL,
+    login VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    hash_and_salt VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    profile_image TEXT DEFAULT NULL,
+    amount_of_complaints_on_profile INT CHECK (amount_of_complaints_on_profile >= 0) DEFAULT 0,
+    amount_of_complaints_on_comment INT CHECK (amount_of_complaints_on_comment >= 0) DEFAULT 0,
+    amount_of_complaints_on_image INT CHECK (amount_of_complaints_on_image >= 0) DEFAULT 0
+);
 
 CREATE TABLE image (
     id BIGSERIAL PRIMARY KEY,
@@ -40,19 +51,6 @@ CREATE TABLE comment (
     CONSTRAINT fk_comment_to_image FOREIGN KEY (image_id) REFERENCES image(id)
 );
 
-CREATE TABLE "user" (
-    id BIGSERIAL PRIMARY KEY,
-    is_admin BOOLEAN DEFAULT FALSE NOT NULL,
-    login VARCHAR(255) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    hash_and_salt VARCHAR(255) NOT NULL,
-    description TEXT DEFAULT NULL,
-    profile_image TEXT DEFAULT NULL,
-    amount_of_complaints_on_profile INT CHECK (amount_of_complaints_on_profile >= 0) DEFAULT 0,
-    amount_of_complaints_on_comment INT CHECK (amount_of_complaints_on_comment >= 0) DEFAULT 0,
-    amount_of_complaints_on_image INT CHECK (amount_of_complaints_on_image >= 0) DEFAULT 0
-);
-
 CREATE TABLE "like" (
     id_user BIGINT NOT NULL,
     id_image BIGINT NOT NULL,
@@ -60,7 +58,7 @@ CREATE TABLE "like" (
         FOREIGN KEY(id_user) REFERENCES "user"(id) ON DELETE CASCADE,
     CONSTRAINT fk_id_image
         FOREIGN KEY(id_image) REFERENCES image(id) ON DELETE CASCADE,
-    CONSTRAINT pk_id_author_id_image PRIMARY KEY (id_user, id_image)
+    CONSTRAINT pk_id_author_id_image_like PRIMARY KEY (id_user, id_image)
 );
 
 
@@ -71,7 +69,7 @@ CREATE TABLE saved (
         FOREIGN KEY(id_user) REFERENCES "user"(id) ON DELETE CASCADE,
     CONSTRAINT fk_id_image
         FOREIGN KEY(id_image) REFERENCES image(id) ON DELETE CASCADE,
-    CONSTRAINT pk_id_author_id_image PRIMARY KEY (id_user, id_image)
+    CONSTRAINT pk_id_author_id_image_saved PRIMARY KEY (id_user, id_image)
 );
 
 -- TODO: As future update, could be added prevent system for complaint bombing
@@ -110,5 +108,5 @@ CREATE TABLE complaint_comment (
         FOREIGN KEY(id_user) REFERENCES "user"(id) ON DELETE SET NULL,
     CONSTRAINT fk_id_comment
         FOREIGN KEY(id_comment) REFERENCES comment(id) ON DELETE CASCADE,
-    CONSTRAINT pk_author_user_object PRIMARY KEY (id_user, id_comment, id_comment_author)
+    CONSTRAINT pk_author_user_comment PRIMARY KEY (id_user, id_comment, id_comment_author)
 );
