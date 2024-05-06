@@ -1,8 +1,8 @@
 import asyncpg as postgres
 from typing import Any
 import asyncio
-import sys
-
+from asyncpg.connect_utils import pathlib
+from pydantic import BaseModel
 
 
 class DB:
@@ -43,10 +43,27 @@ class DB:
         return result
 
 class DB_Returns:
-    class Hash_and_admin:
-        def __init__(self, hash: str, is_admin: bool = False):
-            self.hash = hash
-            self.is_admin = is_admin
+    class Hash_and_admin(BaseModel):
+        hash: str
+        is_admin: bool = False
+
+    class Image(BaseModel):
+        id: int
+        path: str
+    
+    class Image_mobile(Image):
+        title: str | None
+        like_counter: int
+        comment_counter: int
+        author_id: int
+        author_login: str
+        author_picture: str | None
+        
+    class Image_full(Image_mobile):
+        description: str | None
+        tags: list[str] | None
+    
+
 
 
 
@@ -74,6 +91,7 @@ class PhotoFox:
     # 1) 🦊 select image info without counter of reports
     # 2)  select comment with limit without counter of reports - I think that it could be tricky cause we don't neeed just offset we need to also specidfy what object was first when we get data for first time (or for last for 3-rd and so on)
     # 3)  select tag like str
+    # 3.1) select tad id by str
     # 4)  select image with subcribed_on
     # 5)  select image with size | None, tag | None, data | None, size_ratio | None, like | None
     # 6)  select image with author
@@ -125,65 +143,97 @@ class PhotoFox:
 
         return function_result
 
-    async def get_images_pc(self, last_image_id: int) -> list[dict[str, Any]]:
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
-        """
-        SELECT id, image FROM image WHERE id < $1 ORDER BY DESC LIMIT 30;
-        """, last_image_id))
-
-        return result
+    async def get_images_pc(self, last_image_id: int) -> list[DB_Returns.Image]:
+        result: list[dict[str, Any]] = []
+        if last_image_id == -1:
+            query: str =  """SELECT id, image as path FROM image ORDER BY id DESC LIMIT 30;"""
+            result = DB.process_return(await self.__DB.execute(query))
+        else:
+            query: str =  """SELECT id, image as path FROM image WHERE id < $1 ORDER BY id DESC LIMIT 30;"""
+            result = DB.process_return(await self.__DB.execute(query, last_image_id))
+        return list(DB_Returns.Image(**x) for x in result)
     
-    async def get_images_mobile(self, last_image_id: int) -> list[dict[str, Any]]:
+    async def get_images_mobile(self, last_image_id: int) -> list[DB_Returns.Image_mobile]:
+        
+        if last_image_id == -1:
+            query: str = """
+            SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
+               "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture
+            FROM image JOIN "user" ON image.author_id = "user".id
+            ORDER BY id DESC LIMIT 10;
+            """    
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
+        else:
+            query: str = """
+            SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
+               "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture
+            FROM image JOIN "user" ON image.author_id = "user".id
+            WHERE image.id < $1 ORDER BY id DESC LIMIT 10;
+            """    
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id))     
+        
+        return list(DB_Returns.Image_mobile(**x) for x in result)
+
+    async def get_image(self, image_id: int) -> DB_Returns.Image_full:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
         """
-        SELECT image.id, image.image, image.title, image.like_counter, image.comment_counter,
-               "user".id, "user".login, "user".profile_image
-        FROM image JOIN "user" ON image.author_id = "user".id
-        WHERE image.id > $1 ORDER BY DESC LIMIT 10;
-        """, last_image_id))
-
-        return result
-
-    async def get_image(self, image_id: int) -> dict[str, Any]:
-        # TODO: перевірити з значеннями, бо я не впевнений, що воно працює коректно
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
-        """
-        SELECT image.id, image.image, image.title, image.like_counter, image.comment_counter, image.description,
-               "user".id, "user".login, "user".profile_image, 
-               (SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
+        SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter, image.description,
+               "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture, 
+               ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
         FROM image JOIN "user" ON image.author_id = "user".id
         WHERE image.id = $1;
         """, image_id))
         
-        """
-        SELECT image.id, image.image, image.title, image.like_counter, image.comment_counter, image.description,
-               "user".id, "user".login, "user".profile_image, 
-               (SELECT tag.title FROM tags, image_tag WHERE image_tag.image_id = $1 AND image_tag.tag_id = tag.id) AS tags
-        FROM image JOIN "user" ON image.author_id = "user".id
-        WHERE image.id = $1 ;
-        """
-
-        return result[0]
+        
+        return DB_Returns.Image_full(**result[0])
     
-    async def get_subscribed_images_pc(self, user_id: int) -> list[dict[str, Any]]:
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
-        """
-        SELECT id, image FROM image WHERE image.author_id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1) ORDER BY DESC LIMIT 30;
-        """, user_id
-        ))
-
-        """
-        SELECT id, image FROM image, subscribe WHERE subscribe.subscriber = $1 AND image.author_id = subsctibe.subscribed;                
-        """
+    async def get_subscribed_images_pc(self, user_login: str, last_image_id: int) -> list[dict[str, Any]]:
+        
+        if last_image_id == -1:
+            query: str = """
+            SELECT id, image as path FROM image
+                WHERE image.author_id IN
+                (SELECT id_subscribed_on FROM subscribe
+                    WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $1)
+                )
+            ORDER BY id DESC LIMIT 30;
+            """    
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_login))
+        else:
+            query: str = """
+            SELECT id, image as path FROM image
+                WHERE id < $1 AND image.author_id IN
+                (SELECT id_subscribed_on FROM subscribe
+                    WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $2)
+                )
+            ORDER BY id DESC LIMIT 30;
+            """
+            result = DB.process_return(await self.__DB.execute(query, last_image_id, user_login))
         
         return result
 
-    async def get_subscribed_images_mobile(self, user_id: int) -> list[dict[str, Any]]:
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
-        """
-        SELECT id, image FROM image WHERE image.author_id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1) ORDER BY DESC LIMIT 30;
-        """, user_id
-        ))
+    async def get_subscribed_images_mobile(self, user_login: str, last_image_id: int) -> list[dict[str, Any]]:
+
+        if last_image_id == -1:
+            query: str = """
+            SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
+            "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture 
+            FROM image JOIN "user" ON image.author_id = "user".id
+                WHERE image.author_id IN 
+                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $1)) 
+            ORDER BY id DESC LIMIT 30;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_login))
+        else:
+            query: str = """
+            SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
+            "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture 
+            FROM image JOIN "user" ON image.author_id = "user".id
+                WHERE id < $1 AND image.author_id IN 
+                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $2)) 
+            ORDER BY id DESC LIMIT 30;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id, user_login))
 
         return result
 

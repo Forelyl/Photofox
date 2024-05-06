@@ -1,4 +1,5 @@
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
+from asyncpg import Path
 from fastapi.params import Param
 from DB import DB_Returns, db
 
@@ -96,15 +97,14 @@ def access_admin(user: Annotated[User, Depends(process_token)]) -> User:
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="Access level is too low")
 
-async def access_user(user: Annotated[User, Depends(process_token)], login: Annotated[str, Header(pattern=login_regex)]) -> User:
-    if login == user.username:
+async def access_user(user: Annotated[User, Depends(process_token)], login: Annotated[str | None, Header(pattern=login_regex)] = None) -> User:
+    if login is None:
         return user
     
     if user.is_admin:
-        if not await db.login_exists(login):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail="Specified user login doesn't exist")  
-        user.username = login
+        if (login is not None):
+            if not await db.login_exists(login): raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Specified user login doesn't exist")  
+            user.username = login
         return user
     
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
@@ -165,6 +165,25 @@ async def get_all_tags():
 #============================================
 # Image
 #============================================
+@app.get('/image/last', tags=['image'], response_model=list[DB_Returns.Image])
+async def get_last_images_pc(last_image_id: int = -1):
+    return await db.get_images_pc(last_image_id)
+
+@app.get('/image/last/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
+async def get_last_images_mobile(last_image_id: int = -1):
+    return await db.get_images_mobile(last_image_id)
+
+@app.get('/image/', tags=['image'], response_model=DB_Returns.Image_full)
+async def get_images(image_id: int):
+    return await db.get_image(image_id)
+
+@app.get('/image/subscribed', tags=['image'], response_model=list[DB_Returns.Image])
+async def get_subscribed_images_pc(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
+    return await db.get_subscribed_images_pc(user.username, last_image_id)
+
+@app.get('/image/subscribed/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
+async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
+    return await db.get_subscribed_images_mobile(user.username, last_image_id)
 
 #============================================
 # Profile
