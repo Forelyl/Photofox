@@ -187,7 +187,7 @@ class PhotoFox:
         
         return DB_Returns.Image_full(**result[0])
     
-    async def get_subscribed_images_pc(self, user_login: str, last_image_id: int) -> list[dict[str, Any]]:
+    async def get_subscribed_images_pc(self, user_login: str, last_image_id: int) -> list[DB_Returns.Image]:
         
         if last_image_id == -1:
             query: str = """
@@ -210,9 +210,9 @@ class PhotoFox:
             """
             result = DB.process_return(await self.__DB.execute(query, last_image_id, user_login))
         
-        return result
+        return list(DB_Returns.Image(**x) for x in result)
 
-    async def get_subscribed_images_mobile(self, user_login: str, last_image_id: int) -> list[dict[str, Any]]:
+    async def get_subscribed_images_mobile(self, user_login: str, last_image_id: int) -> list[DB_Returns.Image_mobile]:
 
         if last_image_id == -1:
             query: str = """
@@ -221,7 +221,7 @@ class PhotoFox:
             FROM image JOIN "user" ON image.author_id = "user".id
                 WHERE image.author_id IN 
                 (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $1)) 
-            ORDER BY id DESC LIMIT 30;
+            ORDER BY image.id DESC LIMIT 30;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_login))
         else:
@@ -229,13 +229,13 @@ class PhotoFox:
             SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
             "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture 
             FROM image JOIN "user" ON image.author_id = "user".id
-                WHERE id < $1 AND image.author_id IN 
+                WHERE image.id < $1 AND image.author_id IN 
                 (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $2)) 
-            ORDER BY id DESC LIMIT 30;
+            ORDER BY image.id DESC LIMIT 30;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id, user_login))
 
-        return result
+        return list(DB_Returns.Image_mobile(**x) for x in result)
 
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
