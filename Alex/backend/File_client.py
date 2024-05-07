@@ -12,7 +12,7 @@ class DropBox_client:
     def __init__(self) -> None:
         self.__API_KEY    = 'fagt8qrb3adxho7' 
         self.__API_SECRET = 'bty12jbpt74q8wo'
-        self.__API = 'sl.B0zMuKVYlmuPBKEcVtP1QGdjA_A_7vZXNDWhE8ApaS4m0X1vO27JCCTq4k--SBCuUkKUNUXCfVQiQk4UrVOgZ-RzlIZNbA2F5DNT-qIr9ZbJPqA2yFzydPEeUueWtaodij8GM4XbMWKGYqg'
+        self.__API = 'sl.B0wubx6EOuEnt78_YDl0EDPjigExj6FxXzQJOiuNmLKDF62WyKI-lxS2ZzDVffS9FfIjI4S3qVsAepIl12p1S3GJSCdt_OW2Z_IrE90d0MIOg0y0YHBmD1CBL621HaF8IB7pzsSs7tLqWT8'
         self.drop = dropbox.Dropbox(self.__API)
 
 
@@ -29,9 +29,9 @@ class DropBox_client:
         result_link = result.split('url')[1].split('\'')[1][0: -4] + "raw=1"
         
         return DropBox_client.Add_file_return(path=result_path, shared_link=result_link)
-        
-    async def close(self) -> None: raise NotImplemented 
-    async def login(self) -> None: raise NotImplemented
+    
 
+    async def delete_file(self, file_path: str) -> None:
+        self.drop.files_delete(file_path)
 
 DropBox: DropBox_client = DropBox_client()

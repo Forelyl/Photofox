@@ -1,4 +1,3 @@
-import datetime
 import asyncpg as postgres
 from typing import Any
 import asyncio
@@ -149,13 +148,26 @@ class PhotoFox:
 
         return function_result
 
+    async def get_hash_and_admin_by_id(self, user_id: int) -> DB_Returns.Hash_and_admin | None:
+        query_result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
+        """
+        SELECT hash_and_salt, is_admin FROM "user" WHERE id = $1;
+        """, user_id))
+        if len(query_result) < 1: return None
+        function_result: DB_Returns.Hash_and_admin = DB_Returns.Hash_and_admin(
+            hash = query_result[0]["hash_and_salt"], 
+            is_admin = query_result[0]["is_admin"]
+        )
+
+        return function_result
+
     async def get_images_pc(self, last_image_id: int) -> list[DB_Returns.Image]:
         result: list[dict[str, Any]] = []
         if last_image_id == -1:
-            query: str =  """SELECT id, image as path FROM image ORDER BY id DESC LIMIT 30;"""
+            query: str =  """SELECT id, image_url as path FROM image ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query))
         else:
-            query: str =  """SELECT id, image as path FROM image WHERE id < $1 ORDER BY id DESC LIMIT 30;"""
+            query: str =  """SELECT id, image_url as path FROM image WHERE id < $1 ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query, last_image_id))
         return list(DB_Returns.Image(**x) for x in result)
     
@@ -163,16 +175,16 @@ class PhotoFox:
         
         if last_image_id == -1:
             query: str = """
-            SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
-               "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture
+            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
+               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
             FROM image JOIN "user" ON image.author_id = "user".id
             ORDER BY id DESC LIMIT 10;
             """    
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         else:
             query: str = """
-            SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
-               "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture
+            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
+               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
             FROM image JOIN "user" ON image.author_id = "user".id
             WHERE image.id < $1 ORDER BY id DESC LIMIT 10;
             """    
@@ -183,8 +195,8 @@ class PhotoFox:
     async def get_image(self, image_id: int) -> DB_Returns.Image_full:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
         """
-        SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter, image.description,
-               "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture, 
+        SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter, image.description,
+               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture, 
                ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
         FROM image JOIN "user" ON image.author_id = "user".id
         WHERE image.id = $1;
@@ -197,7 +209,7 @@ class PhotoFox:
         
         if last_image_id == -1:
             query: str = """
-            SELECT id, image as path FROM image
+            SELECT id, image_url as path FROM image
                 WHERE image.author_id IN
                 (SELECT id_subscribed_on FROM subscribe
                     WHERE id_subscriber = $1
@@ -207,7 +219,7 @@ class PhotoFox:
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
         else:
             query: str = """
-            SELECT id, image as path FROM image
+            SELECT id, image_url as path FROM image
                 WHERE id < $1 AND image.author_id IN
                 (SELECT id_subscribed_on FROM subscribe
                     WHERE id_subscriber = $2
@@ -223,8 +235,8 @@ class PhotoFox:
 
         if last_image_id == -1:
             query: str = """
-            SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
-            "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture 
+            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
+            "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture 
             FROM image JOIN "user" ON image.author_id = "user".id
                 WHERE image.author_id IN 
                 (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1) 
@@ -233,8 +245,8 @@ class PhotoFox:
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
         else:
             query: str = """
-            SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
-            "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture 
+            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
+            "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture 
             FROM image JOIN "user" ON image.author_id = "user".id
                 WHERE image.id < $1 AND image.author_id IN 
                 (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $2) 
@@ -257,7 +269,7 @@ class PhotoFox:
         
         if last_id == -1:
             query: str = """
-            SELECT comment.id as id, comment.description as description, "user".profile_image as author_picture, "user".login as login
+            SELECT comment.id as id, comment.description as description, "user".profile_image_url as author_picture, "user".login as login
             FROM comment JOIN "user" ON comment.user_id = "user".id
             WHERE comment.image_id = $1
             ORDER BY comment.id DESC LIMIT 10
@@ -265,22 +277,40 @@ class PhotoFox:
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image))
         else:
             query: str = """
-            SELECT comment.id as id, comment.description as description, "user".profile_image as author_picture, "user".login as login
+            SELECT comment.id as id, comment.description as description, "user".profile_image_url as author_picture, "user".login as login
             FROM comment JOIN "user" ON comment.user_id = "user".id
             WHERE comment.image_id = $1 AND comment.id < $2
             ORDER BY comment.id DESC LIMIT 10
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image, last_id))
         
-        print("=================")
-        print("=================")
-        print(result)
-        print("=================")
-        print("=================")
-        
         return list(DB_Returns.Comment(**x) for x in result)
 
+    
+    async def get_image_path_by_id(self, image_id: int, author_id: int) -> tuple[str, bool]:
+        query: str = """
+        SELECT dropbox_path FROM image WHERE id = $1 AND author_id = $2;
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, image_id, author_id))
 
+        if len(result) == 0:
+            return ("", False)
+        else:
+            return (result[0]["dropbox_path"], True)
+
+
+    async def get_avatar_path_by_id(self, user_id) -> str:
+        query: str = """
+        SELECT dropbox_path FROM "user" WHERE id = $1;
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+
+        if result[0]["dropbox_path"] is None:
+            return ""
+        else:
+            return result[0]["dropbox_path"]
+
+            
     async def login_to_id(self, login: str) -> int:
         query: str = """SELECT id FROM "user" WHERE login = $1;"""
 
@@ -296,34 +326,74 @@ class PhotoFox:
         INSERT INTO "user"(login, email, hash_and_salt, is_admin) VALUES($1, $2, $3, $4)
         """, login, email, hash_and_salt, True)
     
+    
     async def add_user(self, login: str, email: str, hash_and_salt: str) -> None:
         await self.__DB.execute(
         """
         INSERT INTO "user"(login, email, hash_and_salt) VALUES($1, $2, $3)
         """, login, email, hash_and_salt)
     
+
     async def add_image(self, id_user: int, share_link: str, path: str, title: str, description: str, download_permission: bool, width: int, height: int):
         await self.__DB.execute(
         """
-        INSERT INTO image(author_id, adding_date, image, dropbox_path, title, description, download_permission, width, height) VALUES(
+        INSERT INTO image(author_id, adding_date, image_url, dropbox_path, title, description, download_permission, width, height) VALUES(
             $1, NOW(), $2, $3, $4, $5, $6, $7, $8
         );
         """, id_user, share_link, path, title, description, download_permission, width, height)
     
+
     async def add_like(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('INSERT INTO "like"(id_user, id_image) VALUES($1, $2);', id_user, id_image)
     
+
     async def add_comment(self, id_user: int, id_image: int, description: str) -> None:
         await self.__DB.execute('INSERT INTO comment(user_id, image_id, description, adding_date) VALUES($1, $2, $3, NOW());', id_user, id_image, description)
+
 
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('DELETE FROM "like" WHERE id_user = $1 AND id_image = $2;', id_user, id_image)
     
+
     async def delete_comment(self, id_user: int, id_comment: int) -> None:
         await self.__DB.execute('DELETE FROM comment WHERE id = $1 AND user_id = $2;', id_comment, id_user)
 
+
+    async def delete_profile(self, id_user: int) -> None:
+        await self.__DB.execute('DELETE FROM "user" WHERE id = $1;', id_user)
+
+
+    async def delete_image(self, id_user: int, id_image: int) -> None:
+        await self.__DB.execute('DELETE FROM image WHERE id = $1 AND author_id = $2;', id_image, id_user)
+    
+
+    async def delete_profile_picture(self, id_user: int) -> None:
+        await  self.__DB.execute('UPDATE "user" SET dropbox_path = NULL, profile_image_url = NULL WHERE id = $1', id_user)
+
     #UPDATE
+    
+    async def update_profile_picture(self, image_path: str, image_url: str, user_id: int) -> None:
+        await self.__DB.execute('UPDATE "user" SET dropbox_path = $1, profile_image_url = $2 WHERE id = $3', image_path, image_url, user_id)
+
+
+    async def update_profile_login(self, new_login: str, user_id: int):
+        await self.__DB.execute('UPDATE "user" SET login = $1 WHERE id = $2', new_login, user_id)
+
+
+    async def update_profile_description(self, new_description: str, user_id: int):
+        if len(new_description) == 0:
+            await self.__DB.execute('UPDATE "user" SET description = NULL WHERE id = $1', user_id)
+        else:
+            await self.__DB.execute('UPDATE "user" SET description = $1 WHERE id = $2', new_description, user_id)
+
+
+    async def update_profile_email(self, new_email: str, user_id: int):
+        await self.__DB.execute('UPDATE "user" SET email = $1 WHERE id = $2', new_email, user_id)
+
+
+    async def update_profile_password(self, new_pass: str, user_id: int):
+        await self.__DB.execute('UPDATE "user" SET hash_and_salt = $1 WHERE id = $2', new_pass, user_id)
 
 async def print_XD(db: PhotoFox):
     value = await db.select_all_tags()

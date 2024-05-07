@@ -1,5 +1,5 @@
+# WARNING: don't use username(login) to provide processes except login, use user.id instead
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
-from re import A
 from asyncpg import exceptions
 from fastapi.params import Param
 from DB import DB_Returns, db
@@ -211,10 +211,22 @@ async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: A
                         width: Annotated[int, Header()], height: Annotated[int, Header()],
                         download_permission: Annotated[bool, Header()] = False): 
 
-    result: DropBox_client.Add_file_return = await DropBox.add_file(image, user.username)
+    result: DropBox_client.Add_file_return = await DropBox.add_file(image, str(user.id))
     await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
     
     return result.shared_link
+
+
+@app.delete('/image', tags=['image'])
+async def delete_image(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Header(ge=1)]):
+    path_and_can_delete: tuple[str, bool] = await db.get_image_path_by_id(image_id, user.id)
+    
+    if not path_and_can_delete[1]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Can't delete image, not authorized or incorrect image-id")
+    
+    await DropBox.delete_file(path_and_can_delete[0])
+    await db.delete_image(user.id, image_id)
+
 
 #============================================
 # Like
@@ -259,9 +271,9 @@ async def get_login_exists(login: Annotated[str, Param(pattern=login_regex)]):
     return await login_exists(login)
 
 @app.post('/admin/add/admin', tags=['admin'], dependencies=[Depends(access_admin)])
-async def add_admin(login: Annotated[str, Body(pattern=login_regex)], 
-                    password: Annotated[str, Body()], 
-                    email: Annotated[str, Body(pattern=email_regex)]):
+async def add_admin(login: Annotated[str, Body(pattern=login_regex, min_length=1, max_length=50)], 
+                    password: Annotated[str, Body(min_length=1, max_length=50)], 
+                    email: Annotated[str, Body(pattern=email_regex, min_length=1, max_length=100)]):
     hash = hash_password(password)
     await db.add_admin(login, email, hash)
 
@@ -280,6 +292,73 @@ async def add_user(login: Annotated[str, Body(pattern=login_regex)],
     hash = hash_password(password)
     await db.add_user(login, email, hash)
 
+@app.delete('/profile/delete', tags=['profile', 'admin'])
+async def delete_user(user: Annotated[User, Depends(access_user)]):
+    await db.delete_profile(user.id)
+
+@app.patch('/profile/picture/delete', tags=['profile', 'admin'])
+async def delete_picture_profile(user: Annotated[User, Depends(access_user)]):
+    profile_picture_path: str = await db.get_avatar_path_by_id(user.id)
+    if profile_picture_path == "": return 
+    
+    await DropBox.delete_file(profile_picture_path)
+    await db.delete_profile_picture(user.id)
+
+
+@app.patch('/profile/picture', tags=['profile', 'admin'])
+async def change_picture_profile(user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()]): 
+    profile_picture_path: str = await db.get_avatar_path_by_id(user.id)
+    if profile_picture_path != "": 
+        await DropBox.delete_file(profile_picture_path)
+
+    if image.filename == None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Filename is missing")
+    image.filename = "profile_picture_" + image.filename 
+    
+    result: DropBox_client.Add_file_return = await DropBox.add_file(image, str(user.id))
+    await db.update_profile_picture(result.path, result.shared_link, user.id)
+
+
+@app.patch('/profile/login', tags=['profile', 'admin'])
+async def change_login_profile(user: Annotated[User, Depends(access_user)], password: Annotated[str, Header(min_length=1, max_length=50)], new_login: Annotated[str, Header(min_length=1, max_length=50, pattern=login_regex)]):
+    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
+    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                               detail="Incorrect username or password",
+                               headers={"WWW-Authenticate": "Bearer"})
+    check_login(hash_and_admin.hash, password)
+    
+    await db.update_profile_login(new_login, user.id)    
+
+@app.patch('/profile/description', tags=['profile', 'admin'])
+async def change_description_profile(user: Annotated[User, Depends(access_user)], new_description: Annotated[str, Header(min_length=0, max_length=255)] = ""):
+    await db.update_profile_description(new_description, user.id)
+
+@app.patch('/profile/email', tags=['profile', 'admin'])
+async def change_email_profile(user: Annotated[User, Depends(access_user)], password: Annotated[str, Header(min_length=1, max_length=50)], new_email: Annotated[str, Header(min_length=1, max_length=100, pattern=email_regex)]):
+    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
+    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                               detail="Incorrect username or password",
+                               headers={"WWW-Authenticate": "Bearer"})
+    check_login(hash_and_admin.hash, password)
+
+    await db.update_profile_email(new_email, user.id)
+
+@app.patch('/profile/password', tags=['profile', 'admin'])
+async def change_password_profile(user: Annotated[User, Depends(access_user)], old_password: Annotated[str, Header(min_length=1, max_length=50)], new_password: Annotated[str, Header(min_length=1, max_length=50)]):
+    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
+    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                               detail="Incorrect username or password",
+                               headers={"WWW-Authenticate": "Bearer"})
+    check_login(hash_and_admin.hash, old_password)
+    
+    if old_password == new_password:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="New password can't be the same as the previous one",
+                            headers={"WWW-Authenticate": "Bearer"})
+
+    hash = hash_password(new_password)
+    await db.update_profile_password(hash, user.id)
+
+
 #============================================
 # Complaint
 #============================================
@@ -293,5 +372,5 @@ def i_am_admin():
     return "You are"
 
 @app.get('/user/iam', tags=['admin'], response_model=str)
-def i_am_user(user: Annotated[User, Depends(access_user)]):
+def i_am_user(user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()]):
     return "You are " + user.username

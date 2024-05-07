@@ -10,7 +10,8 @@ CREATE TABLE "user" (
     email VARCHAR(255) UNIQUE NOT NULL,
     hash_and_salt VARCHAR(255) NOT NULL,
     description TEXT DEFAULT NULL,
-    profile_image TEXT DEFAULT NULL,
+    profile_image_url TEXT DEFAULT NULL,
+    dropbox_path TEXT DEFAULT NULL,
     subscribed BIGINT NOT NULL DEFAULT 0,
     subscribers BIGINT NOT NULL DEFAULT 0,
     amount_of_complaints_on_profile INT CHECK (amount_of_complaints_on_profile >= 0) DEFAULT 0,
@@ -22,7 +23,7 @@ CREATE TABLE "user" (
 CREATE TABLE image (
     id BIGSERIAL PRIMARY KEY,
     author_id BIGINT NOT NULL,
-    image TEXT NOT NULL UNIQUE,
+    image_url TEXT NOT NULL UNIQUE,
     dropbox_path TEXT NOT NULL UNIQUE,
     title VARCHAR(100),
     description TEXT DEFAULT NULL,
