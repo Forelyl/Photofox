@@ -67,7 +67,7 @@ class DB_Returns:
     class Comment(BaseModel):
         id: int
         description: str
-        author_picture: str
+        author_picture: str | None = None
         login: str
 
 
@@ -272,6 +272,12 @@ class PhotoFox:
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image, last_id))
         
+        print("=================")
+        print("=================")
+        print(result)
+        print("=================")
+        print("=================")
+        
         return list(DB_Returns.Comment(**x) for x in result)
 
 
@@ -308,15 +314,15 @@ class PhotoFox:
         await self.__DB.execute('INSERT INTO "like"(id_user, id_image) VALUES($1, $2);', id_user, id_image)
     
     async def add_comment(self, id_user: int, id_image: int, description: str) -> None:
-        await self.__DB.execute('INSERT INTO comment(id_user, id_image, description, adding_date) VALUES($1, $2, $3, NOW());', id_user, id_image, description)
+        await self.__DB.execute('INSERT INTO comment(user_id, image_id, description, adding_date) VALUES($1, $2, $3, NOW());', id_user, id_image, description)
 
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('DELETE FROM "like" WHERE id_user = $1 AND id_image = $2;', id_user, id_image)
     
     async def delete_comment(self, id_user: int, id_comment: int) -> None:
-        await self.__DB.execute('DELETE FROM comment WHERE id = $1 AND id_user = $2;', id_comment, id_user)
-        
+        await self.__DB.execute('DELETE FROM comment WHERE id = $1 AND user_id = $2;', id_comment, id_user)
+
     #UPDATE
 
 async def print_XD(db: PhotoFox):

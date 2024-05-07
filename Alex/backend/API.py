@@ -1,6 +1,6 @@
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
 from re import A
-from asyncpg import Path
+from asyncpg import exceptions
 from fastapi.params import Param
 from DB import DB_Returns, db
 
@@ -41,6 +41,15 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 email_regex: str = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 login_regex: str = r"(^[A-Za-z\d._-]{1,20}$)"
+
+#============================================
+# Errors handlers
+#============================================
+
+@app.exception_handler(exceptions.ForeignKeyViolationError)
+async def foreign_key_exception_handler(request: Request, exc: exceptions.ForeignKeyViolationError):
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Violation of data consistency")
+
 
 #============================================
 # Tokens - pass for time
@@ -257,7 +266,7 @@ async def add_admin(login: Annotated[str, Body(pattern=login_regex)],
     await db.add_admin(login, email, hash)
 
 
-@app.post('/admin/add/user', tags=['admin'])
+@app.post('/admin/add/user', tags=['profile'])
 async def add_user(login: Annotated[str, Body(pattern=login_regex)], 
                    password: Annotated[str, Body()], 
                    email: Annotated[str, Body(pattern=email_regex)]):
