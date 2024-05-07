@@ -3,10 +3,12 @@ from asyncpg import Path
 from fastapi.params import Param
 from DB import DB_Returns, db
 
+from File_client import DropBox_client as Dropbox
+
 from typing import Annotated
 
 from pydantic import BaseModel
-from fastapi import Body, FastAPI, Form, HTTPException, Header, status, Depends, Request
+from fastapi import Body, FastAPI, Form, HTTPException, Header, status, Depends, Request, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from passlib.context import CryptContext
@@ -185,6 +187,14 @@ async def get_subscribed_images_pc(user: Annotated[User, Depends(access_user)], 
 async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
     return await db.get_subscribed_images_mobile(user.username, last_image_id)
 
+@app.post('/image', tags=['image'], response_model=bool)
+async def add_new_image(user: Annotated[User, Depends(access_user)], image: UploadFile = File(...)): 
+    d = Dropbox()
+    print(type(image))
+    print((await (d.setup())(image)).read())
+    return True
+
+
 #============================================
 # Profile
 #============================================
@@ -196,13 +206,27 @@ async def get_email_exists(email: Annotated[str, Param(pattern=email_regex)]):
 async def get_login_exists(login: Annotated[str, Param(pattern=login_regex)]):
     return await login_exists(login)
 
-@app.post('/admin/add/admin', tags=['admin'])
+@app.post('/admin/add/admin', tags=['admin'], dependencies=[Depends(access_admin)])
 async def add_admin(login: Annotated[str, Body(pattern=login_regex)], 
                     password: Annotated[str, Body()], 
                     email: Annotated[str, Body(pattern=email_regex)]):
     hash = hash_password(password)
     await db.add_admin(login, email, hash)
 
+
+@app.post('/admin/add/user', tags=['admin'])
+async def add_user(login: Annotated[str, Body(pattern=login_regex)], 
+                   password: Annotated[str, Body()], 
+                   email: Annotated[str, Body(pattern=email_regex)]):
+    if await db.email_exists(email):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email is already used")
+    if await db.login_exists(login):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Login is already used")
+      
+    hash = hash_password(password)
+    await db.add_user(login, email, hash)
 
 #============================================
 # Complaint

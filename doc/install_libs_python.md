@@ -9,3 +9,7 @@ pip install fastapi
 <code>
 pip install granian[reload]
 </code>
+
+<code>
+pip install httpx[http2]
+</code>

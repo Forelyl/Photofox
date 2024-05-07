@@ -243,6 +243,13 @@ class PhotoFox:
         """
         INSERT INTO "user"(login, email, hash_and_salt, is_admin) VALUES($1, $2, $3, $4)
         """, login, email, hash_and_salt, True)
+    
+    async def add_user(self, login: str, email: str, hash_and_salt: str) -> None:
+        await self.__DB.execute(
+        """
+        INSERT INTO "user"(login, email, hash_and_salt) VALUES($1, $2, $3)
+        """, login, email, hash_and_salt)
+    
     #DELETE
 
     #UPDATE
