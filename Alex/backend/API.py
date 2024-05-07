@@ -1,9 +1,10 @@
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
+from re import A
 from asyncpg import Path
 from fastapi.params import Param
 from DB import DB_Returns, db
 
-from File_client import DropBox_client as Dropbox
+from File_client import DropBox_client, DropBox
 
 from typing import Annotated
 
@@ -187,12 +188,18 @@ async def get_subscribed_images_pc(user: Annotated[User, Depends(access_user)], 
 async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
     return await db.get_subscribed_images_mobile(user.username, last_image_id)
 
-@app.post('/image', tags=['image'], response_model=bool)
-async def add_new_image(user: Annotated[User, Depends(access_user)], image: UploadFile = File(...)): 
-    d = Dropbox()
-    await d.setup(image, user.username)
+# WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
+@app.post('/image', tags=['image'], response_model=str)
+async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()], 
+                        title: Annotated[str, Header(max_length=100, min_length=1)], 
+                        description: Annotated[str, Header(max_length=255)] = "",
+                        width: Annotated[int, Header()], height: Annotated[int, Header()],
+                        download_permission: Annotated[bool, Header()] = False): 
 
-    return True
+    result: DropBox_client.Add_file_return = await DropBox.add_file(image, user.username)
+    await db.add_image(user.username, result.shared_link, result.path, title, description, download_permission, width, height)
+    
+    return result.shared_link
 
 
 #============================================

@@ -7,7 +7,8 @@ CREATE TABLE tag (
 CREATE TABLE image (
     id BIGSERIAL PRIMARY KEY,
     author_id BIGINT NOT NULL,
-    image TEXT NOT NULL,
+    image TEXT NOT NULL UNIQUE,
+    dropbox_path TEXT NOT NULL UNIQUE,
     title VARCHAR(100),
     description TEXT DEFAULT NULL,
     download_permission BOOLEAN DEFAULT FALSE,

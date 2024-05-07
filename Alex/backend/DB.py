@@ -1,3 +1,4 @@
+import datetime
 import asyncpg as postgres
 from typing import Any
 import asyncio
@@ -250,7 +251,13 @@ class PhotoFox:
         INSERT INTO "user"(login, email, hash_and_salt) VALUES($1, $2, $3)
         """, login, email, hash_and_salt)
     
-    #async def add_image(self)
+    async def add_image(self, login: str, share_link: str, path: str, title: str, description: str, download_permission: bool, width: int, height: int):
+        await self.__DB.execute(
+        """
+        INSERT INTO image(author_id, adding_date, image, dropbox_path, title, description, download_permission, width, height) VALUES(
+            (SELECT id FROM "user" WHERE login = $1), NOW(), $2, $3, $4, $5, $6, $7, $8
+        );
+        """, login, share_link, path, title, description, download_permission, width, height)
     
     #DELETE
 

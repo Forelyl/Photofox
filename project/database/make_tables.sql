@@ -22,7 +22,8 @@ CREATE TABLE "user" (
 CREATE TABLE image (
     id BIGSERIAL PRIMARY KEY,
     author_id BIGINT NOT NULL,
-    image TEXT NOT NULL,
+    image TEXT NOT NULL UNIQUE,
+    dropbox_path TEXT NOT NULL UNIQUE,
     title VARCHAR(100),
     description TEXT DEFAULT NULL,
     download_permission BOOLEAN DEFAULT FALSE,
@@ -32,7 +33,7 @@ CREATE TABLE image (
     adding_date DATE NOT NULL,
     width INT DEFAULT 0 CHECK (width > 0),
     height INT DEFAULT 0 CHECK (width > 0),
-    CONSTRAINT fk_author_id FOREIGN KEY (author_id) REFERENCES "user"(id)
+    CONSTRAINT fk_author_id FOREIGN KEY (author_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
 
