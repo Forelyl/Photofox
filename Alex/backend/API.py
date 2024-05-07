@@ -190,8 +190,10 @@ async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user
 @app.post('/image', tags=['image'], response_model=bool)
 async def add_new_image(user: Annotated[User, Depends(access_user)], image: UploadFile = File(...)): 
     d = Dropbox()
+
     print(type(image))
-    print((await (d.setup())(image)).read())
+    await d.setup(image)
+
     return True
 
 

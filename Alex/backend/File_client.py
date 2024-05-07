@@ -1,4 +1,4 @@
-import httpx as http
+import dropbox
 from fastapi import FastAPI, Request, UploadFile, File
 
 
@@ -6,26 +6,14 @@ class DropBox_client:
     def __init__(self) -> None:
         self.__API_KEY    = 'fagt8qrb3adxho7' 
         self.__API_SECRET = 'bty12jbpt74q8wo'
-        self.__API = 'sl.B0w-3f3Uz93MVfIc10kBdRGtx09t16LT0O_bcLNwPgybavSWxLFCsfWNJW7Y_hRxmrNnV8Y0PUVmxB7cTGHha90HkwJ86i9B7nKvS6pFwZJ4yFZJ8_6DVH70YAaCIQRwvuivxA7j5c-Gheg'
-        self.auth = http.BasicAuth(username="username", password="secret")
-        self.client = http.AsyncClient(http2=True, auth=self.auth)
+        self.__API = 'uat.AE98yrMZf_uwlLMgrT3ZLTYb8SaktYcovnArj18yNIhJgX1btKO8xLfbzrT2R2IzDhmGvwdaMQwveQX2dnHXBEYDASpl27R3O1hk3k0pLeA5rhGwSjIwHbBRodX1arGBH8GBS2w30ztpFdVw7tbVwP20_9S5TyzNiy29XLCcKZWUxQwJO0UwqgDTHGtMaTgkKnDmhkUM_4poJ2qWS_63_JbszMN7fECsOdBtj9zFa7xCKKybkHRYCEJw0KFj2n9KFUC3WGrLLZJw46SbnfWQFT7zvd6jZkUP3dUO3eHmce3gcededlv6DqAv2brCv9GlsnRKJJ9XnzriNFXnQbQbuV8ov1k2OXnbjKKi2hXRmla081SThB3jEES5Eb_jTqbndQVgUaJqP2wJ-41Um7VJc7JJh1hbmGuEiLNLnwE-_J5CtFi2aFUr08QyOY1Owp4h5-_wehKDW232GRiKChKCpIF2BnO-yeY7PP2CD1-9Lze7eUZPYbROZ-GjNUP1dRRrHYcszoofTkenxIUTALFNTaS6ZAsvPDDhfwjSZbLigbwiuEtKd4JNFovt9nQxDdLdUA1YNbu2ay9Fgneb7SoNgUI4kfVsjN0a-TwLBF2vXaHEnbM2X0ej7GIyVx1fqgp6nqM4FDimlncOg_feWYCJk74ZhjZfuollaYa-jeJlSH4Gd_zZhzmAYj-17aNTnSz7UkdsmP6HOKxo6wRl3aT7bMiQMvtY2FeVd-LCStIO7FmGb5DATwHYO7QWrcmJ2We6NAA-NzKgBDe6ynu70b4-iDup0UCTmHdEhsndkVpCk6_P9P4VbWKzFpkEvupIx1AKzPScdnCEIIqJy3Hvt3KHA_C7VnpK21Kv3IPZkrXh_W4_784ewU0YXF6tqweiX3Pa0HPwqgess27C7m8PMzqWzim-InX-mzIPRcRjHge8N5OPf_oWdIifwEy7nodBAfw773ZUwA-QsY6Nl2UA4caRDmn-fFqb3RzHpRzJecgxNzuvOLPwucKMpqX_Wm2WA63hNQKwTMgwZGinm1bDiLK_JZYAQ_nQpmr6JKRU29vPQXT4RiqFwflK3lyzUQCyOzd64BKf9MhN1myOgx8x6waupQuwcGz_eqM6VdujqNhA8_JEXNZfqXoUN9e5s9DNRvDw-KNud8EHc_yTrrKktcnH1fKvoebtn81kHjqA-GaXeLh3phA8ag__yxhRVPRsJFTX0SdHw9ro9kYYpxsw_-5n32oT7SUT93PiiohHLyYjnqqRtb2Ie-ksW4SSgnlhLtytmFSdFHyNdlFSTRK9JfaWmC9okKFmkQ_tmbj2UndkZhTo60SYvqnZkfjTBj998hojeSawOiVFREQ2cMq7TiwJgo0vFp0gMJPXaKRbErSNtBnHFzGt_YDG3yAExs0CCTKyIdJ0Wpw67EE-UhrNWxYHANZg18RwdF5o8cBpgeblA_yfKUso-wTPG92dAPHuv6Rqqw5Cg5BcjuFJL-SbgoOXnW-VnpmeQqxD6FvHAym9tuJpqS3l8RuhIvCmCt9bkNpXrnU'
+        self.drop = dropbox.Dropbox(self.__API)
 
 
-    def setup(self): 
-        
-        url: http.URL = http.URL('https://content.dropboxapi.com/2/files/upload')
-        headers: http.Headers = http.Headers({
-            'Authorization': 'Bearer sl.B0yYlZxXGnmeWrZHZFfbuzpj84z9Wi5mL3UetH-jZhyCnpdowUUg-6-8B04Y8a1dePFzn8a8MBguL8Fat2yHcdZIftgmXDSqy5LJGRtwWTY9u4K-ir0rqdUscH_2xh30d99V486p5CQeTi8',
-            'Dropbox-API-Arg': '{"autorename": false, "mode": "overwrite", "mute":false, "path":"/Apps/PhotoFox_DB/2.jpg", "strict_conflict": true}',
-            'Content-Type': 'application/octet-stream'
-        })
-
-        return lambda file: self.client.request(
-            method='POST', 
-            url=url,
-            headers=headers,
-            files={'file': (file.filename, file.file)}
-        )
+    async def setup(self, file): 
+        data = await file.read()
+        self.drop.files_upload(f=data, path='/Apps/Photofox_DB/2.jpg')
+        self.drop.sharing_create_shared_link
 
         
     async def close(self) -> None: raise NotImplemented 
