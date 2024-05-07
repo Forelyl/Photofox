@@ -21,6 +21,7 @@ from contextlib import asynccontextmanager
 async def lifespan(app: FastAPI):
     # start DB connecion
     await db.setup()
+    await db.get_id_of_next_image()
     
     yield # wait for shutdown
     await db.close()
