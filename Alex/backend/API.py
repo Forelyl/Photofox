@@ -9,7 +9,7 @@ from File_client import DropBox_client, DropBox
 from typing import Annotated
 
 from pydantic import BaseModel
-from fastapi import Body, FastAPI, Form, HTTPException, Header, status, Depends, Request, UploadFile, File
+from fastapi import Body, FastAPI, Path, HTTPException, Header, status, Depends, Request, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from passlib.context import CryptContext
@@ -45,10 +45,10 @@ login_regex: str = r"(^[A-Za-z\d._-]{1,20}$)"
 #============================================
 # Tokens - pass for time
 #============================================
-class User:
-    def __init__(self, username: str = "", is_admin: bool = False):
-        self.username = username
-        self.is_admin = is_admin
+class User(BaseModel):
+    username: str
+    is_admin: bool
+    id: int 
 
 class Token(BaseModel): 
     token_type: str
@@ -80,10 +80,11 @@ async def process_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
         
         username:     str | None = payload.get("sub")
         is_admin_str: str | None = payload.get("is_admin")
+        id_str:       str | None = payload.get("id")
 
-        if (is_admin_str is None or username is None): raise credentials_exception
+        if (is_admin_str is None or username is None or id_str is None): raise credentials_exception
         
-        user = User(username, is_admin_str == True)
+        user = User(username=username, is_admin=is_admin_str == "True", id=int(id_str))
         if user.is_admin: 
             if not await db.is_admin(username): raise HTTPException(status_code=status.HTTP_424_FAILED_DEPENDENCY,
                                                                     detail="Access token is incorrect")
@@ -105,16 +106,17 @@ async def access_user(user: Annotated[User, Depends(process_token)], login: Anno
         return user
     
     if user.is_admin:
-        if (login is not None):
+        if (login is not None and login != user.username):
             if not await db.login_exists(login): raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Specified user login doesn't exist")  
             user.username = login
+            user.id = await db.login_to_id(login)
         return user
     
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="Don't allowed to use method due to access level or username")  
     
 
-def create_access_token(data: dict[str, str | bool], expires_delta: timedelta | None = None) -> str:
+async def create_access_token(data: dict[str, str | bool | int], expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
 
     if expires_delta:
@@ -145,8 +147,12 @@ async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     
     check_login(hash_and_admin.hash, form_data.password)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": form_data.username, "is_admin": hash_and_admin.is_admin}, expires_delta=access_token_expires)
-    return Token(access_token=access_token, token_type="bearer", is_admin=hash_and_admin.is_admin)
+    access_token = create_access_token(data={
+                                           "sub": form_data.username, "is_admin": hash_and_admin.is_admin, 
+                                           "id": await db.login_to_id(form_data.username)
+                                       }, 
+                                       expires_delta=access_token_expires)
+    return Token(access_token=await access_token, token_type="bearer", is_admin=hash_and_admin.is_admin)
 
 #============================================
 # Models
@@ -182,11 +188,11 @@ async def get_images(image_id: int):
 
 @app.get('/image/subscribed', tags=['image'], response_model=list[DB_Returns.Image])
 async def get_subscribed_images_pc(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
-    return await db.get_subscribed_images_pc(user.username, last_image_id)
+    return await db.get_subscribed_images_pc(user.id, last_image_id)
 
 @app.get('/image/subscribed/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
 async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
-    return await db.get_subscribed_images_mobile(user.username, last_image_id)
+    return await db.get_subscribed_images_mobile(user.id, last_image_id)
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
 @app.post('/image', tags=['image'], response_model=str)
@@ -197,9 +203,26 @@ async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: A
                         download_permission: Annotated[bool, Header()] = False): 
 
     result: DropBox_client.Add_file_return = await DropBox.add_file(image, user.username)
-    await db.add_image(user.username, result.shared_link, result.path, title, description, download_permission, width, height)
+    await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
     
     return result.shared_link
+
+#============================================
+# Like
+#============================================
+@app.post('/like', tags=['like'])
+async def add_like(user: Annotated[User, Depends(access_user)]):
+    pass
+    #await db.add_admin(login, email, hash)
+
+@app.delete('/like', tags=['like'])
+async def remove_like(user: Annotated[User, Depends(access_user)]):
+    pass
+    #await db.add_admin(login, email, hash)
+
+@app.get('/like', tags=['like'], dependencies=[Depends(access_admin)], response_model=bool)
+async def current_user_set_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Path(ge=0)]):
+    return await db.get_like_on_image(user.id, image_id)
 
 
 #============================================

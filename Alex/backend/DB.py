@@ -93,7 +93,7 @@ class PhotoFox:
     # 2)  select comment with limit without counter of reports - I think that it could be tricky cause we don't neeed just offset we need to also specidfy what object was first when we get data for first time (or for last for 3-rd and so on)
     # 3)  select tag like str
     # 3.1) select tad id by str
-    # 4)  select image with subcribed_on
+    # 4) 🦊 select image with subcribed_on
     # 5)  select image with size | None, tag | None, data | None, size_ratio | None, like | None
     # 6)  select image with author
     # 7)  select image with complaints
@@ -188,32 +188,33 @@ class PhotoFox:
         
         return DB_Returns.Image_full(**result[0])
     
-    async def get_subscribed_images_pc(self, user_login: str, last_image_id: int) -> list[DB_Returns.Image]:
+    async def get_subscribed_images_pc(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image]:
         
         if last_image_id == -1:
             query: str = """
             SELECT id, image as path FROM image
                 WHERE image.author_id IN
                 (SELECT id_subscribed_on FROM subscribe
-                    WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $1)
+                    WHERE id_subscriber = $1
                 )
             ORDER BY id DESC LIMIT 30;
             """    
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_login))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
         else:
             query: str = """
             SELECT id, image as path FROM image
                 WHERE id < $1 AND image.author_id IN
                 (SELECT id_subscribed_on FROM subscribe
-                    WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $2)
+                    WHERE id_subscriber = $2
                 )
             ORDER BY id DESC LIMIT 30;
             """
-            result = DB.process_return(await self.__DB.execute(query, last_image_id, user_login))
+            result = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
         
         return list(DB_Returns.Image(**x) for x in result)
 
-    async def get_subscribed_images_mobile(self, user_login: str, last_image_id: int) -> list[DB_Returns.Image_mobile]:
+
+    async def get_subscribed_images_mobile(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image_mobile]:
 
         if last_image_id == -1:
             query: str = """
@@ -221,23 +222,40 @@ class PhotoFox:
             "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture 
             FROM image JOIN "user" ON image.author_id = "user".id
                 WHERE image.author_id IN 
-                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $1)) 
+                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1) 
             ORDER BY image.id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_login))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
         else:
             query: str = """
             SELECT image.id, image.image as path, image.title, image.like_counter, image.comment_counter,
             "user".id as author_id, "user".login as author_login, "user".profile_image as author_picture 
             FROM image JOIN "user" ON image.author_id = "user".id
                 WHERE image.id < $1 AND image.author_id IN 
-                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = (SELECT id FROM "user" WHERE login = $2)) 
+                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $2) 
             ORDER BY image.id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id, user_login))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
 
         return list(DB_Returns.Image_mobile(**x) for x in result)
 
+
+    async def get_like_on_image(self, id_user: int, id_image: int) -> bool:
+        query: str = """
+        SELECT * FROM like WHERE $2 = id_image AND $1 = id_user;
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user, id_image))
+        return len(result) == 1
+    
+
+    async def login_to_id(self, login: str) -> int:
+        query: str = """SELECT id FROM "user" WHERE login = $1;"""
+
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
+        
+        return result[0]["id"]
+        
+        
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
         await self.__DB.execute(
@@ -251,14 +269,16 @@ class PhotoFox:
         INSERT INTO "user"(login, email, hash_and_salt) VALUES($1, $2, $3)
         """, login, email, hash_and_salt)
     
-    async def add_image(self, login: str, share_link: str, path: str, title: str, description: str, download_permission: bool, width: int, height: int):
+    async def add_image(self, id_user: int, share_link: str, path: str, title: str, description: str, download_permission: bool, width: int, height: int):
         await self.__DB.execute(
         """
         INSERT INTO image(author_id, adding_date, image, dropbox_path, title, description, download_permission, width, height) VALUES(
-            (SELECT id FROM "user" WHERE login = $1), NOW(), $2, $3, $4, $5, $6, $7, $8
+            $1, NOW(), $2, $3, $4, $5, $6, $7, $8
         );
-        """, login, share_link, path, title, description, download_permission, width, height)
+        """, id_user, share_link, path, title, description, download_permission, width, height)
     
+    async def add_like(self, login: str, id_image: int) -> None:
+        pass
     #DELETE
 
     #UPDATE
