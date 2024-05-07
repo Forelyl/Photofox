@@ -11,5 +11,5 @@ pip install granian[reload]
 </code>
 
 <code>
-pip install httpx[http2]
+pip install dropbox
 </code>

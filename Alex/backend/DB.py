@@ -237,10 +237,6 @@ class PhotoFox:
 
         return list(DB_Returns.Image_mobile(**x) for x in result)
 
-    async def get_id_of_next_image(self) -> int:
-        print(DB.process_return(await self.__DB.execute("SELECT get_next_id_of_image();"))[0])
-        return 2
-
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
         await self.__DB.execute(
@@ -253,6 +249,8 @@ class PhotoFox:
         """
         INSERT INTO "user"(login, email, hash_and_salt) VALUES($1, $2, $3)
         """, login, email, hash_and_salt)
+    
+    #async def add_image(self)
     
     #DELETE
 

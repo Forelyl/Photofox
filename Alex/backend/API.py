@@ -21,7 +21,6 @@ from contextlib import asynccontextmanager
 async def lifespan(app: FastAPI):
     # start DB connecion
     await db.setup()
-    await db.get_id_of_next_image()
     
     yield # wait for shutdown
     await db.close()
@@ -191,9 +190,7 @@ async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user
 @app.post('/image', tags=['image'], response_model=bool)
 async def add_new_image(user: Annotated[User, Depends(access_user)], image: UploadFile = File(...)): 
     d = Dropbox()
-
-    print(type(image))
-    await d.setup(image)
+    await d.setup(image, user.username)
 
     return True
 
