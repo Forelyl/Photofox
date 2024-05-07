@@ -242,7 +242,7 @@ class PhotoFox:
 
     async def get_like_on_image(self, id_user: int, id_image: int) -> bool:
         query: str = """
-        SELECT * FROM like WHERE $2 = id_image AND $1 = id_user;
+        SELECT * FROM "like" WHERE $2 = id_image AND $1 = id_user;
         """
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user, id_image))
         return len(result) == 1
@@ -277,10 +277,12 @@ class PhotoFox:
         );
         """, id_user, share_link, path, title, description, download_permission, width, height)
     
-    async def add_like(self, login: str, id_image: int) -> None:
-        pass
+    async def add_like(self, id_user: int, id_image: int) -> None:
+        await self.__DB.execute('INSERT INTO "like"(id_user, id_image) VALUES($1, $2);', id_user, id_image)
     #DELETE
-
+    async def delete_like(self, id_user: int, id_image: int) -> None:
+        await self.__DB.execute('DELETE FROM "like" WHERE id_user = $1 AND id_image = $2;', id_user, id_image)
+    
     #UPDATE
 
 async def print_XD(db: PhotoFox):

@@ -211,18 +211,21 @@ async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: A
 # Like
 #============================================
 @app.post('/like', tags=['like'])
-async def add_like(user: Annotated[User, Depends(access_user)]):
-    pass
-    #await db.add_admin(login, email, hash)
+async def add_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
+    await db.add_like(user.id, image_id)
 
 @app.delete('/like', tags=['like'])
-async def remove_like(user: Annotated[User, Depends(access_user)]):
-    pass
-    #await db.add_admin(login, email, hash)
+async def remove_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
+    await db.delete_like(user.id, image_id)
 
-@app.get('/like', tags=['like'], dependencies=[Depends(access_admin)], response_model=bool)
-async def current_user_set_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Path(ge=0)]):
+@app.get('/like', tags=['like'], dependencies=[Depends(access_user)], response_model=bool)
+async def current_user_set_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
     return await db.get_like_on_image(user.id, image_id)
+
+#============================================
+# Like
+#============================================
+
 
 
 #============================================
