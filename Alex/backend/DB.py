@@ -64,6 +64,11 @@ class DB_Returns:
         description: str | None
         tags: list[str] | None
     
+    class Comment(BaseModel):
+        id: int
+        description: str
+        author_picture: str
+        login: str
 
 
 
@@ -248,6 +253,28 @@ class PhotoFox:
         return len(result) == 1
     
 
+    async def get_last_comments(self, id_image: int, last_id: int) -> list[DB_Returns.Comment]:
+        
+        if last_id == -1:
+            query: str = """
+            SELECT comment.id as id, comment.description as description, "user".profile_image as author_picture, "user".login as login
+            FROM comment JOIN "user" ON comment.user_id = "user".id
+            WHERE comment.image_id = $1
+            ORDER BY comment.id DESC LIMIT 10
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image))
+        else:
+            query: str = """
+            SELECT comment.id as id, comment.description as description, "user".profile_image as author_picture, "user".login as login
+            FROM comment JOIN "user" ON comment.user_id = "user".id
+            WHERE comment.image_id = $1 AND comment.id < $2
+            ORDER BY comment.id DESC LIMIT 10
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image, last_id))
+        
+        return list(DB_Returns.Comment(**x) for x in result)
+
+
     async def login_to_id(self, login: str) -> int:
         query: str = """SELECT id FROM "user" WHERE login = $1;"""
 
@@ -279,10 +306,17 @@ class PhotoFox:
     
     async def add_like(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('INSERT INTO "like"(id_user, id_image) VALUES($1, $2);', id_user, id_image)
+    
+    async def add_comment(self, id_user: int, id_image: int, description: str) -> None:
+        await self.__DB.execute('INSERT INTO comment(id_user, id_image, description, adding_date) VALUES($1, $2, $3, NOW());', id_user, id_image, description)
+
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('DELETE FROM "like" WHERE id_user = $1 AND id_image = $2;', id_user, id_image)
     
+    async def delete_comment(self, id_user: int, id_comment: int) -> None:
+        await self.__DB.execute('DELETE FROM comment WHERE id = $1 AND id_user = $2;', id_comment, id_user)
+        
     #UPDATE
 
 async def print_XD(db: PhotoFox):

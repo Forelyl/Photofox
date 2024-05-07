@@ -223,9 +223,19 @@ async def current_user_set_like(user: Annotated[User, Depends(access_user)], ima
     return await db.get_like_on_image(user.id, image_id)
 
 #============================================
-# Like
+# Comment
 #============================================
+@app.post('/comment', tags=['comment'])
+async def add_comment(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)], description: Annotated[str, Body()]):
+    await db.add_comment(user.id, image_id, description)
 
+@app.delete('/comment', tags=['comment'])
+async def remove_comment(user: Annotated[User, Depends(access_user)], comment_id: Annotated[int, Param(ge=1)]):
+    await db.delete_comment(user.id, comment_id)
+
+@app.get('/comment', tags=['comment'], response_model=list[DB_Returns.Comment])
+async def get_last_comment(image_id: Annotated[int, Param(ge=1)], last_commnet_id: int = -1 ):
+    return await db.get_last_comments(image_id, last_commnet_id)
 
 
 #============================================
