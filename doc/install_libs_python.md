@@ -1,5 +1,5 @@
 <code>
-pip install psycopg[binary]
+pip install asyncpg
 </code>
 
 <code>
