@@ -3,6 +3,7 @@ from typing import Any
 import asyncio
 from asyncpg.connect_utils import pathlib
 from pydantic import BaseModel
+from pydantic_core.core_schema import NoInfoValidatorFunction
 
 
 class DB:
@@ -58,7 +59,16 @@ class DB_Returns:
         author_id: int
         author_login: str
         author_picture: str | None
-        
+    
+    class Image_reported(Image):
+        title: str | None
+        like_counter: int
+        comment_counter: int
+        reports_counter: int
+        author_login: str
+        description: str | None
+        tags: list[str] | None
+
     class Image_full(Image_mobile):
         description: str | None
         tags: list[str] | None
@@ -68,6 +78,16 @@ class DB_Returns:
         description: str
         author_picture: str | None = None
         login: str
+    
+    class Comment_reported(BaseModel):
+        id: int
+        description: str
+        
+        commented_picture: str # link
+        comment_author_id: int 
+        comment_author_login: str
+        amount_of_reports: int
+    
 
 
 
@@ -298,27 +318,79 @@ class PhotoFox:
         else:
             return (result[0]["dropbox_path"], True)
 
-
     async def get_avatar_path_by_id(self, user_id) -> str:
-        query: str = """
-        SELECT dropbox_path FROM "user" WHERE id = $1;
-        """
+        query: str = 'SELECT dropbox_path FROM "user" WHERE id = $1;'
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
 
         if result[0]["dropbox_path"] is None:
             return ""
         else:
             return result[0]["dropbox_path"]
-
-            
+    
     async def login_to_id(self, login: str) -> int:
-        query: str = """SELECT id FROM "user" WHERE login = $1;"""
+        query: str = 'SELECT id FROM "user" WHERE login = $1;'
 
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
         
         return result[0]["id"]
         
+    async def get_reported_comments_sorted_by_reports(self, last_comment_id: int) -> list[DB_Returns.Comment_reported]:
+        if last_comment_id == -1:
+            query: str = """
+            SELECT comment.id as id, comment.description as description, comment.report_counter as amount_of_reports,
+                   comment.user_id as comment_author_id, 
+                   image.image_url as commented_picture, "user".login as comment_author_login
+            FROM comment 
+
+            JOIN image ON comment.image_id = image.id
+            JOIN "user" ON comment.user_id = "user".id
+            ORDER BY comment.id DESC LIMIT 10;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
+        else:
+            query: str = """
+            SELECT comment.id as id, comment.description as description, comment.report_counter as amount_of_reports,
+                   comment.user_id as comment_author_id, 
+                   image.image_url as commented_picture, "user".login as comment_author_login
+            FROM comment 
+            WHERE comment.id < $1
+            JOIN image ON comment.image_id = image.id
+            JOIN "user" ON comment.user_id = "user".id
+            ORDER BY comment.id DESC LIMIT 10;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_comment_id))
+
+        return list(DB_Returns.Comment_reported(**x) for x in result)
         
+    async def get_reported_images_sorted_by_reports(self, last_image_id: int) -> list[DB_Returns.Image_reported]:
+        if last_image_id == -1:
+            query: str = """
+            SELECT image.id as id, image.image_url as path, image.title as title, like_counter, comment_counter, image.report_counter,
+                   image.description, 
+                   ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
+                   login as author_login, 
+            FROM image
+
+            JOIN "user" ON image.user_id = "user".id
+            ORDER BY image.id DESC LIMIT 10;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
+        else:
+            query: str = """
+            SELECT image.id as id, image.image_url as path, image.title as title, like_counter, comment_counter, image.report_counter,
+                   image.description, 
+                   ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
+                   login as author_login, 
+            FROM image
+            WHERE image.id < $1
+            JOIN "user" ON image.user_id = "user".id
+            ORDER BY image.id DESC LIMIT 10;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id))
+
+        return list(DB_Returns.Image_reported(**x) for x in result)
+
+
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
         await self.__DB.execute(
@@ -350,6 +422,14 @@ class PhotoFox:
     async def add_comment(self, id_user: int, id_image: int, description: str) -> None:
         await self.__DB.execute('INSERT INTO comment(user_id, image_id, description, adding_date) VALUES($1, $2, $3, NOW());', id_user, id_image, description)
 
+    async def add_complaint_image(self, id_user: int, id_image: int) -> None:
+        await self.__DB.execute('INSERT INTO complaint_image(id_user = $1, id_image = $2);', id_user, id_image)
+
+    async def add_complaint_comment(self, id_user: int, id_comment: int) -> None:
+        await self.__DB.execute('INSERT INTO complaint_comment(id_user = $1, id_comment = $2);', id_user, id_comment)
+
+    async def add_complaint_profile(self, id_user: int, id_profile_owner: int) -> None:
+        await self.__DB.execute('INSERT INTO complaint_image(id_user = $1, id_profile_owner = $2);', id_user, id_profile_owner)
 
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:
@@ -369,8 +449,14 @@ class PhotoFox:
     
 
     async def delete_profile_picture(self, id_user: int) -> None:
-        await  self.__DB.execute('UPDATE "user" SET dropbox_path = NULL, profile_image_url = NULL WHERE id = $1', id_user)
+        await self.__DB.execute('UPDATE "user" SET dropbox_path = NULL, profile_image_url = NULL WHERE id = $1', id_user)
 
+    
+    async def delete_all_reports_from_comment(self, id_comment: int) -> None:
+        await self.__DB.execute('DELETE FROM complaint_comment WHERE id_comment = $1', id_comment)
+
+    async def delete_all_reports_from_image(self, id_image: int) -> None:
+        await self.__DB.execute('DELETE FROM complaint_image WHERE id_image = $1', id_image)
     #UPDATE
     
     async def update_profile_picture(self, image_path: str, image_url: str, user_id: int) -> None:

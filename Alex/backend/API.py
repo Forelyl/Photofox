@@ -2,7 +2,7 @@
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
 from asyncpg import exceptions
 from fastapi.params import Param
-from DB import DB_Returns, db
+from DB import DB, DB_Returns, db
 
 from File_client import DropBox_client, DropBox
 
@@ -362,7 +362,33 @@ async def change_password_profile(user: Annotated[User, Depends(access_user)], o
 #============================================
 # Complaint
 #============================================
+@app.post('/complaint/image', tags=['complaint'])
+async def add_complaint_image(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]) -> None:
+    await db.add_complaint_image(user.id, image_id)
 
+@app.post('/complaint/comment', tags=['complaint'])
+async def add_complaint_comment(user: Annotated[User, Depends(access_user)], comment_id: Annotated[int, Param(ge=1)]) -> None:
+    await db.add_complaint_comment(user.id, comment_id)
+
+@app.post('/complaint/profile', tags=['complaint'])
+async def add_complaint_profile(user: Annotated[User, Depends(access_user)], profile_owner_id: Annotated[int, Param(ge=1)]) -> None:
+    await db.add_complaint_profile(user.id, profile_owner_id)
+
+@app.get('/complaint/comment', tags=['complaint'], dependencies=[Depends(access_admin)], response_model=list[DB_Returns.Comment_reported])
+async def get_reported_comments_sorted_by_reports(last_comment_id: Annotated[int, Param()] = -1):
+    return db.get_reported_comments_sorted_by_reports(last_comment_id)
+
+@app.get('/complaint/picture', tags=['complaint'], dependencies=[Depends(access_admin)], response_model=list[DB_Returns.Image_reported])
+async def get_reported_images_sorted_by_reports(last_image_id: Annotated[int, Param()] = -1):
+    return db.get_reported_images_sorted_by_reports(last_image_id)
+
+@app.delete('/complaint/comment', tags=['complaint'], dependencies=[Depends(access_admin)])
+async def delete_reports_from_comment(comment_id: Annotated[int, Param(ge=1)]):
+    await db.delete_all_reports_from_comment(comment_id)
+
+@app.delete('/complaint/picture', tags=['complaint'], dependencies=[Depends(access_admin)])
+async def delete_reports_from_image(image_id: Annotated[int, Param(ge=1)]):
+    await db.delete_all_reports_from_image(image_id)
 
 #============================================
 # Check
