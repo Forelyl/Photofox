@@ -394,8 +394,8 @@ async def delete_reports_from_image(image_id: Annotated[int, Param(ge=1)]):
     await db.delete_all_reports_from_image(image_id)
 
 @app.delete('/complaint/profile', tags=['complaint'], dependencies=[Depends(access_admin)])
-async def delete_all_reports_on_profile(image_id: Annotated[int, Param(ge=1)]):
-    await db.delete_all_reports_from_profile(image_id)
+async def delete_all_reports_on_profile(profile_id: Annotated[int, Param(ge=1)]):
+    await db.delete_all_reports_from_profile(profile_id)
 
 
 #============================================

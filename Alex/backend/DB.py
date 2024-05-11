@@ -99,6 +99,9 @@ class DB_Returns:
         report_profile_counter: int
         subscribed_on: int
         subscribers: int
+
+        report_score: float
+        is_blocked: bool
         
 
 
@@ -407,7 +410,7 @@ class PhotoFox:
             query: str = """
             SELECT id, login, profile_image_url as profile_image, description, amount_of_complaints_on_comment as report_comment_counter,
                    amount_of_complaints_on_image as report_image_counter, amount_of_complaints_on_profile as report_profile_counter,
-                   subscribed as subscribed_on, subscribers
+                   subscribed as subscribed_on, subscribers, complaint_score as report_score, is_blocked
             FROM "user"
             WHERE complaint_score > 0 AND NOT is_admin
             ORDER BY complaint_score DESC LIMIT 10;
@@ -417,7 +420,7 @@ class PhotoFox:
             query: str = """
             SELECT id, login, profile_image_url as profile_image, description, amount_of_complaints_on_comment as report_comment_counter,
                    amount_of_complaints_on_image as report_image_counter, amount_of_complaints_on_profile as report_profile_counter,
-                   subscribed as subscribed_on, subscribers
+                   subscribed as subscribed_on, subscribers, complaint_score as report_score, is_blocked
             FROM "user"
             WHERE id < $1 AND complaint_score > 0 AND NOT is_admin
             ORDER BY complaint_score DESC LIMIT 10;
@@ -494,6 +497,14 @@ class PhotoFox:
 
     async def delete_all_reports_from_image(self, id_image: int) -> None:
         await self.__DB.execute('DELETE FROM complaint_image WHERE id_image = $1', id_image)
+
+    async def delete_all_reports_from_profile(self, user_id: int) -> None:
+        await self.__DB.execute('DELETE FROM complaint_image WHERE id_image IN (SELECT id FROM image WHERE author_id = $1);', user_id);
+        await self.__DB.execute('DELETE FROM complaint_comment WHERE id_comment IN (SELECT id FROM comment WHERE user_id = $1);', user_id);
+        await self.__DB.execute('DELETE FROM complaint_profile WHERE id_profile_owner = $1;', user_id);
+        await self.__DB.execute('UPDATE "user" SET complaint_score = 0 WHERE id = $1;', user_id);
+        
+        
     #UPDATE
     
     async def update_profile_picture(self, image_path: str, image_url: str, user_id: int) -> None:
@@ -517,6 +528,7 @@ class PhotoFox:
 
     async def update_profile_password(self, new_pass: str, user_id: int):
         await self.__DB.execute('UPDATE "user" SET hash_and_salt = $1 WHERE id = $2', new_pass, user_id)
+    
 
 async def print_XD(db: PhotoFox):
     value = await db.select_all_tags()
