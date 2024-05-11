@@ -87,13 +87,12 @@ async def process_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     try:
         payload: dict[str, str] = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         
-        username:     str | None = payload.get("sub")
-        is_admin_str: str | None = payload.get("is_admin")
-        id_str:       str | None = payload.get("id")
+        username:     str  | None = payload.get("sub")
+        is_admin_str: str  | None = payload.get("is_admin") # actualy returns bool | None
+        id_str:       str  | None = payload.get("id") # actualy returns int | None
 
         if (is_admin_str is None or username is None or id_str is None): raise credentials_exception
-        
-        user = User(username=username, is_admin=is_admin_str == "True", id=int(id_str))
+        user = User(username=username, is_admin=bool(is_admin_str), id=int(id_str))
         if user.is_admin: 
             if not await db.is_admin(username): raise HTTPException(status_code=status.HTTP_424_FAILED_DEPENDENCY,
                                                                     detail="Access token is incorrect")
@@ -376,19 +375,28 @@ async def add_complaint_profile(user: Annotated[User, Depends(access_user)], pro
 
 @app.get('/complaint/comment', tags=['complaint'], dependencies=[Depends(access_admin)], response_model=list[DB_Returns.Comment_reported])
 async def get_reported_comments_sorted_by_reports(last_comment_id: Annotated[int, Param()] = -1):
-    return db.get_reported_comments_sorted_by_reports(last_comment_id)
+    return await db.get_reported_comments_sorted_by_reports(last_comment_id)
 
-@app.get('/complaint/picture', tags=['complaint'], dependencies=[Depends(access_admin)], response_model=list[DB_Returns.Image_reported])
+@app.get('/complaint/image', tags=['complaint'], dependencies=[Depends(access_admin)], response_model=list[DB_Returns.Image_reported])
 async def get_reported_images_sorted_by_reports(last_image_id: Annotated[int, Param()] = -1):
-    return db.get_reported_images_sorted_by_reports(last_image_id)
+    return await db.get_reported_images_sorted_by_reports(last_image_id)
+
+@app.get('/complaint/profile', tags=['complaint'], dependencies=[Depends(access_admin)], response_model=list[DB_Returns.Profile_reported])
+async def get_reported_profiles_sorted_by_reports(last_profile_id: Annotated[int, Param()] = -1):
+    return await db.get_reported_profiles_sorted_by_report_score(last_profile_id)
 
 @app.delete('/complaint/comment', tags=['complaint'], dependencies=[Depends(access_admin)])
 async def delete_reports_from_comment(comment_id: Annotated[int, Param(ge=1)]):
     await db.delete_all_reports_from_comment(comment_id)
 
-@app.delete('/complaint/picture', tags=['complaint'], dependencies=[Depends(access_admin)])
+@app.delete('/complaint/image', tags=['complaint'], dependencies=[Depends(access_admin)])
 async def delete_reports_from_image(image_id: Annotated[int, Param(ge=1)]):
     await db.delete_all_reports_from_image(image_id)
+
+@app.delete('/complaint/profile', tags=['complaint'], dependencies=[Depends(access_admin)])
+async def delete_all_reports_on_profile(image_id: Annotated[int, Param(ge=1)]):
+    await db.delete_all_reports_from_profile(image_id)
+
 
 #============================================
 # Check

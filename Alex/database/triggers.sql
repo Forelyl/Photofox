@@ -59,7 +59,7 @@ BEGIN
     SELECT amount_of_complaints_on_image INTO complaint_amount FROM "user" WHERE user_id = "user".id;
     UPDATE "user" SET amount_of_complaints_on_image = GREATEST(complaint_amount - 1, 0)
         WHERE user_id = "user".id;
-
+    UPDATE  "user" SET complaint_score = GREATEST(complaint_score - 1, 0) WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $decrease_complaint$;
@@ -88,7 +88,7 @@ BEGIN
     SELECT amount_of_complaints_on_comment INTO complaint_amount FROM "user" WHERE user_id = "user".id;
     UPDATE "user" SET amount_of_complaints_on_comment = GREATEST(complaint_amount - 1, 0)
         WHERE user_id = "user".id;
-
+    UPDATE  "user" SET complaint_score = GREATEST(complaint_score - 0.25, 0)  WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $decrease_complaint$;
@@ -110,7 +110,9 @@ DECLARE
     complaint_amount INT;
 BEGIN
     SELECT amount_of_complaints_on_profile INTO complaint_amount FROM "user" WHERE OLD.id_profile_owner = "user".id;
-    UPDATE "user" SET amount_of_complaints_on_profile = GREATEST(complaint_amount - 1, 0) WHERE OLD.id_profile_owner = "user".id;
+    UPDATE "user" SET amount_of_complaints_on_profile = GREATEST(complaint_amount - 1, 0)
+        WHERE OLD.id_profile_owner = "user".id;
+    UPDATE  "user" SET complaint_score = GREATEST(complaint_score - 1, 0)  WHERE OLD.id_profile_owner = "user".id;
     RETURN NEW;
 END;
 $decrease_complaint$;
@@ -136,7 +138,7 @@ BEGIN
     SELECT amount_of_complaints_on_comment INTO complaint_amount FROM "user" WHERE user_id = "user".id;
     UPDATE "user" SET amount_of_complaints_on_comment = GREATEST(complaint_amount - 1, 0)
         WHERE user_id = "user".id;
-
+    UPDATE  "user" SET complaint_score = GREATEST(complaint_score - 0.25, 0) WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $decrease_complaint$;
@@ -146,30 +148,6 @@ CREATE TRIGGER comment_complaint_decrease_counter_comment_delete
     ON comment
     FOR EACH ROW
     EXECUTE PROCEDURE decrease_complaint_comment_count_comment_delete();
-
--------------
-
-CREATE OR REPLACE FUNCTION delete_account()
-       RETURNS TRIGGER
-       LANGUAGE PLPGSQL
-       AS
-$delete_account$
-DECLARE
-    subscribe_id BIGINT;
-    subscribe_amount BIGINT;
-BEGIN
-    DELETE FROM comment WHERE user_id = OLD.id;
-    DELETE FROM image WHERE author_id = OLD.id;
-    RETURN OLD;
-END;
-$delete_account$;
-
-
-CREATE TRIGGER delete_account_trigger
-    BEFORE DELETE
-    ON "user"
-    FOR EACH ROW
-    EXECUTE PROCEDURE delete_account();
 
 -------------
 
@@ -196,3 +174,26 @@ CREATE TRIGGER decrease_subscribe_trigger
     ON "subscribe"
     FOR EACH ROW
     EXECUTE PROCEDURE decrease_subscribe();
+
+-----------------------------------
+-- Delete account
+-----------------------------------
+
+CREATE OR REPLACE FUNCTION delete_account()
+       RETURNS TRIGGER
+       LANGUAGE PLPGSQL
+       AS
+$delete_account$
+BEGIN
+    DELETE FROM comment WHERE user_id = OLD.id;
+    DELETE FROM image WHERE author_id = OLD.id;
+    RETURN OLD;
+END;
+$delete_account$;
+
+
+CREATE TRIGGER delete_account_trigger
+    BEFORE DELETE
+    ON "user"
+    FOR EACH ROW
+    EXECUTE PROCEDURE delete_account();

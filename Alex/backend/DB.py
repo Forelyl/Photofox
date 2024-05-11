@@ -64,7 +64,7 @@ class DB_Returns:
         title: str | None
         like_counter: int
         comment_counter: int
-        reports_counter: int
+        report_counter: int
         author_login: str
         description: str | None
         tags: list[str] | None
@@ -88,6 +88,18 @@ class DB_Returns:
         comment_author_login: str
         amount_of_reports: int
     
+    class Profile_reported(BaseModel):
+        id: int
+        login: str
+        profile_image: str | None
+        description: str | None
+
+        report_comment_counter: int
+        report_image_counter: int
+        report_profile_counter: int
+        subscribed_on: int
+        subscribers: int
+        
 
 
 
@@ -341,10 +353,10 @@ class PhotoFox:
                    comment.user_id as comment_author_id, 
                    image.image_url as commented_picture, "user".login as comment_author_login
             FROM comment 
-
             JOIN image ON comment.image_id = image.id
             JOIN "user" ON comment.user_id = "user".id
-            ORDER BY comment.id DESC LIMIT 10;
+            WHERE comment.report_counter > 0
+            ORDER BY amount_of_reports DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         else:
@@ -353,10 +365,10 @@ class PhotoFox:
                    comment.user_id as comment_author_id, 
                    image.image_url as commented_picture, "user".login as comment_author_login
             FROM comment 
-            WHERE comment.id < $1
             JOIN image ON comment.image_id = image.id
             JOIN "user" ON comment.user_id = "user".id
-            ORDER BY comment.id DESC LIMIT 10;
+            WHERE comment.report_counter > 0 AND comment.id < $1
+            ORDER BY amount_of_reports DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_comment_id))
 
@@ -367,28 +379,53 @@ class PhotoFox:
             query: str = """
             SELECT image.id as id, image.image_url as path, image.title as title, like_counter, comment_counter, image.report_counter,
                    image.description, 
-                   ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
-                   login as author_login, 
+                   ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = image.id)) AS tags,
+                   login as author_login 
             FROM image
-
-            JOIN "user" ON image.user_id = "user".id
-            ORDER BY image.id DESC LIMIT 10;
+            JOIN "user" ON image.author_id = "user".id
+            WHERE report_counter > 0
+            ORDER BY report_counter DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         else:
             query: str = """
             SELECT image.id as id, image.image_url as path, image.title as title, like_counter, comment_counter, image.report_counter,
                    image.description, 
-                   ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
-                   login as author_login, 
+                   ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = image.id)) AS tags,
+                   login as author_login
             FROM image
-            WHERE image.id < $1
-            JOIN "user" ON image.user_id = "user".id
-            ORDER BY image.id DESC LIMIT 10;
+            JOIN "user" ON image.author_id = "user".id
+            WHERE report_counter > 0 AND image.id < $1
+            ORDER BY report_counter DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id))
 
         return list(DB_Returns.Image_reported(**x) for x in result)
+    
+    async def get_reported_profiles_sorted_by_report_score(self, last_profile_id: int) -> list[DB_Returns.Profile_reported]:
+        if last_profile_id == -1:
+            query: str = """
+            SELECT id, login, profile_image_url as profile_image, description, amount_of_complaints_on_comment as report_comment_counter,
+                   amount_of_complaints_on_image as report_image_counter, amount_of_complaints_on_profile as report_profile_counter,
+                   subscribed as subscribed_on, subscribers
+            FROM "user"
+            WHERE complaint_score > 0 AND NOT is_admin
+            ORDER BY complaint_score DESC LIMIT 10;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
+        else:
+            query: str = """
+            SELECT id, login, profile_image_url as profile_image, description, amount_of_complaints_on_comment as report_comment_counter,
+                   amount_of_complaints_on_image as report_image_counter, amount_of_complaints_on_profile as report_profile_counter,
+                   subscribed as subscribed_on, subscribers
+            FROM "user"
+            WHERE id < $1 AND complaint_score > 0 AND NOT is_admin
+            ORDER BY complaint_score DESC LIMIT 10;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_profile_id))
+
+        return list(DB_Returns.Profile_reported(**x) for x in result)
+    
 
 
     #INSERT
@@ -423,13 +460,13 @@ class PhotoFox:
         await self.__DB.execute('INSERT INTO comment(user_id, image_id, description, adding_date) VALUES($1, $2, $3, NOW());', id_user, id_image, description)
 
     async def add_complaint_image(self, id_user: int, id_image: int) -> None:
-        await self.__DB.execute('INSERT INTO complaint_image(id_user = $1, id_image = $2);', id_user, id_image)
+        await self.__DB.execute('INSERT INTO complaint_image(id_user, id_image) VALUES($1, $2);', id_user, id_image)
 
     async def add_complaint_comment(self, id_user: int, id_comment: int) -> None:
-        await self.__DB.execute('INSERT INTO complaint_comment(id_user = $1, id_comment = $2);', id_user, id_comment)
+        await self.__DB.execute('INSERT INTO complaint_comment(id_user, id_comment) VALUES($1, $2);', id_user, id_comment)
 
     async def add_complaint_profile(self, id_user: int, id_profile_owner: int) -> None:
-        await self.__DB.execute('INSERT INTO complaint_image(id_user = $1, id_profile_owner = $2);', id_user, id_profile_owner)
+        await self.__DB.execute('INSERT INTO complaint_profile(id_user, id_profile_owner) VALUES($1, $2);', id_user, id_profile_owner)
 
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:

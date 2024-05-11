@@ -11,7 +11,9 @@ CREATE TABLE "user" (
     subscribers BIGINT NOT NULL DEFAULT 0,
     amount_of_complaints_on_profile INT CHECK (amount_of_complaints_on_profile >= 0) DEFAULT 0,
     amount_of_complaints_on_comment INT CHECK (amount_of_complaints_on_comment >= 0) DEFAULT 0,
-    amount_of_complaints_on_image INT CHECK (amount_of_complaints_on_image >= 0) DEFAULT 0
+    amount_of_complaints_on_image INT CHECK (amount_of_complaints_on_image >= 0) DEFAULT 0,
+    complaint_score DECIMAL(20, 1) CHECK (complaint_score >= 0) DEFAULT 0,
+    is_blocked BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE "like" (

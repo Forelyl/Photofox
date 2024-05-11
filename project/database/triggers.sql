@@ -1,14 +1,13 @@
 -----------------------------------
 -- Increasing
 -----------------------------------
-
 CREATE OR REPLACE FUNCTION increase_like_count()
        RETURNS TRIGGER
        LANGUAGE PLPGSQL
        AS
 $$
 BEGIN
-    UPDATE image SET like_counter = like_counter+1 WHERE NEW.id_image = image.id;
+    UPDATE image SET like_counter = like_counter + 1 WHERE NEW.id_image = image.id;
 
     RETURN NEW;
 END;
@@ -26,7 +25,7 @@ CREATE OR REPLACE FUNCTION increase_comment_count()
        AS
 $$
 BEGIN
-    UPDATE image SET comment_counter = comment_counter+1 WHERE NEW.image_id = image.id;
+    UPDATE image SET comment_counter = comment_counter + 1 WHERE NEW.image_id = image.id;
     RETURN NEW;
 END;
 $$;
@@ -48,7 +47,8 @@ BEGIN
     UPDATE image SET report_counter = report_counter+1 WHERE NEW.id_image = image.id;
 
     SELECT image.author_id INTO user_id FROM image WHERE image.id = NEW.id_image;
-    UPDATE "user" SET amount_of_complaints_on_image = amount_of_complaints_on_image+1 WHERE user_id = "user".id;
+    UPDATE "user" SET amount_of_complaints_on_image = amount_of_complaints_on_image + 1 WHERE user_id = "user".id;
+    UPDATE "user" SET complaint_score = complaint_score + 1 WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $$;
@@ -71,7 +71,8 @@ BEGIN
     UPDATE comment SET report_counter = report_counter+1 WHERE NEW.id_comment = comment.id;
 
     SELECT comment.user_id INTO user_id FROM comment WHERE comment.id = NEW.id_comment;
-    UPDATE "user" SET amount_of_complaints_on_comment = amount_of_complaints_on_comment+1 WHERE user_id = "user".id;
+    UPDATE "user" SET amount_of_complaints_on_comment = amount_of_complaints_on_comment + 1 WHERE user_id = "user".id;
+    UPDATE "user" SET complaint_score = complaint_score + 0.25 WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $$;
@@ -89,7 +90,9 @@ CREATE OR REPLACE FUNCTION increase_complaint_count_profile()
        AS
 $$
 BEGIN
-    UPDATE "user" SET amount_of_complaints_on_profile = amount_of_complaints_on_profile+1 WHERE NEW.id_profile_owner = "user".id;
+    UPDATE "user" SET amount_of_complaints_on_profile = amount_of_complaints_on_profile + 1
+        WHERE NEW.id_profile_owner = "user".id;
+    UPDATE "user" SET  complaint_score = complaint_score + 1 WHERE "user".id = NEW.id_profile_owner;
     RETURN NEW;
 END;
 $$;
@@ -107,8 +110,8 @@ CREATE OR REPLACE FUNCTION increase_subscribers_count()
         AS
 $$
 BEGIN
-    UPDATE "user" SET subscribers = subscribers+1 WHERE NEW.id_subscribed_on = "user".id;
-    UPDATE "user" SET subscribed = subscribed+1 WHERE NEW.id_subscriber = "user".id;
+    UPDATE "user" SET subscribers = subscribers + 1 WHERE NEW.id_subscribed_on = "user".id;
+    UPDATE "user" SET subscribed = subscribed + 1 WHERE NEW.id_subscriber = "user".id;
     RETURN NEW;
 END;
 $$;
@@ -118,6 +121,7 @@ CREATE TRIGGER subscribe_counter
     ON subscribe
     FOR EACH ROW
     EXECUTE PROCEDURE increase_subscribers_count();
+
 -----------------------------------
 -- Decreasing
 -----------------------------------
@@ -183,7 +187,7 @@ BEGIN
     SELECT amount_of_complaints_on_image INTO complaint_amount FROM "user" WHERE user_id = "user".id;
     UPDATE "user" SET amount_of_complaints_on_image = GREATEST(complaint_amount - 1, 0)
         WHERE user_id = "user".id;
-
+    UPDATE  "user" SET complaint_score = GREATEST(complaint_score - 1, 0) WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $decrease_complaint$;
@@ -212,7 +216,7 @@ BEGIN
     SELECT amount_of_complaints_on_comment INTO complaint_amount FROM "user" WHERE user_id = "user".id;
     UPDATE "user" SET amount_of_complaints_on_comment = GREATEST(complaint_amount - 1, 0)
         WHERE user_id = "user".id;
-
+    UPDATE  "user" SET complaint_score = GREATEST(complaint_score - 0.25, 0)  WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $decrease_complaint$;
@@ -234,7 +238,9 @@ DECLARE
     complaint_amount INT;
 BEGIN
     SELECT amount_of_complaints_on_profile INTO complaint_amount FROM "user" WHERE OLD.id_profile_owner = "user".id;
-    UPDATE "user" SET amount_of_complaints_on_profile = GREATEST(complaint_amount - 1, 0) WHERE OLD.id_profile_owner = "user".id;
+    UPDATE "user" SET amount_of_complaints_on_profile = GREATEST(complaint_amount - 1, 0)
+        WHERE OLD.id_profile_owner = "user".id;
+    UPDATE  "user" SET complaint_score = GREATEST(complaint_score - 1, 0)  WHERE OLD.id_profile_owner = "user".id;
     RETURN NEW;
 END;
 $decrease_complaint$;
@@ -260,7 +266,7 @@ BEGIN
     SELECT amount_of_complaints_on_comment INTO complaint_amount FROM "user" WHERE user_id = "user".id;
     UPDATE "user" SET amount_of_complaints_on_comment = GREATEST(complaint_amount - 1, 0)
         WHERE user_id = "user".id;
-
+    UPDATE  "user" SET complaint_score = GREATEST(complaint_score - 0.25, 0) WHERE user_id = "user".id;
     RETURN NEW;
 END;
 $decrease_complaint$;
@@ -301,15 +307,11 @@ CREATE TRIGGER decrease_subscribe_trigger
 -- Delete account
 -----------------------------------
 
-
 CREATE OR REPLACE FUNCTION delete_account()
        RETURNS TRIGGER
        LANGUAGE PLPGSQL
        AS
 $delete_account$
-DECLARE
-    subscribe_id BIGINT;
-    subscribe_amount BIGINT;
 BEGIN
     DELETE FROM comment WHERE user_id = OLD.id;
     DELETE FROM image WHERE author_id = OLD.id;
@@ -323,4 +325,3 @@ CREATE TRIGGER delete_account_trigger
     ON "user"
     FOR EACH ROW
     EXECUTE PROCEDURE delete_account();
-
