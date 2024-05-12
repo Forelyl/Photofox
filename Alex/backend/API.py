@@ -41,6 +41,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 email_regex: str = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 login_regex: str = r"(^[A-Za-z\d._-]{1,20}$)"
+tag_regex:   str = r"(^[0-9a-z_]+$)"
 
 #============================================
 # Errors handlers
@@ -50,6 +51,9 @@ login_regex: str = r"(^[A-Za-z\d._-]{1,20}$)"
 async def foreign_key_exception_handler(request: Request, exc: exceptions.ForeignKeyViolationError):
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Violation of data consistency")
 
+@app.exception_handler(exceptions.UniqueViolationError)
+async def unique_exception_handler(request: Request, exc: exceptions.UniqueViolationError):
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Violation of data consistency")
 
 #============================================
 # Tokens - pass for time
@@ -92,6 +96,7 @@ async def process_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
         id_str:       str  | None = payload.get("id") # actualy returns int | None
 
         if (is_admin_str is None or username is None or id_str is None): raise credentials_exception
+        
         user = User(username=username, is_admin=bool(is_admin_str), id=int(id_str))
         if user.is_admin: 
             if not await db.is_admin(username): raise HTTPException(status_code=status.HTTP_424_FAILED_DEPENDENCY,
@@ -154,10 +159,16 @@ async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
                                headers={"WWW-Authenticate": "Bearer"})
     
     check_login(hash_and_admin.hash, form_data.password)
+
+    id = await db.login_to_id(form_data.username)
+    if (await db.check_bloked(id) and not hash_and_admin.is_admin): 
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Account was banned, due to service laws violation")
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={
                                            "sub": form_data.username, "is_admin": hash_and_admin.is_admin, 
-                                           "id": await db.login_to_id(form_data.username)
+                                           "id": id
                                        }, 
                                        expires_delta=access_token_expires)
     return Token(access_token=await access_token, token_type="bearer", is_admin=hash_and_admin.is_admin)
@@ -179,6 +190,13 @@ async def get_all_tags():
     await email_exists("2")
     return await db.select_all_tags()
 
+@app.post('/tag', tags=['tag'], dependencies=[Depends(access_user)])
+async def add_tag(tag_title: Annotated[str, Header(max_length=20, min_length=1, pattern=tag_regex)]):
+    await db.add_tag(tag_title)
+
+@app.delete('/tag', tags=['tag'], dependencies=[Depends(access_admin)])
+async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
+    await db.delete_tag(tag_id)
 #============================================
 # Image
 #============================================
@@ -208,11 +226,12 @@ async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: A
                         title: Annotated[str, Header(max_length=100, min_length=1)], 
                         description: Annotated[str, Header(max_length=255)] = "",
                         width: Annotated[int, Header()], height: Annotated[int, Header()],
+                        tags: Annotated[list[int], Body()],
                         download_permission: Annotated[bool, Header()] = False): 
-
+    # TODO: add tags check to not just raise an error and forget about all of the tags
     result: DropBox_client.Add_file_return = await DropBox.add_file(image, str(user.id))
-    await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
-    
+    image_id = await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
+    await db.add_tag_to_image(image_id, tags)
     return result.shared_link
 
 
@@ -254,9 +273,29 @@ async def remove_comment(user: Annotated[User, Depends(access_user)], comment_id
     await db.delete_comment(user.id, comment_id)
 
 @app.get('/comment', tags=['comment'], response_model=list[DB_Returns.Comment])
-async def get_last_comment(image_id: Annotated[int, Param(ge=1)], last_commnet_id: int = -1 ):
+async def get_last_comment(image_id: Annotated[int, Param(ge=1)], last_commnet_id: int = -1):
     return await db.get_last_comments(image_id, last_commnet_id)
 
+#============================================
+# Subscribing
+#============================================
+@app.post('/subscribe', tags=['subscribe'])
+async def subscribe(user: Annotated[User, Depends(access_user)], subscribe_on_id: Annotated[int, Param(ge=1)]):
+    if user.id == subscribe_on_id: 
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Can't subscribe on yourself")
+    await db.add_subscribe(user.id, subscribe_on_id)
+
+@app.delete('/subscribe', tags=['subscribe'])
+async def unsubscribe(user: Annotated[User, Depends(access_user)], subscribed_on_id: Annotated[int, Param(ge=1)]):
+    await db.delete_subscribe(user.id, subscribed_on_id)
+
+@app.get('/subscribe/get/on', tags=['subscribe'], response_model=list[DB_Returns.Profile])
+async def get_all_profile_on_which_subscribed(user: Annotated[User, Depends(access_user)], last_profile_id: int = -1):
+    return await db.get_subscribed_on_profiles(user.id, last_profile_id)
+
+@app.get('/subscribe/get/by', tags=['subscribe'], response_model=list[DB_Returns.Profile])
+async def get_all_profile_which_are_subscribed(user: Annotated[User, Depends(access_user)], last_profile_id: int = -1):
+    return await db.get_subscribers_on_profiles(user.id, last_profile_id)
 
 #============================================
 # Profile
@@ -396,6 +435,14 @@ async def delete_reports_from_image(image_id: Annotated[int, Param(ge=1)]):
 @app.delete('/complaint/profile', tags=['complaint'], dependencies=[Depends(access_admin)])
 async def delete_all_reports_on_profile(profile_id: Annotated[int, Param(ge=1)]):
     await db.delete_all_reports_from_profile(profile_id)
+
+@app.patch('/complaint/block', tags=['complaint'], dependencies=[Depends(access_admin)])
+async def block_user(user_id: Annotated[int, Param(ge=1)]):
+    await db.update_block_profile(user_id)
+
+@app.patch('/complaint/unblock', tags=['complaint'], dependencies=[Depends(access_admin)])
+async def unblock_user(user_id: Annotated[int, Param(ge=1)]):
+    await db.update_unblock_profile(user_id)
 
 
 #============================================

@@ -88,6 +88,12 @@ class DB_Returns:
         comment_author_login: str
         amount_of_reports: int
     
+    class Profile(BaseModel):
+        id: int
+        login: str
+        profile_image: str | None
+        is_blocked: bool = False
+
     class Profile_reported(BaseModel):
         id: int
         login: str
@@ -125,20 +131,22 @@ class PhotoFox:
     # TODO:
     # -4) 🦊 email is exists
     # -3) 🦊 login is exists
-    # -2) ##########
-    # -1) hash, is_admin - user 
-    # 0) 🦊 select image with limit - last
-    # 1) 🦊 select image info without counter of reports
-    # 2)  select comment with limit without counter of reports - I think that it could be tricky cause we don't neeed just offset we need to also specidfy what object was first when we get data for first time (or for last for 3-rd and so on)
+    # -1) 🦊 hash, is_admin - user 
+    # 0)  🦊 select image with limit - last
+    # 1)  🦊 select image info without counter of reports
+    # 2)  🦊 select comment with limit without counter of reports
     # 3)  select tag like str
-    # 3.1) select tad id by str
-    # 4) 🦊 select image with subcribed_on
-    # 5)  select image with size | None, tag | None, data | None, size_ratio | None, like | None
-    # 6)  select image with author
-    # 7)  select image with complaints
-    # 8)  select profile with complaints
-    # 9)  select comments with complaints
-    # X)     
+    # 4)  delete tag (admin privilege)
+    # 5)  🦊 insert tag
+    # 6)  🦊 select image with subcribed_on
+    # 7)  select image with size | None, tag | None, data | None, size_ratio | None, like | None
+    # 8)  select image with author
+    # 9)  change values of image 
+    # 10) 🦊 select image with complaints
+    # 11) 🦊 select profile with complaints
+    # 12) 🦊 select comments with complaints
+    # 13) 🦊 add subscribe and unsubscribe   
+    # 14) tag to id
 
 
     async def select_all_tags(self) -> list[dict[str, Any]]:
@@ -199,10 +207,10 @@ class PhotoFox:
     async def get_images_pc(self, last_image_id: int) -> list[DB_Returns.Image]:
         result: list[dict[str, Any]] = []
         if last_image_id == -1:
-            query: str =  """SELECT id, image_url as path FROM image ORDER BY id DESC LIMIT 30;"""
+            query: str =  """SELECT id, image_url as path FROM image WHERE NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query))
         else:
-            query: str =  """SELECT id, image_url as path FROM image WHERE id < $1 ORDER BY id DESC LIMIT 30;"""
+            query: str =  """SELECT id, image_url as path FROM image WHERE id < $1 AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query, last_image_id))
         return list(DB_Returns.Image(**x) for x in result)
     
@@ -212,7 +220,7 @@ class PhotoFox:
             query: str = """
             SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
-            FROM image JOIN "user" ON image.author_id = "user".id
+            FROM image JOIN "user" ON image.author_id = "user".id WHERE NOT "user".is_blocked 
             ORDER BY id DESC LIMIT 10;
             """    
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
@@ -221,7 +229,7 @@ class PhotoFox:
             SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
             FROM image JOIN "user" ON image.author_id = "user".id
-            WHERE image.id < $1 ORDER BY id DESC LIMIT 10;
+            WHERE image.id < $1 AND NOT "user".is_blocked ORDER BY id DESC LIMIT 10;
             """    
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id))     
         
@@ -231,10 +239,10 @@ class PhotoFox:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
         """
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter, image.description,
-               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture, 
+               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
                ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
         FROM image JOIN "user" ON image.author_id = "user".id
-        WHERE image.id = $1;
+        WHERE image.id = $1 AND NOT "user".is_blocked;
         """, image_id))
         
         
@@ -247,8 +255,8 @@ class PhotoFox:
             SELECT id, image_url as path FROM image
                 WHERE image.author_id IN
                 (SELECT id_subscribed_on FROM subscribe
-                    WHERE id_subscriber = $1
-                )
+                    WHERE id_subscriber = $1 
+                ) AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id)
             ORDER BY id DESC LIMIT 30;
             """    
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
@@ -258,7 +266,7 @@ class PhotoFox:
                 WHERE id < $1 AND image.author_id IN
                 (SELECT id_subscribed_on FROM subscribe
                     WHERE id_subscriber = $2
-                )
+                ) AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id)
             ORDER BY id DESC LIMIT 30;
             """
             result = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
@@ -274,7 +282,7 @@ class PhotoFox:
             "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture 
             FROM image JOIN "user" ON image.author_id = "user".id
                 WHERE image.author_id IN 
-                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1) 
+                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1) AND NOT "user".is_blocked
             ORDER BY image.id DESC LIMIT 30;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
@@ -284,7 +292,7 @@ class PhotoFox:
             "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture 
             FROM image JOIN "user" ON image.author_id = "user".id
                 WHERE image.id < $1 AND image.author_id IN 
-                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $2) 
+                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $2) AND NOT "user".is_blocked
             ORDER BY image.id DESC LIMIT 30;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
@@ -306,7 +314,7 @@ class PhotoFox:
             query: str = """
             SELECT comment.id as id, comment.description as description, "user".profile_image_url as author_picture, "user".login as login
             FROM comment JOIN "user" ON comment.user_id = "user".id
-            WHERE comment.image_id = $1
+            WHERE comment.image_id = $1 AND NOT "user".is_blocked
             ORDER BY comment.id DESC LIMIT 10
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image))
@@ -314,7 +322,7 @@ class PhotoFox:
             query: str = """
             SELECT comment.id as id, comment.description as description, "user".profile_image_url as author_picture, "user".login as login
             FROM comment JOIN "user" ON comment.user_id = "user".id
-            WHERE comment.image_id = $1 AND comment.id < $2
+            WHERE comment.image_id = $1 AND comment.id < $2 AND NOT "user".is_blocked
             ORDER BY comment.id DESC LIMIT 10
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image, last_id))
@@ -429,8 +437,51 @@ class PhotoFox:
 
         return list(DB_Returns.Profile_reported(**x) for x in result)
     
+    async def check_bloked(self, user_id: int) -> bool:
+        query: str = """SELECT is_blocked FROM "user" WHERE id = $1"""
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+        
+        return result[0]["is_blocked"]
 
+    async def get_subscribed_on_profiles(self, user_id: int, last_profile_id: int) -> list[DB_Returns.Profile]:
+        if last_profile_id == -1:
+            query: str = """
+            SELECT id, login, profile_image_url as profile_image, is_blocked
+            FROM "user"
+            WHERE id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1)
+            ORDER BY id DESC LIMIT 30;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+        else:
+            query: str = """
+            SELECT id, login, profile_image_url as profile_image, is_blocked
+            FROM "user"
+            WHERE id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1 AND id_subscribed_on < $2)
+            ORDER BY id DESC LIMIT 30;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, last_profile_id))
 
+        return list(DB_Returns.Profile(**x) for x in result)
+
+    async def get_subscribers_on_profiles(self, user_id: int, last_profile_id: int) -> list[DB_Returns.Profile]:
+        if last_profile_id == -1:
+            query: str = """
+            SELECT id, login, profile_image_url as profile_image
+            FROM "user"
+            WHERE id IN (SELECT id_subscriber FROM subscribe WHERE id_subscribed_on = $1) AND NOT is_blocked
+            ORDER BY id DESC LIMIT 30;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+        else:
+            query: str = """
+            SELECT id, login, profile_image_url as profile_image
+            FROM "user"
+            WHERE id IN (SELECT id_subscriber FROM subscribe WHERE id_subscribed_on = $1 AND id_subscriber < $2) AND NOT is_blocked
+            ORDER BY id DESC LIMIT 30;
+            """
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, last_profile_id))
+
+        return list(DB_Returns.Profile(**x) for x in result)
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
         await self.__DB.execute(
@@ -446,13 +497,18 @@ class PhotoFox:
         """, login, email, hash_and_salt)
     
 
-    async def add_image(self, id_user: int, share_link: str, path: str, title: str, description: str, download_permission: bool, width: int, height: int):
+    async def add_image(self, id_user: int, share_link: str, path: str, title: str, description: str, download_permission: bool, width: int, height: int) -> int:
         await self.__DB.execute(
         """
         INSERT INTO image(author_id, adding_date, image_url, dropbox_path, title, description, download_permission, width, height) VALUES(
             $1, NOW(), $2, $3, $4, $5, $6, $7, $8
         );
         """, id_user, share_link, path, title, description, download_permission, width, height)
+
+        return self.__DB.process_return(await self.__DB.execute(
+        """
+        SELECT id FROM image WHERE author_id = $1 AND image_url = $2;
+        """, id_user, share_link))[0]['id']
     
 
     async def add_like(self, id_user: int, id_image: int) -> None:
@@ -471,6 +527,20 @@ class PhotoFox:
     async def add_complaint_profile(self, id_user: int, id_profile_owner: int) -> None:
         await self.__DB.execute('INSERT INTO complaint_profile(id_user, id_profile_owner) VALUES($1, $2);', id_user, id_profile_owner)
 
+    async def add_subscribe(self, id_subscriber: int, id_subscibed_on: int) -> None:
+        await self.__DB.execute('INSERT INTO subscribe(id_subscriber, id_subscribed_on) VALUES($1, $2);', id_subscriber, id_subscibed_on)
+
+    async def add_tag(self, title: str) -> None:
+        await self.__DB.execute('INSERT INTO tag(title) VALUES($1);', title)
+        
+    async def add_tag_to_image(self, image_id: int, tag_id: list[int]) -> None:
+        tags_str: str = ""
+        for i in range(len(tag_id)):
+            tags_str += "(" + str(image_id) + ", " + str(tag_id[i]) + ")"
+            if i != len(tag_id) - 1: tags_str += ", "
+        
+        await self.__DB.execute('INSERT INTO image_tag(image_id, tag_id) VALUES ' + tags_str + ';')
+    
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('DELETE FROM "like" WHERE id_user = $1 AND id_image = $2;', id_user, id_image)
@@ -487,6 +557,8 @@ class PhotoFox:
     async def delete_image(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('DELETE FROM image WHERE id = $1 AND author_id = $2;', id_image, id_user)
     
+    async def delete_tag(self, tag_id: int) -> None:
+        await self.__DB.execute('DELETE FROM tag WHERE id = $1', tag_id)
 
     async def delete_profile_picture(self, id_user: int) -> None:
         await self.__DB.execute('UPDATE "user" SET dropbox_path = NULL, profile_image_url = NULL WHERE id = $1', id_user)
@@ -499,12 +571,14 @@ class PhotoFox:
         await self.__DB.execute('DELETE FROM complaint_image WHERE id_image = $1', id_image)
 
     async def delete_all_reports_from_profile(self, user_id: int) -> None:
-        await self.__DB.execute('DELETE FROM complaint_image WHERE id_image IN (SELECT id FROM image WHERE author_id = $1);', user_id);
-        await self.__DB.execute('DELETE FROM complaint_comment WHERE id_comment IN (SELECT id FROM comment WHERE user_id = $1);', user_id);
-        await self.__DB.execute('DELETE FROM complaint_profile WHERE id_profile_owner = $1;', user_id);
-        await self.__DB.execute('UPDATE "user" SET complaint_score = 0 WHERE id = $1;', user_id);
+        await self.__DB.execute('DELETE FROM complaint_image WHERE id_image IN (SELECT id FROM image WHERE author_id = $1);', user_id)
+        await self.__DB.execute('DELETE FROM complaint_comment WHERE id_comment IN (SELECT id FROM comment WHERE user_id = $1);', user_id)
+        await self.__DB.execute('DELETE FROM complaint_profile WHERE id_profile_owner = $1;', user_id)
+        await self.__DB.execute('UPDATE "user" SET complaint_score = 0 WHERE id = $1;', user_id)
         
-        
+    async def delete_subscribe(self, user_id: int, subscribed_on: int) -> None:
+        await self.__DB.execute('DELETE FROM subscribe WHERE id_subscriber = $1 AND id_subscribed_on = $2', user_id, subscribed_on)
+
     #UPDATE
     
     async def update_profile_picture(self, image_path: str, image_url: str, user_id: int) -> None:
@@ -528,6 +602,12 @@ class PhotoFox:
 
     async def update_profile_password(self, new_pass: str, user_id: int):
         await self.__DB.execute('UPDATE "user" SET hash_and_salt = $1 WHERE id = $2', new_pass, user_id)
+    
+    async def update_block_profile (self, user_id: int):
+        await self.__DB.execute('UPDATE "user" SET is_blocked = true WHERE id = $1 AND NOT is_admin', user_id)
+    
+    async def update_unblock_profile (self, user_id: int):
+        await self.__DB.execute('UPDATE "user" SET is_blocked = false WHERE id = $1', user_id)
     
 
 async def print_XD(db: PhotoFox):

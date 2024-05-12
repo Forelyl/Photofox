@@ -1,0 +1,1 @@
+CREATE INDEX search_image_index ON image (author_id ASC);

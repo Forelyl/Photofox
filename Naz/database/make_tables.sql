@@ -24,8 +24,8 @@ CREATE TABLE image (
 CREATE TABLE image_tag (
     image_id BIGINT,
     tag_id INT NOT NULL,
-    CONSTRAINT fk_image_tag_to_image FOREIGN KEY (image_id) REFERENCES image(id),
-    CONSTRAINT fk_image_tage_to_tag FOREIGN KEY (tag_id) REFERENCES tag(id),
+    CONSTRAINT fk_image_tag_to_image FOREIGN KEY (image_id) REFERENCES image(id) ON DELETE CASCADE,
+    CONSTRAINT fk_image_tage_to_tag FOREIGN KEY (tag_id) REFERENCES tag(id) ON DELETE CASCADE,
     CONSTRAINT pk_image_tag PRIMARY KEY (image_id, tag_id)
 );
 

@@ -12,7 +12,7 @@ class DropBox_client:
     def __init__(self) -> None:
         self.__API_KEY    = 'fagt8qrb3adxho7' 
         self.__API_SECRET = 'bty12jbpt74q8wo'
-        self.__API = 'sl.B1CSWAzgRa42AammYIL4cndadDqT0d4aIn1BNpoOF9lQFCaL01HFjgAjkNY-zvsTHzOQDPwMJBBfJcw7Sjx1acc-bLGZ1SPqKnoZP20UxZENcyhQABGGs3eXwaMm3eVCOuyjR3cbFXBpMrc'
+        self.__API = 'sl.B1HmTCBIGbPMEnNewS9SgWt8VgodzqYCDB8-2vSfHrdKUk50Ut9p9MyrKGKMYV-uhsQg7ryty7WhyAw_thwajJvKYmRtaV82QUz8F_FL2eT8ijXAgX40yU6v0CoMAmIbySAX5SrLf-t1yME'
         self.drop = dropbox.Dropbox(self.__API)
 
 
