@@ -13,3 +13,11 @@ pip install granian[reload]
 <code>
 pip install dropbox
 </code>
+
+<code>
+pip install passlib
+</code>
+
+<code>
+pip install python-jose
+</code>
