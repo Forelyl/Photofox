@@ -5,7 +5,6 @@
     flex-direction: column;
     height: 100svh;
     width: 100%;
-    overflow: hidden;
     background-color: #062551;
 
 
@@ -30,7 +29,6 @@
         display: flex;
         justify-content: center;
         position: absolute;
-        overflow: hidden;
         background-repeat: no-repeat;
         background-position-y: center;
         background-clip: content-box;
