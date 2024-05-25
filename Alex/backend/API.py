@@ -150,7 +150,7 @@ def check_login(hash: str, password: str) -> None:
 
 # -------------------------------------------
 
-@app.post('/token')
+@app.post('/login')
 async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin(form_data.username))
     
@@ -303,7 +303,7 @@ async def get_all_profile_which_are_subscribed(user: Annotated[User, Depends(acc
 @app.get('/profile/email/exists', response_model=bool, tags=['profile'])
 async def get_email_exists(email: Annotated[str, Param(pattern=email_regex)]):
     return await email_exists(email)
-
+# TODO переглянути чи треба ці функції
 @app.get('/profile/login/exists', response_model=bool, tags=['profile'])
 async def get_login_exists(login: Annotated[str, Param(pattern=login_regex)]):
     return await login_exists(login)
@@ -316,17 +316,18 @@ async def add_admin(login: Annotated[str, Body(pattern=login_regex, min_length=1
     await db.add_admin(login, email, hash)
 
 
-@app.post('/admin/add/user', tags=['profile'])
+@app.post('/profile/add/user', tags=['profile'])
 async def add_user(login: Annotated[str, Body(pattern=login_regex)], 
                    password: Annotated[str, Body()], 
                    email: Annotated[str, Body(pattern=email_regex)]):
+    error_array = []
     if await db.email_exists(email):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already used")
+        error_array.append("Email is already used")
     if await db.login_exists(login):
+        error_array.append("Login is already used")
+    if len(error_array) != 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Login is already used")
-      
+                            detail=error_array)
     hash = hash_password(password)
     await db.add_user(login, email, hash)
 

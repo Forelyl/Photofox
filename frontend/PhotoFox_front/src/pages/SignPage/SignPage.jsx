@@ -1,17 +1,17 @@
-import { useSearchParams, json} from "react-router-dom";
-import { Form } from "react-router-dom";
-import "./SignPage.css";
+import {useSearchParams, json, Link, Form} from "react-router-dom";
 
 export default function SignPage() {
     const [searchParams] = useSearchParams();
     const signMode = searchParams.get("mode") === 'in';
-
+    console.log("signMode");
+    //TODO реалізувати скидання паролю
     return (
         <>
             <Form method="post">
+                <h1>{(signMode) ? "Log in" : 'Register'}</h1>
                 <div className='input'>
                     <span>Login</span>
-                    <input name='login' type='email'/>
+                    <input name='username' type='email'/>
                 </div>
                 {signMode && (<div className='input'>
                     <span>Email</span>
@@ -19,8 +19,15 @@ export default function SignPage() {
                 </div>)}
                 <div className='input'>
                     <span>Password</span>
-                    <input name='pass' type={(signMode) ? 'password' : 'text'}/>
+                    <input name='password' type={(signMode) ? 'password' : 'text'}/>
                 </div>
+                {signMode && (
+                    <span>Recover password</span>
+                )}
+                <div>
+                    <Link to={`/sign?mode=${(signMode) ? 'up' : 'in'}`}>{(signMode) ? 'Go to register' : 'Go to log in'}</Link>
+                </div>
+                <button>{(signMode) ? 'Log in' : 'Register'}</button>
             </Form>
         </>
     );
@@ -31,21 +38,40 @@ export async function action({request}) {
     const signMode = searchParams.get("mode");
 
     const data = await request.formData();
-    let authData = {};
+    let response;
+
     if (signMode === 'in') {
-        authData = {
-            email: data.get('email'),
-            password: data.get('password')
-        }
+        response = await fetch('http://127.0.0.1:3000/profile/add/user', {
+            method: 'POST',
+            header: {
+                'Content-Type': 'multipart/form-data'
+            },
+            body: data
+        });
     }
     else if (signMode === 'up') {
-        authData = {
-            login: data.get('login'),
+        const authData = {
+            login: data.get('username'),
             email: data.get('email'),
             password: data.get('password')
         }
+        response = await fetch('http://127.0.0.1:3000/login', {
+            method: 'POST',
+            header: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(authData)
+        });
     }
     else {
-        throw json({message: 'Invalid sign mode'});
+        throw json({message: 'Invalid sign mode'}, {status: 422});
+    }
+
+    if (response.status === 400 || response.status) {
+        return response;
+    }
+
+    if (!response.ok) {
+        throw json({message: 'Could not authenticate user.'}, {status: 500});
     }
 }
