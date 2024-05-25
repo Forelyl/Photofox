@@ -4,11 +4,13 @@ import { useEffect } from "react";
 
 export default function Banner() {
     useEffect(() => {
+        setBackground();
         function handleResize() {
             setBackground();
         }
         window.addEventListener('resize', handleResize)
-    });
+    }
+);
 
     return (
         <div id='banner'>
