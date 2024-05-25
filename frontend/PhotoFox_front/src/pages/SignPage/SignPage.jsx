@@ -1,4 +1,4 @@
-import {useSearchParams, json, Link, Form} from "react-router-dom";
+import {useSearchParams, json, Link, Form, redirect} from "react-router-dom";
 
 export default function SignPage() {
     const [searchParams] = useSearchParams();
@@ -13,7 +13,7 @@ export default function SignPage() {
                     <span>Login</span>
                     <input name='username' type='email'/>
                 </div>
-                {signMode && (<div className='input'>
+                {!signMode && (<div className='input'>
                     <span>Email</span>
                     <input name='email' type='email'/>
                 </div>)}
@@ -74,4 +74,6 @@ export async function action({request}) {
     if (!response.ok) {
         throw json({message: 'Could not authenticate user.'}, {status: 500});
     }
+
+    redirect('/')
 }

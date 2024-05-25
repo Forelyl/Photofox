@@ -13,7 +13,7 @@ import { loaderCheckToken, tokenLoader } from "./utils/auth.js";
 const router = createBrowserRouter([
     { path: '/', id: 'root', element: <RootLayout/>, children: [
         { index: true, element: <HomePage /> },
-        { path: 'sing?mode=in', element: <SignPage />, action: authAction },
+        { path: 'sign', element: <SignPage />, action: authAction },
         { path: ':profileName', children: [ //TODO add loader that checks if logined and showes editing tools
             { index: true, element: <ProfilePage /> },
             { path: 'edit', element: <ProfileEdit />, loader: loaderCheckToken },
