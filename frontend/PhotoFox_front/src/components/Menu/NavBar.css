@@ -1,0 +1,39 @@
+#menu {
+  padding: 0;
+  margin: 0;
+  
+  position: sticky;
+  top: 0;
+  background-color: #17245C;
+  display: grid;
+  grid-template-columns: auto auto;
+  padding-left: 1%;
+  
+  > a {
+    background-color: #17245C;
+    display: flex;
+    align-items: center;
+
+    gap: 3%;
+    color: #F9F8D7;
+    text-decoration: none;
+    font-family: "Days One", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: min(2.5vh, 1.25vw);
+    letter-spacing: 6px;
+  }
+  > #right {
+    flex-direction: row;
+    background-color: #17245C;
+    display: flex;
+    gap: 20px;
+    > #search {
+
+    }
+    > a {
+      background-color: red;
+    }
+  } 
+
+}

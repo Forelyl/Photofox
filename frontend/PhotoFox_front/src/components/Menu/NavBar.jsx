@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useRouteLoaderData } from "react-router-dom";
 import FilterMenu from "./FilterMenu.jsx";
 import DropdownMenu from "./DropdownMenu.jsx";
+import "./NavBar.css";
 
 
 export default function NavBar() {
@@ -27,22 +28,24 @@ export default function NavBar() {
                     <img src='public/site_logo.svg' alt='logo' />
                     <h1>PhotoFox</h1>
                 </Link>
-                <div id='search'>
-                    <img src='public/search_icon.svg' alt='search' />
-                    <input type='text' placeholder='Search...' />
-                    <button onClick={handleOpenFilters}>
-                        <img src={(openFilters) ? 'public/filter_opened.svg' : 'public/filter_closed.svg'}
-                             alt={(openFilters) ? 'filter opened' : 'filter closed'}
-                        />
+                <div id='right'>
+                    <div id='search'>
+                        <img src='public/search_icon.svg' alt='search' />
+                        <input type='text' placeholder='Search...' />
+                        <button onClick={handleOpenFilters}>
+                            <img src={(openFilters) ? 'public/filter_opened.svg' : 'public/filter_closed.svg'}
+                                 alt={(openFilters) ? 'filter opened' : 'filter closed'}
+                            />
+                        </button>
+                    </div>
+                    <Link to={'/add-picture'}>
+                        <img src='public/add_picture.svg' alt='Add new picture' />
+                    </Link>
+                    <button onClick={handleDropdownOpens}>
+                        <img src={(!token) ? 'public/login.svg' : 'public/profile_icon'}
+                             alt={(!token) ? 'Login' : 'Profile menu'} />
                     </button>
                 </div>
-                <Link to={'/add-picture'}>
-                    <img src='public/add_picture.svg' alt='Add new picture' />
-                </Link>
-                <button onClick={handleDropdownOpens}>
-                    <img src={(!token) ? 'public/login.svg' : 'public/profile_icon'}
-                         alt={(!token) ? 'Login' : 'Profile menu'} />
-                </button>
             </menu>
             {openFilters && (
                 <FilterMenu onClose={handleOpenFilters}/>
@@ -50,6 +53,53 @@ export default function NavBar() {
             {openDropdown && (
                 <DropdownMenu onClose={handleDropdownOpens}/>
             )}
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            v
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            v
+            v
+            
         </>
     );
 }
