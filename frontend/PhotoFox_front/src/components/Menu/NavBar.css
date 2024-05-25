@@ -1,13 +1,14 @@
 #menu {
   padding: 0;
   margin: 0;
-  
+  width: 100vw;
   position: sticky;
   top: 0;
   background-color: #17245C;
   display: grid;
   grid-template-columns: auto auto;
-  padding-left: 1%;
+  
+
   
   > a {
     background-color: #17245C;
@@ -22,17 +23,56 @@
     font-style: normal;
     font-size: min(2.5vh, 1.25vw);
     letter-spacing: 6px;
+    > img {
+      width: 100%;
+    }
   }
   > #right {
-    flex-direction: row;
     background-color: #17245C;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    margin-left: auto;
     gap: 20px;
-    > #search {
+    width: 100%;
 
+    button {
+      border: 0;
+      padding: 0;
+      font-size: 0;
+      height: 50%;
     }
+
+    > #search {
+      flex-basis: 10;
+      width: 5%;
+      display: flex;
+      flex-direction: row;
+      > img {
+        height: 50%;
+      }
+      > button > img {
+        background-color: yellow;
+        height: 100%;
+        object-fit: fill;
+        
+      }
+    }
+    
+    > button {
+      width: 20%;
+      flex-basis: 1;
+      > img {
+        width: 100%;
+      }
+    }
+
     > a {
-      background-color: red;
+      flex-basis: 1;
+      width: 20%;
+      > img {
+        height: 100%;
+        width: 100%;
+      }
     }
   } 
 
