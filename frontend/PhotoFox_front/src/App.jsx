@@ -1,7 +1,7 @@
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import RootLayout from "./pages/RootLayout.jsx";
 import HomePage from "./pages/HomePage/HomePage.jsx";
-import SignPage from "./pages/SignPage.jsx";
+import SignPage from "./pages/SignPage/SignPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import ProfileEdit from "./pages/ProfileEdit.jsx";
 import ProfilePictures from "./pages/ProfilePictures.jsx";
