@@ -24,7 +24,7 @@ export default function NavBar() {
     return (
         <>
             <menu id='menu'>
-                <Link to={'/'}>
+                <Link to={'/'} id='left'>
                     <img src='public/site_logo.svg' alt='logo' />
                     <h1>PhotoFox</h1>
                 </Link>
@@ -68,7 +68,7 @@ export default function NavBar() {
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
-            v
+            
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
@@ -97,8 +97,7 @@ export default function NavBar() {
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
-            v
-            v
+
             
         </>
     );
