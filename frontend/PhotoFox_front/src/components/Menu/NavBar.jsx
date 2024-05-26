@@ -9,7 +9,9 @@ export default function NavBar() {
     const token = useRouteLoaderData('root');
     const [openFilters, setOpenFilters] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
-    const [profilePicture, setProfilePicture] = useState('/profile_icon');
+
+    //TODO: якщо юзер залогінився виводити аву
+    const [profilePicture, setProfilePicture] = useState('/NavBarElements/profile_icon.svg');
 
     function handleOpenFilters() {
         setOpenFilters(openFilters => !openFilters);
@@ -42,7 +44,7 @@ export default function NavBar() {
                         <img src='/NavBarElements/add_picture.svg' alt='Add new picture' />
                     </Link>
                     <button onClick={handleDropdownOpens}>
-                        <img src={(!token) ? '/NavBarElements/login.svg' : '/NavBarElements/profile_icon'}
+                        <img src={(!token) ? '/NavBarElements/login.svg' : '/NavBarElements/profile_icon.svg'}
                              alt={(!token) ? 'Login' : 'Profile menu'} />
                     </button>
                 </div>
