@@ -1,9 +1,19 @@
 import {useSearchParams, json, Link, Form, redirect} from "react-router-dom";
+import {useEffect} from "react";
+import {setBackground} from "../../utils/bannerChange.js";
 
 export default function SignPage() {
     const [searchParams] = useSearchParams();
     const signMode = searchParams.get("mode") === 'in';
-    console.log("signMode");
+
+    useEffect(() => {
+        setBackground();
+        function handleResize() {
+            setBackground();
+        }
+        window.addEventListener('resize', handleResize);
+    });
+
     //TODO реалізувати скидання паролю
     return (
         <>
