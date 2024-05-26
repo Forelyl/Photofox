@@ -1,5 +1,15 @@
+import { Link, useRouteLoaderData } from "react-router-dom";
 import './DropdownMenu.css'
 
 export default function DropdownMenu() {
-    return <h1>Dropdown menu</h1>
+
+
+    return (
+        <div>
+            <hr />
+            <Link to={}></Link>
+            <Link to={}></Link>
+            <Link to={}></Link>
+        </div>
+    );
 }

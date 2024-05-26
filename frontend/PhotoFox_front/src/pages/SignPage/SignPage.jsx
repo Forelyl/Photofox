@@ -18,7 +18,12 @@ export default function SignPage() {
     return (
         <>
             <Form method="post">
-                <h1>{(signMode) ? "Log in" : 'Register'}</h1>
+                <div>
+                    <Link to='/'>
+                        <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
+                    </Link>
+                    <h1>{(signMode) ? "Log in" : 'Register'}</h1>
+                </div>
                 <div className='input'>
                     <span>Login</span>
                     <input name='username' type='email'/>

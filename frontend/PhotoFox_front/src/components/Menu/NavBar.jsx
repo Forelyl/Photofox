@@ -25,24 +25,24 @@ export default function NavBar() {
         <>
             <menu id='menu'>
                 <Link to={'/'} id='left'>
-                    <img src='/site_logo.svg' alt='logo' />
+                    <img src='/NavBarElements/site_logo.svg' alt='logo' />
                     <h1>PhotoFox</h1>
                 </Link>
                 <div id='right'>
                     <div id='search'>
-                        <img src='/search_icon.svg' alt='search' />
+                        <img src='/NavBarElements/search_icon.svg' alt='search' />
                         <input type='text' />
                         <button onClick={handleOpenFilters}>
-                            <img src={(openFilters) ? '/filter_opened.svg' : '/filter_closed.svg'}
+                            <img src={(openFilters) ? '/NavBarElements/filter_opened.svg' : '/NavBarElements/filter_closed.svg'}
                                  alt={(openFilters) ? 'filter opened' : 'filter closed'}
                             />
                         </button>
                     </div>
                     <Link to={'/add-picture'}>
-                        <img src='/add_picture.svg' alt='Add new picture' />
+                        <img src='/NavBarElements/add_picture.svg' alt='Add new picture' />
                     </Link>
                     <button onClick={handleDropdownOpens}>
-                        <img src={(!token) ? '/login.svg' : '/profile_icon'}
+                        <img src={(!token) ? '/NavBarElements/login.svg' : '/NavBarElements/profile_icon'}
                              alt={(!token) ? 'Login' : 'Profile menu'} />
                     </button>
                 </div>
