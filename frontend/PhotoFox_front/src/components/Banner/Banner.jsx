@@ -16,7 +16,7 @@ export default function Banner() {
         <div id='banner'>
             <div id='background'></div>
             <div id='image'>
-                <img src='public/site_logo_text.svg' alt='site logo'/>
+                <img src='/site_logo_text.svg' alt='site logo'/>
             </div>
             <a>
                 <svg viewBox="0 0 1565 1489" fill="none" xmlns="http://www.w3.org/2000/svg">

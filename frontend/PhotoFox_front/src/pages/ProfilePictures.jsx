@@ -5,7 +5,7 @@ export default function ProfilePictures() {
     const mode = searchParams.get("mode")
     return (
         <>
-            <h1>Hi</h1>
+            <h1>Hi5</h1>
         </>
     );
 }

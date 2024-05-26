@@ -2,7 +2,7 @@
 export default function AddPicture() {
     return (
         <>
-            <h1>Hi</h1>
+            <h1>Hiq1</h1>
         </>
     );
 }

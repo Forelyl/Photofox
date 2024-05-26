@@ -5,7 +5,7 @@ export default function ProfileSubs() {
     const mode = searchParams.get("mode")
     return (
         <>
-            <h1>Hi</h1>
+            <h1>Hi6</h1>
         </>
     );
 }

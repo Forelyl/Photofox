@@ -9,7 +9,7 @@ export default function NavBar() {
     const token = useRouteLoaderData('root');
     const [openFilters, setOpenFilters] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
-    const [profilePicture, setProfilePicture] = useState('public/profile_icon');
+    const [profilePicture, setProfilePicture] = useState('/profile_icon');
 
     function handleOpenFilters() {
         setOpenFilters(openFilters => !openFilters);
@@ -25,24 +25,24 @@ export default function NavBar() {
         <>
             <menu id='menu'>
                 <Link to={'/'} id='left'>
-                    <img src='public/site_logo.svg' alt='logo' />
+                    <img src='/site_logo.svg' alt='logo' />
                     <h1>PhotoFox</h1>
                 </Link>
                 <div id='right'>
                     <div id='search'>
-                        <img src='public/search_icon.svg' alt='search' />
+                        <img src='/search_icon.svg' alt='search' />
                         <input type='text' />
                         <button onClick={handleOpenFilters}>
-                            <img src={(openFilters) ? 'public/filter_opened.svg' : 'public/filter_closed.svg'}
+                            <img src={(openFilters) ? '/filter_opened.svg' : '/filter_closed.svg'}
                                  alt={(openFilters) ? 'filter opened' : 'filter closed'}
                             />
                         </button>
                     </div>
                     <Link to={'/add-picture'}>
-                        <img src='public/add_picture.svg' alt='Add new picture' />
+                        <img src='/add_picture.svg' alt='Add new picture' />
                     </Link>
                     <button onClick={handleDropdownOpens}>
-                        <img src={(!token) ? 'public/login.svg' : 'public/profile_icon'}
+                        <img src={(!token) ? '/login.svg' : '/profile_icon'}
                              alt={(!token) ? 'Login' : 'Profile menu'} />
                     </button>
                 </div>
