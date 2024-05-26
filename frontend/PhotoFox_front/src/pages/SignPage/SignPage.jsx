@@ -2,6 +2,7 @@ import {useSearchParams, json, Link, Form, redirect} from "react-router-dom";
 import {useEffect} from "react";
 import {setBackground} from "../../utils/bannerChange.js";
 import './SignPage.css'
+import {getToken} from "../../utils/auth.js";
 
 export default function SignPage() {
     const [searchParams] = useSearchParams();
@@ -90,6 +91,11 @@ export async function action({request}) {
     if (!response.ok) {
         throw json({message: 'Could not authenticate user.'}, {status: 500});
     }
+
+    const resData = await response.json();
+    const token = resData.token;
+
+    localStorage.setItem('token', token);
 
     redirect('/')
 }
