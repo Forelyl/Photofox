@@ -14,19 +14,134 @@
     > form {
         display: grid;
         grid-template-columns: 1fr;
-        align-items: center;
-        justify-content: center;
         align-content: center;
         justify-items: center;
+
 
         width: 35%;
         background-color: #49B1E9;
         border-radius: 30px;
-        > h1 {
-            font-weight: 300;
-            padding: 0;
-            margin-top: 0;
-            letter-spacing: 5px;
+        > #top {
+            position: relative;
+            padding-top: 3vh;
+            width: 90%;
+            > a {
+                transition: 0.5s ease-in-out;
+                transform: scale(1);
+                transform: translateX(0px);
+                position: absolute;
+                left: 0px;
+                top: 27.5%;
+                height: 45%;
+                > img {
+                    height: 100%;
+                }
+            }
+            > a:hover {
+                animation: arrow_shake 1s ease-in-out;
+                transform: scale(1.1);
+                transform: translateX(-4px);
+
+            }
+
+            > h1 {
+                text-align: center;
+                font-weight: 300;
+                padding: 0;
+                padding-left: 5px;
+                margin-top: 0;
+                letter-spacing: 5px;
+            }
+        }
+        > .input {
+            position: relative;
+            width: 80%;
+            height: 10vh;
+            margin: 2vh 0;
+            > input {
+                background-color: #BAE7FF;
+                border-radius: 10px;
+                font-family: 'Days One';
+                font-weight: 100;
+                color: black;
+                width: 90%;
+                height: 100%;
+                border: 0;
+                outline: 0;
+                padding: 0 5%;
+            }
+            > span {
+                position: absolute;
+                font-size: 3vh;
+                line-height: 3vh;
+                left: 5%;
+                top: calc((100% - 3vh) / 2);
+                color: #7A7A7A;
+                pointer-events: none;
+                transition: 0.4s ease-in-out;
+            }
+            > span:has(~input:focus), > span:has(~input:valid) {
+                top: 10%;
+                font-size: 1.5vh;
+            }
+        }
+        > #recover-pass {
+            color: black;
+            text-align: right;
+            width: 80%;
+            padding-right: 10px;
+            font-size: 1.9vh;
+        }
+        > #action {
+            display: grid;
+            grid-template-columns: auto auto;
+            align-items: center;
+            justify-items: center;
+            width: 80%;
+            height: 8vh;
+            margin-top: 1.5vh;
+            margin-bottom: 4vh;
+            gap: 3%;
+            > div {
+                border-radius: 1.2vh;
+                background-color: #17245C;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Days One';
+                font-size: 2.5vh;
+                height: 100%;
+                width: 100%;
+                > a {
+                    color: floralwhite;
+                    text-decoration: none;
+                }
+            }
+            > button {
+                border-radius: 1.2vh;
+                background-color: #5E68CA;
+                padding: 0;
+                border: none;
+                color: floralwhite;
+                font-family: 'Days One';
+                font-size: 2.5vh;
+                height: 100%;
+                width: 100%;
+            }
         }
     }
+}
+
+@keyframes arrow_shake {
+    0% {
+        transform: translateX(0px);
+    }
+    50% {
+        transform: translateX(4px);
+    }
+    75%, 100% {
+        transform: scale(1.1);
+        transform: translateX(-4px);
+    }
+    
 }

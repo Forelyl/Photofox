@@ -19,31 +19,33 @@ export default function SignPage() {
     return (
         <div id='background'>
             <Form method="post">
-                <div>
+                <div id='top'>
                     <Link to='/'>
                         <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                     </Link>
-                    <h1>{(signMode) ? "Log in" : 'Register'}</h1>
+                    <h1>{(signMode) ? 'Log in' : 'Register'}</h1>
                 </div>
                 <div className='input'>
                     <span>Login</span>
-                    <input name='username' type='email'/>
+                    <input name='username' type='text' required/>
                 </div>
                 {!signMode && (<div className='input'>
                     <span>Email</span>
-                    <input name='email' type='email'/>
+                    <input name='email' type='text' required/>
                 </div>)}
                 <div className='input'>
                     <span>Password</span>
-                    <input name='password' type={(signMode) ? 'password' : 'text'}/>
+                    <input name='password' type={(signMode) ? 'password' : 'text'} required/>
                 </div>
                 {signMode && (
-                    <span>Recover password</span>
+                    <span id='recover-pass'>Recover password</span>
                 )}
-                <div>
-                    <Link to={`/sign?mode=${(signMode) ? 'up' : 'in'}`}>{(signMode) ? 'Go to register' : 'Go to log in'}</Link>
+                <div id='action'> 
+                    <div>
+                        <Link to={`/sign?mode=${(signMode) ? 'up' : 'in'}`}>{(signMode) ? 'Go to register' : 'Go to log in'}</Link>
+                    </div>
+                    <button>{(signMode) ? 'Log in' : 'Register'}</button>
                 </div>
-                <button>{(signMode) ? 'Log in' : 'Register'}</button>
             </Form>
         </div>
     );
