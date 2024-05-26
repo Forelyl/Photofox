@@ -1,6 +1,7 @@
 import {useSearchParams, json, Link, Form, redirect} from "react-router-dom";
 import {useEffect} from "react";
 import {setBackground} from "../../utils/bannerChange.js";
+import './SignPage.css'
 
 export default function SignPage() {
     const [searchParams] = useSearchParams();
@@ -16,7 +17,7 @@ export default function SignPage() {
 
     //TODO реалізувати скидання паролю
     return (
-        <>
+        <div id='background'>
             <Form method="post">
                 <h1>{(signMode) ? "Log in" : 'Register'}</h1>
                 <div className='input'>
@@ -39,7 +40,7 @@ export default function SignPage() {
                 </div>
                 <button>{(signMode) ? 'Log in' : 'Register'}</button>
             </Form>
-        </>
+        </div>
     );
 }
 

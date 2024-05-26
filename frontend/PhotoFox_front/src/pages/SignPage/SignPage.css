@@ -1,0 +1,32 @@
+#background {
+    background-color: #062551;
+    background-size: 200%;
+    width: 100vw;
+    max-width: 100%;
+    height: 100svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-clip: content-box;
+    font-family: 'Days One';
+    > form {
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        justify-items: center;
+
+        width: 35%;
+        background-color: #49B1E9;
+        border-radius: 30px;
+        > h1 {
+            font-weight: 300;
+            padding: 0;
+            margin-top: 0;
+            letter-spacing: 5px;
+        }
+    }
+}
