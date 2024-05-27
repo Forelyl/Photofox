@@ -7,7 +7,7 @@ export default function SignPage() {
     const [searchParams] = useSearchParams();
     const signMode = (searchParams.get("mode") !== 'up');
     const errorData = useActionData();
-    console.log(errorData);
+
     useEffect(() => {
         setBackground();
         function handleResize() {
@@ -27,15 +27,15 @@ export default function SignPage() {
                     <h1>{(signMode) ? 'Log in' : 'Register'}</h1>
                 </div>
                 <div>
-                    {/*{errorData && errorData.details.errors && <ul>*/}
-                    {/*    {Object.values(errorData.details.errors).map((error, i) => <li key={i}>{error}</li>)}*/}
+                    {/*{errorData && errorData.detail.message && <span>{errorData.detail.message}</span>}*/}
+                    {/*{errorData && errorData.detail.errors && <ul>*/}
+                    {/*    {Object.values(errorData.detail.errors).map((error, i) => <li key={i}>{error}</li>)}*/}
                     {/*</ul>}*/}
-                    {/*{errorData && errorData.details.message && <span>{errorData.details.message}</span>}*/}
+                    <span> some message </span>
                     <ul>
                         <li>first err</li>
                         <li>second errr</li>
                     </ul>
-                    <span> some message </span>
                 </div>
                 <div className='input'>
                     <span>Login</span>
@@ -92,14 +92,12 @@ export async function action({request}) {
             },
             body: JSON.stringify(authData)
         });
-        console.log(authData);
     }
     else {
         throw json({message: 'Invalid sign mode'}, {status: 422});
     }
 
     if (response.status === 400) {
-        console.log(response);
         return response;
     }
 
