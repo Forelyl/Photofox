@@ -168,7 +168,7 @@ async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin(form_data.username))
     
     if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail="Incorrect username or password",
+                               detail={"message":"Incorrect username or password"},
                                headers={"WWW-Authenticate": "Bearer"})
     
     check_login(hash_and_admin.hash, form_data.password)
