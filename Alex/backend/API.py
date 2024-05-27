@@ -62,11 +62,11 @@ tag_regex:   str = r"(^[0-9a-z_]+$)"
 
 @app.exception_handler(exceptions.ForeignKeyViolationError)
 async def foreign_key_exception_handler(request: Request, exc: exceptions.ForeignKeyViolationError):
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Violation of data consistency")
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency"})
 
 @app.exception_handler(exceptions.UniqueViolationError)
 async def unique_exception_handler(request: Request, exc: exceptions.UniqueViolationError):
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Violation of data consistency")
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency"})
 
 #============================================
 # Tokens - pass for time
@@ -97,7 +97,7 @@ async def login_exists(login: str):
 async def process_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail={"message":"Could not validate credentials"},
         headers={"WWW-Authenticate": "Bearer"},
     )
     
@@ -113,7 +113,7 @@ async def process_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
         user = User(username=username, is_admin=bool(is_admin_str), id=int(id_str))
         if user.is_admin: 
             if not await db.is_admin(username): raise HTTPException(status_code=status.HTTP_424_FAILED_DEPENDENCY,
-                                                                    detail="Access token is incorrect")
+                                                                    detail={"message":"Access token is incorrect"})
     
     except JWTError: # handles possible errors (maybe somehing like incorrect value for given SECRET_KEY) from jwt.decode, as I understand
         raise credentials_exception
@@ -125,7 +125,7 @@ def access_admin(user: Annotated[User, Depends(process_token)]) -> User:
     if user.is_admin: return user
     
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Access level is too low")
+                        detail={"message":"Access level is too low"})
 
 async def access_user(user: Annotated[User, Depends(process_token)], login: Annotated[str | None, Header(pattern=login_regex)] = None) -> User:
     if login is None:
@@ -133,13 +133,14 @@ async def access_user(user: Annotated[User, Depends(process_token)], login: Anno
     
     if user.is_admin:
         if (login is not None and login != user.username):
-            if not await db.login_exists(login): raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Specified user login doesn't exist")  
+            if not await db.login_exists(login): raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                                                     detail={"message":"Specified user login doesn't exist"})
             user.username = login
             user.id = await db.login_to_id(login)
         return user
     
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Don't allowed to use method due to access level or username")  
+                        detail={"message":"Don't allowed to use method due to access level or username"})
     
 
 async def create_access_token(data: dict[str, str | bool | int], expires_delta: timedelta | None = None) -> str:
@@ -158,7 +159,7 @@ async def create_access_token(data: dict[str, str | bool | int], expires_delta: 
 def check_login(hash: str, password: str) -> None: 
     if not password_context.verify(hash=hash, secret=password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Incorrect username or password",
+                            detail={"message" : "Incorrect username or password"},
                             headers={"WWW-Authenticate": "Bearer"})
 
 # -------------------------------------------
@@ -168,7 +169,7 @@ async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin(form_data.username))
     
     if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail="Incorrect username or password",
+                               detail={"message" : "Incorrect username or password"},
                                headers={"WWW-Authenticate": "Bearer"})
     
     check_login(hash_and_admin.hash, form_data.password)
@@ -176,7 +177,7 @@ async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     id = await db.login_to_id(form_data.username)
     if (await db.check_bloked(id) and not hash_and_admin.is_admin): 
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Account was banned, due to service laws violation")
+                            detail={"message":"Account was banned, due to service laws violation"})
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={
@@ -253,7 +254,8 @@ async def delete_image(user: Annotated[User, Depends(access_user)], image_id: An
     path_and_can_delete: tuple[str, bool] = await db.get_image_path_by_id(image_id, user.id)
     
     if not path_and_can_delete[1]:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Can't delete image, not authorized or incorrect image-id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail={"message":"Can't delete image, not authorized or incorrect image-id"})
     
     await DropBox.delete_file(path_and_can_delete[0])
     await db.delete_image(user.id, image_id)
@@ -295,7 +297,7 @@ async def get_last_comment(image_id: Annotated[int, Param(ge=1)], last_commnet_i
 @app.post('/subscribe', tags=['subscribe'])
 async def subscribe(user: Annotated[User, Depends(access_user)], subscribe_on_id: Annotated[int, Param(ge=1)]):
     if user.id == subscribe_on_id: 
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Can't subscribe on yourself")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Can't subscribe on yourself"})
     await db.add_subscribe(user.id, subscribe_on_id)
 
 @app.delete('/subscribe', tags=['subscribe'])
@@ -386,7 +388,7 @@ async def change_picture_profile(user: Annotated[User, Depends(access_user)], im
 async def change_login_profile(user: Annotated[User, Depends(access_user)], password: Annotated[str, Header(min_length=1, max_length=50)], new_login: Annotated[str, Header(min_length=1, max_length=50, pattern=login_regex)]):
     hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
     if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail="Incorrect username or password",
+                               detail={"message" : "Incorrect username or password"},
                                headers={"WWW-Authenticate": "Bearer"})
     check_login(hash_and_admin.hash, password)
     
@@ -400,7 +402,7 @@ async def change_description_profile(user: Annotated[User, Depends(access_user)]
 async def change_email_profile(user: Annotated[User, Depends(access_user)], password: Annotated[str, Header(min_length=1, max_length=50)], new_email: Annotated[str, Header(min_length=1, max_length=100, pattern=email_regex)]):
     hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
     if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail="Incorrect username or password",
+                               detail={"message" : "Incorrect username or password"},
                                headers={"WWW-Authenticate": "Bearer"})
     check_login(hash_and_admin.hash, password)
 
@@ -410,13 +412,13 @@ async def change_email_profile(user: Annotated[User, Depends(access_user)], pass
 async def change_password_profile(user: Annotated[User, Depends(access_user)], old_password: Annotated[str, Header(min_length=1, max_length=50)], new_password: Annotated[str, Header(min_length=1, max_length=50)]):
     hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
     if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail="Incorrect username or password",
+                               detail={"message" : "Incorrect username or password"},
                                headers={"WWW-Authenticate": "Bearer"})
     check_login(hash_and_admin.hash, old_password)
     
     if old_password == new_password:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="New password can't be the same as the previous one",
+                            detail={"message":"New password can't be the same as the previous one"},
                             headers={"WWW-Authenticate": "Bearer"})
 
     hash = hash_password(new_password)
