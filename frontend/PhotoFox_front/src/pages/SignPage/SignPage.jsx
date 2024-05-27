@@ -26,12 +26,12 @@ export default function SignPage() {
                     </Link>
                     <h1>{(signMode) ? 'Log in' : 'Register'}</h1>
                 </div>
-                <div>
-                    {/*{errorData && errorData.detail.message && <span>{errorData.detail.message}</span>}*/}
+                <div id='error-block'>
+                    {/*{errorData && errorData.detail.message && <span id='error-text'>{errorData.detail.message}</span>}*/}
                     {/*{errorData && errorData.detail.errors && <ul>*/}
                     {/*    {Object.values(errorData.detail.errors).map((error, i) => <li key={i}>{error}</li>)}*/}
                     {/*</ul>}*/}
-                    <span> some message </span>
+                    <span id='error-text'> some message </span>
                     <ul>
                         <li>first err</li>
                         <li>second errr</li>

@@ -84,20 +84,33 @@
             > span {
                 position: absolute;
                 font-size: min(3vh, 6vw);
-                line-height: 3vh;
+                line-height: min(3vh, 6vw);
                 left: 5%;
-                top: calc((100% - 3vh) / 2);
+                top: calc((100% - min(3vh, 6vw)) / 2 - 25%);
                 color: #7A7A7A;
                 pointer-events: none;
                 transition: 0.4s ease-in-out;
             }
             > span:has(~input:focus), > span:has(~input:valid) {
                 top: 10%;
+                line-height: min(1.5vh, 3vw);
                 font-size: min(1.5vh, 3vw);
+                top: calc((100% - min(1.5vh, 3vw)) / 2 - 25%);
             }
             > span:has(~input:autofill) {
                 color: #c1bfbf;
             }
+        }
+        > #error-block {
+            color: rgb(199, 55, 55);
+            font-size: min(1.8vh, 3vw);
+            text-align: left;
+            font-family: 'Inter';
+            font-weight: 500;
+            width: 75%;
+            padding-left: 10px;
+            border-left: 6px double rgb(67, 0, 236);
+            
         }
         > #recover-pass {
             color: black;
