@@ -71,11 +71,15 @@
                 font-weight: 100;
                 font-size: min(3vh, 6vw);
                 color: black;
-                width: 90%;
+                width: 100%;
                 height: 100%;
                 border: 0;
                 outline: 0;
                 padding: 0 5%;
+                box-sizing: border-box;
+            }
+            input:autofill {
+                box-shadow: 100vh 100vh 100vh 100vh #216b91 inset;  
             }
             > span {
                 position: absolute;
@@ -90,6 +94,9 @@
             > span:has(~input:focus), > span:has(~input:valid) {
                 top: 10%;
                 font-size: min(1.5vh, 3vw);
+            }
+            > span:has(~input:autofill) {
+                color: #c1bfbf;
             }
         }
         > #recover-pass {
