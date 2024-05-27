@@ -1,5 +1,6 @@
 # WARNING: don't use username(login) to provide processes except login, use user.id instead
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
+from re import error
 from asyncpg import exceptions
 from fastapi.params import Param
 from DB import DB, DB_Returns, db
@@ -333,13 +334,20 @@ async def add_admin(login: Annotated[str, Body(pattern=login_regex, min_length=1
 async def add_user(login: Annotated[str, Body(pattern=login_regex)], 
                    password: Annotated[str, Body()], 
                    email: Annotated[str, Body(pattern=email_regex)]):
+    errors = []
     if await db.email_exists(email):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already used")
+        errors.append("Email is already used")
     if await db.login_exists(login):
+        errors.append("Login is already used")
+    
+    if len(errors) != 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Login is already used")
-      
+            detail={
+                'errors' : errors,
+                'message': "Failed to create user"
+            }
+        )
+    
     hash = hash_password(password)
     await db.add_user(login, email, hash)
 
