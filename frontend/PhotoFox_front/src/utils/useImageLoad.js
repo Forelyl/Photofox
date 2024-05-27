@@ -2,17 +2,16 @@ import { useState, useEffect } from "react";
 
 export default function useImageLoad(lastImage, filters) {
     const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState(false);
     const [images, setImages] = useState([]);
     const [imagesLeft, setImagesLeft] = useState(false);
 
     useEffect(() => {
         setImages([]);
     }, [filters]);
+
     useEffect(() => {
         setLoading(true);
         // setError(false);
-
         async function getF(){
             const response = await fetch(`http://127.0.0.1:3000/image/last`, {
                 method: 'GET',
@@ -26,8 +25,8 @@ export default function useImageLoad(lastImage, filters) {
             setImagesLeft(values.length > 0);
             return null;
         }
-
-        getF();
+        const gg = getF();
+        setLoading(false);
     }, [lastImage, filters]);
 
     return {loading, images, imagesLeft};
