@@ -135,7 +135,11 @@
 }
 
 @media (max-width: 1500px) {
-    
+    #background {
+        > form {
+            width: 50%;
+        }
+    }
 }
 
 

@@ -479,3 +479,14 @@ def i_am_admin():
 @app.get('/user/iam', tags=['admin'], response_model=str)
 def i_am_user(user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()]):
     return "You are " + user.username
+
+
+@app.middleware("http")
+async def log_request_body(request: Request, call_next):
+    # Access the request body
+    body_bytes = await request.body()
+    body_str = body_bytes.decode("utf-8")
+    print(f"Request body: {body_str}")
+
+    response = await call_next(request)
+    return response
