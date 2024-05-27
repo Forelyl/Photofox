@@ -335,13 +335,15 @@ async def add_user(login: Annotated[str, Body(pattern=login_regex)],
                    email: Annotated[str, Body(pattern=email_regex)]):
     error_array = []
     if await db.email_exists(email):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already used")
+        error_array.append("Email is already used")
     if await db.login_exists(login):
         error_array.append("Login is already used")
     if len(error_array) != 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Login is already used")
+            detail={
+                'errors': error_array,
+                'message':'Failed to create user'
+            })
       
     hash = hash_password(password)
     await db.add_user(login, email, hash)

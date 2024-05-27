@@ -1,13 +1,13 @@
-import {useSearchParams, json, Link, Form, redirect} from "react-router-dom";
+import {useSearchParams, json, Link, Form, redirect, useActionData} from "react-router-dom";
 import {useEffect} from "react";
 import {setBackground} from "../../utils/bannerChange.js";
 import './SignPage.css'
-import {getToken} from "../../utils/auth.js";
 
 export default function SignPage() {
     const [searchParams] = useSearchParams();
-    const signMode = searchParams.get("mode") === 'in';
-
+    const signMode = (searchParams.get("mode") !== 'up');
+    const errorData = useActionData();
+    console.log(errorData);
     useEffect(() => {
         setBackground();
         function handleResize() {
@@ -26,6 +26,17 @@ export default function SignPage() {
                     </Link>
                     <h1>{(signMode) ? 'Log in' : 'Register'}</h1>
                 </div>
+                <div>
+                    {/*{errorData && errorData.details.errors && <ul>*/}
+                    {/*    {Object.values(errorData.details.errors).map((error, i) => <li key={i}>{error}</li>)}*/}
+                    {/*</ul>}*/}
+                    {/*{errorData && errorData.details.message && <span>{errorData.details.message}</span>}*/}
+                    <ul>
+                        <li>first err</li>
+                        <li>second errr</li>
+                    </ul>
+                    <span> some message </span>
+                </div>
                 <div className='input'>
                     <span>Login</span>
                     <input name='username' type='text' required/>
@@ -36,7 +47,7 @@ export default function SignPage() {
                 </div>)}
                 <div className='input'>
                     <span>Password</span>
-                    <input name='password' type={(signMode) ? 'password' : 'text'} required/>
+                    <input name='password' type='password' required/>
                 </div>
                 {signMode && (
                     <span id='recover-pass'>Recover password</span>
@@ -60,9 +71,9 @@ export async function action({request}) {
     let response;
 
     if (signMode === 'in') {
-        response = await fetch('http://127.0.0.1:3000/profile/add/user', {
+        response = await fetch('http://127.0.0.1:3000/login', {
             method: 'POST',
-            header: {
+            headers: {
                 'Content-Type': 'multipart/form-data'
             },
             body: data
@@ -74,19 +85,21 @@ export async function action({request}) {
             email: data.get('email'),
             password: data.get('password')
         }
-        response = await fetch('http://127.0.0.1:3000/login', {
+        response = await fetch('http://127.0.0.1:3000/profile/add/user', {
             method: 'POST',
-            header: {
+            headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(authData)
         });
+        console.log(authData);
     }
     else {
         throw json({message: 'Invalid sign mode'}, {status: 422});
     }
 
-    if (response.status === 400 || response.status) {
+    if (response.status === 400) {
+        console.log(response);
         return response;
     }
 
@@ -95,9 +108,9 @@ export async function action({request}) {
     }
 
     const resData = await response.json();
-    const token = resData.token;
+    const token = resData.access_token;
 
     localStorage.setItem('token', token);
 
-    redirect('/')
+    return redirect('/');
 }
