@@ -214,7 +214,7 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 #============================================
 # Image
 #============================================
-@app.get('/image/last', tags=['image'], response_model=list[DB_Returns.Image])
+@app.get('/image/last', tags=['image'], response_model=list[DB_Returns.Image_PC])
 async def get_last_images_pc(last_image_id: Annotated[int, Header()] = -1):
     return await db.get_images_pc(last_image_id)
 
@@ -226,7 +226,7 @@ async def get_last_images_mobile(last_image_id: Annotated[int, Header()] = -1):
 async def get_images(image_id: int):
     return await db.get_image(image_id)
 
-@app.get('/image/subscribed', tags=['image'], response_model=list[DB_Returns.Image])
+@app.get('/image/subscribed', tags=['image'], response_model=list[DB_Returns.Image_PC])
 async def get_subscribed_images_pc(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
     return await db.get_subscribed_images_pc(user.id, last_image_id)
 

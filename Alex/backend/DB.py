@@ -52,6 +52,10 @@ class DB_Returns:
         id: int
         path: str
     
+    class Image_PC(Image):
+        width: int
+        heigh: int
+    
     class Image_mobile(Image):
         title: str | None
         like_counter: int
@@ -118,8 +122,8 @@ class PhotoFox:
     def __init__(self) -> None:
         self.__DBNAME   = "photofox";
         self.__USER     = "fox";
-#         self.__PASSWORD = "qweasd12"
-        self.__PASSWORD = "1234";
+        self.__PASSWORD = "qweasd12"
+        # self.__PASSWORD = "1234";
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
@@ -205,15 +209,15 @@ class PhotoFox:
 
         return function_result
 
-    async def get_images_pc(self, last_image_id: int) -> list[DB_Returns.Image]:
+    async def get_images_pc(self, last_image_id: int) -> list[DB_Returns.Image_PC]:
         result: list[dict[str, Any]] = []
         if last_image_id == -1:
-            query: str =  """SELECT id, image_url as path FROM image WHERE NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
+            query: str =  """SELECT id, image_url as path, width, height FROM image WHERE NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query))
         else:
-            query: str =  """SELECT id, image_url as path FROM image WHERE id < $1 AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
+            query: str =  """SELECT id, image_url as path, width, height FROM image WHERE id < $1 AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query, last_image_id))
-        return list(DB_Returns.Image(**x) for x in result)
+        return list(DB_Returns.Image_PC(**x) for x in result)
     
     async def get_images_mobile(self, last_image_id: int) -> list[DB_Returns.Image_mobile]:
         
@@ -249,11 +253,11 @@ class PhotoFox:
         
         return DB_Returns.Image_full(**result[0])
     
-    async def get_subscribed_images_pc(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image]:
+    async def get_subscribed_images_pc(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image_PC]:
         
         if last_image_id == -1:
             query: str = """
-            SELECT id, image_url as path FROM image
+            SELECT id, image_url as path, width, height FROM image
                 WHERE image.author_id IN
                 (SELECT id_subscribed_on FROM subscribe
                     WHERE id_subscriber = $1 
@@ -263,7 +267,7 @@ class PhotoFox:
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
         else:
             query: str = """
-            SELECT id, image_url as path FROM image
+            SELECT id, image_url as path, width, height FROM image
                 WHERE id < $1 AND image.author_id IN
                 (SELECT id_subscribed_on FROM subscribe
                     WHERE id_subscriber = $2
@@ -272,7 +276,7 @@ class PhotoFox:
             """
             result = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
         
-        return list(DB_Returns.Image(**x) for x in result)
+        return list(DB_Returns.Image_PC(**x) for x in result)
 
 
     async def get_subscribed_images_mobile(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image_mobile]:

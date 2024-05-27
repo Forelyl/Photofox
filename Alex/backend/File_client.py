@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
+from re import A
 import dropbox
-from dropbox import files as a
+from dropbox import oauth
 from pydantic import BaseModel
 import datetime
 
@@ -13,8 +14,25 @@ class DropBox_client:
         self.__API_KEY    = 'fagt8qrb3adxho7' 
         self.__API_SECRET = 'bty12jbpt74q8wo'
         self.__API = 'sl.B2AY6G2_DIBwlCwhD-NxPe01uqrVr7jKh2MKHT_MDasK6ZRYPg9gGvCmT70NT1S9yQOf7D3Z5KsltUxKDg-idHLDNqN3X3InKb3Vt8SkEiXDYJ8h1VTRKChcFoSoXeS0trSABVwJwY4gw34'
+        self.__API_REFRESH_TOKEN = 'ygwX9ssOZK4AAAAAAAAAAa54lBJIluDqaM7zdONzR-roS6p4JAlIpTIDTc5Q2LZ8'
+        # self.aoaoa()
         self.drop = dropbox.Dropbox(self.__API)
+        # self.drop = dropbox.Dropbox(app_key=self.__API_KEY, app_secret= oauth2_refresh_token=self.__API_REFRESH_TOKEN)
+        # print(self.drop.refresh_access_token())
 
+    def aoaoa (self): 
+        drtr = oauth.DropboxOAuth2FlowNoRedirect(
+            consumer_key=self.__API_KEY, 
+            consumer_secret=self.__API_SECRET, 
+            locale='en', 
+            token_access_type='offline', 
+            scope=["files.metadata.write", "files.metadata.read", "files.content.write", "files.content.read",
+                   "sharing.write", "sharing.read", "file_requests.write", "file_requests.read"],
+            include_granted_scopes="user",
+            use_pkce=False)
+        print(drtr.start())
+        a = input("Mate do the thing des: ")
+        print("Token is: " + drtr.finish(a).refresh_token)
 
     async def add_file(self, file, username) -> Add_file_return: 
         data = await file.read()
