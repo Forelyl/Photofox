@@ -11,6 +11,7 @@ from typing import Annotated
 from pydantic import BaseModel
 from fastapi import Body, FastAPI, Path, HTTPException, Header, status, Depends, Request, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
@@ -28,8 +29,20 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 password_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
+origins = [
+    "http://192.168.1.101:5173",
+    "http://192.168.0.102:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],  
+)
 
 SECRET_KEY = "476b0f8f5dbe0460361022cfe01b94fe50c74998e15d2206098ca6ff1de1ba8c"
 ALGORITHM = "HS256"
@@ -316,20 +329,30 @@ async def add_admin(login: Annotated[str, Body(pattern=login_regex, min_length=1
     await db.add_admin(login, email, hash)
 
 
-@app.post('/profile/add/user', tags=['profile'])
+@app.post('/profile/add/user', tags=['profile'], response_model=Token)
 async def add_user(login: Annotated[str, Body(pattern=login_regex)], 
                    password: Annotated[str, Body()], 
                    email: Annotated[str, Body(pattern=email_regex)]):
     error_array = []
     if await db.email_exists(email):
-        error_array.append("Email is already used")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email is already used")
     if await db.login_exists(login):
         error_array.append("Login is already used")
     if len(error_array) != 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail=error_array)
+            detail="Login is already used")
+      
     hash = hash_password(password)
     await db.add_user(login, email, hash)
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={
+                                           "sub": login, "is_admin": False, 
+                                           "id": await db.login_to_id(login)
+                                       }, 
+                                       expires_delta=access_token_expires)
+    return Token(access_token=await access_token, token_type="bearer", is_admin=False)
 
 @app.delete('/profile/delete', tags=['profile', 'admin'])
 async def delete_user(user: Annotated[User, Depends(access_user)]):
