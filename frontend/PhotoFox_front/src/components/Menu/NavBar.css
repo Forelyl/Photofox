@@ -1,8 +1,14 @@
+#menu-wrapper {
+  width: 100;
+  position: sticky;
+  top: 0;
+}
+
 #menu {
+  position: sticky;
   padding: 0;
   margin: 0;
-  position: sticky;
-
+  z-index: 120;
   top: 0;
   background-color: #17245C;
   display: flex;
