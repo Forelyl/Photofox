@@ -54,7 +54,7 @@ class DB_Returns:
     
     class Image_PC(Image):
         width: int
-        heigh: int
+        height: int
     
     class Image_mobile(Image):
         title: str | None
@@ -217,6 +217,7 @@ class PhotoFox:
         else:
             query: str =  """SELECT id, image_url as path, width, height FROM image WHERE id < $1 AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query, last_image_id))
+        print(list(x for x in result))
         return list(DB_Returns.Image_PC(**x) for x in result)
     
     async def get_images_mobile(self, last_image_id: int) -> list[DB_Returns.Image_mobile]:

@@ -16,9 +16,9 @@ class DropBox_client:
         self.__API = 'sl.B2AY6G2_DIBwlCwhD-NxPe01uqrVr7jKh2MKHT_MDasK6ZRYPg9gGvCmT70NT1S9yQOf7D3Z5KsltUxKDg-idHLDNqN3X3InKb3Vt8SkEiXDYJ8h1VTRKChcFoSoXeS0trSABVwJwY4gw34'
         self.__API_REFRESH_TOKEN = 'ygwX9ssOZK4AAAAAAAAAAa54lBJIluDqaM7zdONzR-roS6p4JAlIpTIDTc5Q2LZ8'
         # self.aoaoa()
-        self.drop = dropbox.Dropbox(self.__API)
-        # self.drop = dropbox.Dropbox(app_key=self.__API_KEY, app_secret= oauth2_refresh_token=self.__API_REFRESH_TOKEN)
-        # print(self.drop.refresh_access_token())
+        # self.drop = dropbox.Dropbox(self.__API)
+        self.drop = dropbox.Dropbox(app_key=self.__API_KEY, app_secret=self.__API_SECRET, oauth2_refresh_token=self.__API_REFRESH_TOKEN)
+        print(self.drop.refresh_access_token())
 
     def aoaoa (self): 
         drtr = oauth.DropboxOAuth2FlowNoRedirect(
