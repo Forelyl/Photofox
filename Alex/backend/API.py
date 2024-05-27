@@ -11,6 +11,7 @@ from typing import Annotated
 from pydantic import BaseModel
 from fastapi import Body, FastAPI, Path, HTTPException, Header, status, Depends, Request, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
@@ -30,6 +31,18 @@ app = FastAPI(lifespan=lifespan)
 password_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/token')
 
+origins = [
+    "http://192.168.1.101:5173",
+    "http://192.168.0.102:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],  
+)
 
 SECRET_KEY = "476b0f8f5dbe0460361022cfe01b94fe50c74998e15d2206098ca6ff1de1ba8c"
 ALGORITHM = "HS256"
