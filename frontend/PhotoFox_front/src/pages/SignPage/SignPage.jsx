@@ -1,4 +1,4 @@
-import {useSearchParams, json, Link, Form, redirect, useActionData} from "react-router-dom";
+import {useSearchParams, json, Link, Form, redirect, useActionData, useNavigation} from "react-router-dom";
 import {useEffect} from "react";
 import {setBackground} from "../../utils/bannerChange.js";
 import './SignPage.css'
@@ -7,6 +7,9 @@ export default function SignPage() {
     const [searchParams] = useSearchParams();
     const signMode = (searchParams.get("mode") !== 'up');
     const errorData = useActionData();
+    const navigation = useNavigation();
+
+    const submitting = navigation.state === 'submitting'
 
     useEffect(() => {
         setBackground();
@@ -56,7 +59,9 @@ export default function SignPage() {
                     <div>
                         <Link to={`/sign?mode=${(signMode) ? 'up' : 'in'}`}>{(signMode) ? 'Go to register' : 'Go to log in'}</Link>
                     </div>
-                    <button>{(signMode) ? 'Log in' : 'Register'}</button>
+                    <button disabled={submitting}>
+                        {(submitting) ? 'In proses...' : ((signMode) ? 'Log in' : 'Register')}
+                    </button>
                 </div>
             </Form>
         </div>
@@ -73,9 +78,6 @@ export async function action({request}) {
     if (signMode === 'in') {
         response = await fetch('http://127.0.0.1:3000/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
             body: data
         });
     }
