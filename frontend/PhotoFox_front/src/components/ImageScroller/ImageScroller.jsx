@@ -8,6 +8,7 @@ export default function ImageScroller() {
     const [filters, setFilters] = useState([]);
 
     const {images, imagesLeft, loading} = useImageLoad(lastImage, filters);
+
     const {rows, lastId} = spreadImages(images, imagesLeft);
 
     const lastRow = useRef();
@@ -21,17 +22,17 @@ export default function ImageScroller() {
         })
         if (node) lastRow.current.observe(node);
     }, [loading, imagesLeft]);
-
+    console.log(rows.length, "lol")
     return (
         <div >
             <div className="grid-container">
                 {rows.map((row, index) => {
-                    if (index + 1 === images.length) {
+                    if (index + 1 === rows.length) {
                         console.log('sd')
-                        return <ImageRow key={index} images={row} ref={lastRowRef}/>
+                        return <ImageRow key={index} images={row} ref={lastRowRef} className={(imagesLeft) ? undefined : 'last-row' }/>;
                     }
                     else {
-                        return <ImageRow key={index} images={row}/>
+                        return <ImageRow key={index} images={row}/>;
                     }
                 })}
             </div>
@@ -45,13 +46,18 @@ function spreadImages(images, imagesLeft) {
     let rowImages = [];
     let expectedWidth = 0;
     let lastId;
+
+    //Змінювати якщо треба змінити максимальну ширину суми
     const maxWidth = 1500;
     images.map((image, index) => {
+
+        //Можна замінити image.width на любий вираз
         expectedWidth += image.width;
+
         console.log(expectedWidth, image.id);
+
         if (expectedWidth < maxWidth) {
             rowImages.push(image);
-            console.log('kf')
         }
 
         if ((!imagesLeft && (index + 1) === images.length) || expectedWidth > maxWidth) {

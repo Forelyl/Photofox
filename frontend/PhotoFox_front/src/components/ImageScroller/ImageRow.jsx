@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { forwardRef } from "react";
 
-export default function ImageRow({ images, ref = null}) {
+const ImageRow = forwardRef(function ImageRow({ images, className= undefined }, ref) {
     return (
-        <div ref={ref}>
-            {images.map(image => <img src={image.path} key={image.id} />)}
+        <div ref={ref} className={className}>
+            {images.map(image => <img src={image.path} key={image.id}/>)}
         </div>
     )
-}
+});
+
+export default ImageRow;

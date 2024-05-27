@@ -11,6 +11,7 @@ export default function useImageLoad(lastImage, filters) {
 
     useEffect(() => {
         setLoading(true);
+        console.log('dsfs');
         // setError(false);
         async function getF(){
             const response = await fetch(`http://127.0.0.1:3000/image/last`, {
