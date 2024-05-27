@@ -52,9 +52,7 @@ export default function NavBar() {
             {openFilters && (
                 <FilterMenu onClose={handleOpenFilters}/>
             )}
-            <div className={(openDropdown)? 'opened' : undefined}>
-                <DropdownMenu onClose={handleDropdown} />
-            </div>
+            <DropdownMenu onClose={handleDropdown}  className={(openDropdown)? 'opened' : undefined} />
 
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>

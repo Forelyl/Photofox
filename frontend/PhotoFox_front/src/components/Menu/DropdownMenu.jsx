@@ -2,12 +2,12 @@ import {Link, useNavigate, useRouteLoaderData} from "react-router-dom";
 import { action as logOut } from '../../utils/logout.js'
 import './DropdownMenu.css'
 
-export default function DropdownMenu({ onClose }) {
+export default function DropdownMenu({ onClose, className }) {
     const token = useRouteLoaderData('root');
     const navigate = useNavigate();
     const name = "hi";
     return (
-        <div id='dropdown-menu'>
+        <div id='dropdown-menu' className={className}>
             {!token && (
                 <Link to='/sign?mode=in'>
                     <img src='/DropdownElements/log_in.svg' alt='Log in'/>
