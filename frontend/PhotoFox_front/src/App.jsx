@@ -12,7 +12,8 @@ import { loaderCheckToken, tokenLoader } from "./utils/auth.js";
 import InfoPage from "./pages/InfoPage.jsx";
 
 const router = createBrowserRouter([
-    { path: '/', id: 'root', element: <RootLayout/>, children: [
+    { path: '/', id: 'root', element: <RootLayout/>, loader: tokenLoader,
+        children: [
         { index: true, element: <HomePage /> },
         { path: 'sign', element: <SignPage />, action: authAction },
         { path: ':profileName', children: [ //TODO add loader that checks if logined and showes editing tools
@@ -26,9 +27,7 @@ const router = createBrowserRouter([
         { path: 'add-picture', element: <AddPicture />, loader: loaderCheckToken },
         { path: 'picture/:pictureId', element: <PicturePage /> },
         { path: 'info', element: <InfoPage />}
-
-
-    ], loader: tokenLoader}
+    ], }
 ]);
 
 function App() {

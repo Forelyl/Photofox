@@ -18,7 +18,7 @@ export default function NavBar() {
         setOpenDropdown(false);
     }
 
-    function handleDropdownOpens() {
+    function handleDropdown() {
         setOpenDropdown(openDropdown => !openDropdown);
         setOpenFilters(false);
     }
@@ -43,7 +43,7 @@ export default function NavBar() {
                     <Link to={'/add-picture'}>
                         <img src='/NavBarElements/add_picture.svg' alt='Add new picture' />
                     </Link>
-                    <button onClick={handleDropdownOpens}>
+                    <button onClick={handleDropdown}>
                         <img src={(!token) ? '/NavBarElements/login.svg' : '/NavBarElements/profile_icon.svg'}
                              alt={(!token) ? 'Login' : 'Profile menu'} />
                     </button>
@@ -53,7 +53,7 @@ export default function NavBar() {
                 <FilterMenu onClose={handleOpenFilters}/>
             )}
             {openDropdown && (
-                <DropdownMenu onClose={handleDropdownOpens}/>
+                <DropdownMenu onClose={handleDropdown}/>
             )}
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>

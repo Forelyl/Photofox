@@ -1,6 +1,6 @@
-import { redirect } from "react-router-dom";
 
-export function action() {
+export function action(onLogOut, navigate) {
     localStorage.removeItem('token');
-    return redirect('/');
+    onLogOut();
+    navigate("/", { replace: true });
 }
