@@ -215,11 +215,11 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 # Image
 #============================================
 @app.get('/image/last', tags=['image'], response_model=list[DB_Returns.Image])
-async def get_last_images_pc(last_image_id: Annotated[int, Body()] = -1):
+async def get_last_images_pc(last_image_id: Annotated[int, Header()] = -1):
     return await db.get_images_pc(last_image_id)
 
 @app.get('/image/last/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
-async def get_last_images_mobile(last_image_id: Annotated[int, Body()] = -1):
+async def get_last_images_mobile(last_image_id: Annotated[int, Header()] = -1):
     return await db.get_images_mobile(last_image_id)
 
 @app.get('/image/', tags=['image'], response_model=DB_Returns.Image_full)
