@@ -215,11 +215,11 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 # Image
 #============================================
 @app.get('/image/last', tags=['image'], response_model=list[DB_Returns.Image])
-async def get_last_images_pc(last_image_id: int = -1):
+async def get_last_images_pc(last_image_id: Annotated[int, Body()] = -1):
     return await db.get_images_pc(last_image_id)
 
 @app.get('/image/last/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
-async def get_last_images_mobile(last_image_id: int = -1):
+async def get_last_images_mobile(last_image_id: Annotated[int, Body()] = -1):
     return await db.get_images_mobile(last_image_id)
 
 @app.get('/image/', tags=['image'], response_model=DB_Returns.Image_full)
@@ -240,12 +240,13 @@ async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: A
                         title: Annotated[str, Header(max_length=100, min_length=1)], 
                         description: Annotated[str, Header(max_length=255)] = "",
                         width: Annotated[int, Header()], height: Annotated[int, Header()],
-                        tags: Annotated[list[int], Body()],
+                        tags: Annotated[list[int] | None, Body()] = None,
                         download_permission: Annotated[bool, Header()] = False): 
     # TODO: add tags check to not just raise an error and forget about all of the tags
     result: DropBox_client.Add_file_return = await DropBox.add_file(image, str(user.id))
     image_id = await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
-    await db.add_tag_to_image(image_id, tags)
+    if (tags is not None):
+        await db.add_tag_to_image(image_id, tags)
     return result.shared_link
 
 
