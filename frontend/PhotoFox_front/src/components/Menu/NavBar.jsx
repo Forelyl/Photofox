@@ -24,7 +24,7 @@ export default function NavBar() {
     }
 
     return (
-        <>
+        <div id='menu-wrapper'>
             <menu id='menu'>
                 <Link to={'/'} id='left'>
                     <img src='/NavBarElements/site_logo.svg' alt='logo' />
@@ -52,9 +52,10 @@ export default function NavBar() {
             {openFilters && (
                 <FilterMenu onClose={handleOpenFilters}/>
             )}
-            {openDropdown && (
-                <DropdownMenu onClose={handleDropdown}/>
-            )}
+            <div className={(openDropdown)? 'opened' : undefined}>
+                <DropdownMenu onClose={handleDropdown} />
+            </div>
+
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
@@ -184,7 +185,7 @@ export default function NavBar() {
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
-            
-        </>
+
+        </div>
     );
 }
