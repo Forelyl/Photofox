@@ -53,7 +53,6 @@ export default function NavBar() {
                 <FilterMenu onClose={handleOpenFilters}/>
             )}
             <DropdownMenu onClose={handleDropdown}  className={(openDropdown)? 'opened' : undefined} />
-
         </div>
     );
 }
