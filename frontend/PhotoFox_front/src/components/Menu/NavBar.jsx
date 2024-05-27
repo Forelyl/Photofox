@@ -25,7 +25,6 @@ export default function NavBar() {
 
     return (
         <div id='menu-wrapper'>
-        <div id='menu-wrapper'>
             <menu id='menu'>
                 <Link to={'/'} id='left'>
                     <img src='/NavBarElements/site_logo.svg' alt='logo' />
