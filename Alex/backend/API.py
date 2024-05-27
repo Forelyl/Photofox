@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 password_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
 origins = [
     "http://192.168.1.101:5173",
@@ -163,7 +163,7 @@ def check_login(hash: str, password: str) -> None:
 
 # -------------------------------------------
 
-@app.post('/token')
+@app.post('/login')
 async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin(form_data.username))
     
@@ -329,7 +329,7 @@ async def add_admin(login: Annotated[str, Body(pattern=login_regex, min_length=1
     await db.add_admin(login, email, hash)
 
 
-@app.post('/admin/add/user', tags=['profile'])
+@app.post('/profile/add/user', tags=['profile'], response_model=Token)
 async def add_user(login: Annotated[str, Body(pattern=login_regex)], 
                    password: Annotated[str, Body()], 
                    email: Annotated[str, Body(pattern=email_regex)]):
@@ -342,6 +342,14 @@ async def add_user(login: Annotated[str, Body(pattern=login_regex)],
       
     hash = hash_password(password)
     await db.add_user(login, email, hash)
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={
+                                           "sub": login, "is_admin": False, 
+                                           "id": await db.login_to_id(login)
+                                       }, 
+                                       expires_delta=access_token_expires)
+    return Token(access_token=await access_token, token_type="bearer", is_admin=False)
 
 @app.delete('/profile/delete', tags=['profile', 'admin'])
 async def delete_user(user: Annotated[User, Depends(access_user)]):
