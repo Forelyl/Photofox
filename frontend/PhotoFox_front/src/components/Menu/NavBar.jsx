@@ -25,6 +25,7 @@ export default function NavBar() {
 
     return (
         <div id='menu-wrapper'>
+        <div id='menu-wrapper'>
             <menu id='menu'>
                 <Link to={'/'} id='left'>
                     <img src='/NavBarElements/site_logo.svg' alt='logo' />
@@ -52,11 +53,138 @@ export default function NavBar() {
             {openFilters && (
                 <FilterMenu onClose={handleOpenFilters}/>
             )}
-            {openDropdown && (
-                <DropdownMenu onClose={handleDropdown}/>
-            )}
+            <DropdownMenu onClose={handleDropdown}  className={(openDropdown)? 'opened' : undefined} />
+
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
             
-            
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>asfasfasf assssssssssssssssssssssssssssssssssssssssssssss</p>
+
         </div>
     );
 }
