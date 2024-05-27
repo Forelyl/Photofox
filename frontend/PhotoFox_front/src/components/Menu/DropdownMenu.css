@@ -1,0 +1,14 @@
+#dropdown-menu {
+    background-color: #242424;
+    font-family: "Epilogue";
+    a {
+        color: floralwhite;
+        text-decoration: none;
+    }
+    button {
+        font-family: "Epilogue";
+        background-color: transparent;
+        border: 0;
+        padding: 0;
+    }
+}

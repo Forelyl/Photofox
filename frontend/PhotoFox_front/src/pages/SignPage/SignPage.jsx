@@ -20,6 +20,7 @@ export default function SignPage() {
     });
 
     //TODO реалізувати скидання паролю
+    // TODO: на реєстрацію за неправильних даних (s, 1, 1) - логін, пошта й пароль відповідно кидається помилка 500
     return (
         <div id='background'>
             <Form method="post">
@@ -30,15 +31,10 @@ export default function SignPage() {
                     <h1>{(signMode) ? 'Log in' : 'Register'}</h1>
                 </div>
                 <div id='error-block'>
-                    {/*{errorData && errorData.detail.message && <span id='error-text'>{errorData.detail.message}</span>}*/}
-                    {/*{errorData && errorData.detail.errors && <ul>*/}
-                    {/*    {Object.values(errorData.detail.errors).map((error, i) => <li key={i}>{error}</li>)}*/}
-                    {/*</ul>}*/}
-                    <span id='error-text'> some message </span>
-                    <ul>
-                        <li>first err</li>
-                        <li>second errr</li>
-                    </ul>
+                    {errorData && errorData.detail.message && <span id='error-text'>{errorData.detail.message}</span>}
+                    {errorData && errorData.detail.errors && <ul>
+                       {Object.values(errorData.detail.errors).map((error, i) => <li key={i}>{error}</li>)}
+                    </ul>}
                 </div>
                 <div className='input'>
                     <span>Login</span>

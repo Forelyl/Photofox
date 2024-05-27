@@ -86,7 +86,7 @@
                 font-size: min(3vh, 6vw);
                 line-height: min(3vh, 6vw);
                 left: 5%;
-                top: calc((100% - min(3vh, 6vw)) / 2 - 25%);
+                top: calc((100% - min(3vh, 6vw)) / 2);
                 color: #7A7A7A;
                 pointer-events: none;
                 transition: 0.4s ease-in-out;
@@ -95,22 +95,48 @@
                 top: 10%;
                 line-height: min(1.5vh, 3vw);
                 font-size: min(1.5vh, 3vw);
-                top: calc((100% - min(1.5vh, 3vw)) / 2 - 25%);
+                top: calc((100% - min(1.5vh, 3vw)) / 2 - 27%);
             }
             > span:has(~input:autofill) {
                 color: #c1bfbf;
             }
         }
         > #error-block {
-            color: rgb(199, 55, 55);
+            box-sizing: border-box;
+            padding: 2%;
+            padding-bottom: 4%;
+            margin-bottom: 3%;
+            display: none;
+            flex-direction: column;
+            align-content: center;
+            justify-content: left;
+            color: #ed6b00;
             font-size: min(1.8vh, 3vw);
             text-align: left;
             font-family: 'Inter';
-            font-weight: 500;
-            width: 75%;
+            font-weight: 600;
+            width: 80%;
             padding-left: 10px;
-            border-left: 6px double rgb(67, 0, 236);
-            
+            background-color: #fef0bf;
+            border-radius: 13px;
+            > ul {
+                box-sizing: border-box;
+                width: 100%;
+                list-style: circle;
+                padding-left: 10%;
+                margin: 2% 0px 0 0;
+                text-align: left;
+                font-weight: 400;
+            }
+            > span {
+                width: 100%;
+                padding-left: 3%;
+                padding-top: 2%;
+                font-size: min(2.3vh, 3.4vw);
+            }
+        }
+        > #error-block:has(> span) {
+            display: flex;
         }
         > #recover-pass {
             color: black;
