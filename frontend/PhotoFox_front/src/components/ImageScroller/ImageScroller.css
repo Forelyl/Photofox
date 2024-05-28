@@ -20,9 +20,6 @@
     }
 }
 
-.text-images-info:has(>span:hover) {
-    
-}
 
 @keyframes text-shake {
     0% {
