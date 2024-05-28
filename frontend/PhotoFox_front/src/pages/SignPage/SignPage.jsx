@@ -9,7 +9,7 @@ export default function SignPage() {
     const errorData = useActionData();
     const navigation = useNavigation();
 
-    const submitting = navigation.state === 'submitting'
+    const submitting = navigation.state === 'submitting';
 
     useEffect(() => {
         setBackground();

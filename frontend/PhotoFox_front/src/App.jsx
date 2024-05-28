@@ -7,12 +7,12 @@ import ProfileEdit from "./pages/ProfileEdit.jsx";
 import ProfilePictures from "./pages/ProfilePictures.jsx";
 import ProfileSubs from "./pages/ProfileSubs.jsx";
 import PicturePage from "./pages/PicturePage.jsx";
-import AddPicture from "./pages/AddPicture/AddPicture.jsx";
-import { loaderCheckToken, tokenLoader } from "./utils/auth.js";
+import AddPicturePage, {action as publishAction} from "./pages/AddPicture/AddPicturePage.jsx";
+import {loaderCheckToken} from "./utils/auth.js";
 import InfoPage from "./pages/InfoPage.jsx";
 
 const router = createBrowserRouter([
-    { path: '/', id: 'root', element: <RootLayout/>, loader: tokenLoader,
+    { path: '/', element: <RootLayout/>,
         children: [
         { index: true, element: <HomePage /> },
         { path: 'sign', element: <SignPage />, action: authAction },
@@ -24,19 +24,19 @@ const router = createBrowserRouter([
             { path: 'subs', element: <ProfileSubs /> },
             { path: 'picture/:pictureId',  element: <PicturePage /> }
         ]},
-        { path: 'add-picture', element: <AddPicture />, loader: loaderCheckToken },
+        { path: 'add-picture', element: <AddPicturePage />, loader: loaderCheckToken, action: publishAction },
         { path: 'picture/:pictureId', element: <PicturePage /> },
-        { path: 'info', element: <InfoPage />}
+        { path: 'info', element: <InfoPage /> }
     ], }
 ]);
 
 function App() {
 
-  return (
-      <>
-        <RouterProvider router={router} />
-      </>
-  );
+    return (
+        <>
+            <RouterProvider router={router} />
+        </>
+    );
 }
 
 export default App
