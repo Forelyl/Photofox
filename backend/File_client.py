@@ -5,6 +5,7 @@ from dropbox import oauth
 from pydantic import BaseModel
 import datetime
 
+# TODO: add restriction on image type
 class DropBox_client:
     class Add_file_return(BaseModel):
         path: str
