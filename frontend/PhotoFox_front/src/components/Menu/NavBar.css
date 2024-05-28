@@ -1,6 +1,7 @@
 #menu-wrapper {
   width: 100;
   position: sticky;
+  z-index: 120;
   top: 0;
 }
 

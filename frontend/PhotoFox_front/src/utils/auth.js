@@ -19,5 +19,7 @@ export function loaderCheckToken() {
     console.log(token);
     if (!token) {
         return redirect('/sign?mode=in');
+    } else {
+        return null;
     }
 }
