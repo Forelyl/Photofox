@@ -44,27 +44,29 @@ export default function ImageScroller() {
 function spreadImages(images, imagesLeft) {
     let rows = [];
     let rowImages = [];
-    let expectedWidth = 0;
+    let expectedRatio = 0;
     let lastId;
 
     //Змінювати якщо треба змінити максимальну ширину суми
-    const maxWidth = 1500;
+    const screenRation = screen.width / screen.height;
+    const maxRatio     = 11.42 * screenRation; // 80 / 7
+    const minRatio     =  6.15 * screenRation; // 80 / 13
     images.map((image, index) => {
 
         //Можна замінити image.width на любий вираз
-        expectedWidth += image.width;
+        expectedRatio += image.width / image.height;
 
-        console.log(expectedWidth, image.id);
+        console.log(expectedRatio, image.id);
 
-        if (expectedWidth < maxWidth) {
+        if (expectedRatio <= maxRatio) {
             rowImages.push(image);
         }
 
-        if ((!imagesLeft && (index + 1) === images.length) || expectedWidth > maxWidth) {
+        if ((!imagesLeft && (index + 1) === images.length) || expectedRatio >= minRatio) {
             rows.push(rowImages);
 
             rowImages = [];
-            expectedWidth = 0;
+            expectedRatio = 0;
             lastId = image.id - 1;
         }
     });
