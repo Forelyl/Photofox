@@ -50,9 +50,9 @@ export default function ImageScroller() {
                     }
                 })}
             </div> : 
-            <div className='text-images-info'>No images were found</div>
+            <div className='text-images-info'><div>No images were found</div></div>
             }
-            {loading && <div className='text-images-info'>Loading...</div>}
+            {loading && <div className='text-images-info'><div>Loading...</div></div>}
         </>
     );
 }
