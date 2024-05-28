@@ -7,7 +7,7 @@ import ProfileEdit from "./pages/ProfileEdit.jsx";
 import ProfilePictures from "./pages/ProfilePictures.jsx";
 import ProfileSubs from "./pages/ProfileSubs.jsx";
 import PicturePage from "./pages/PicturePage.jsx";
-import AddPicture from "./pages/AddPicture.jsx";
+import AddPicture from "./pages/AddPicture/AddPicture.jsx";
 import { loaderCheckToken, tokenLoader } from "./utils/auth.js";
 import InfoPage from "./pages/InfoPage.jsx";
 

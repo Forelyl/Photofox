@@ -5,7 +5,7 @@ import DropdownMenu from "./DropdownMenu.jsx";
 import "./NavBar.css";
 
 
-export default function NavBar() {
+export default function NavBar( {hideSearch = false, hideAdd = false} ) {
     const token = useRouteLoaderData('root');
     const [openFilters, setOpenFilters] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
@@ -31,7 +31,7 @@ export default function NavBar() {
                     <h1>PhotoFox</h1>
                 </Link>
                 <div id='right'>
-                    <div id='search'>
+                    {!hideSearch && (<div id='search'>
                         <img src='/NavBarElements/search_icon.svg' alt='search' />
                         <input type='text' />
                         <button onClick={handleOpenFilters}>
@@ -39,10 +39,10 @@ export default function NavBar() {
                                  alt={(openFilters) ? 'filter opened' : 'filter closed'}
                             />
                         </button>
-                    </div>
-                    <Link to={'/add-picture'}>
+                    </div>)}
+                    {!hideAdd && (<Link to={'/add-picture'}>
                         <img src='/NavBarElements/add_picture.svg' alt='Add new picture' />
-                    </Link>
+                    </Link>)}
                     <button onClick={handleDropdown}>
                         <img src={(!token) ? '/NavBarElements/login.svg' : '/NavBarElements/profile_icon.svg'}
                              alt={(!token) ? 'Login' : 'Profile menu'} />
