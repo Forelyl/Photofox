@@ -4,6 +4,7 @@ import FilterMenu from "./FilterMenu.jsx";
 import DropdownMenu from "./DropdownMenu.jsx";
 import "./NavBar.css";
 import { getToken } from "../../utils/auth.js";
+import {setIntendedDestination} from "../../utils/independentDestination.js";
 
 
 export default function NavBar( {hideSearch = false, hideAdd = false} ) {
@@ -13,6 +14,9 @@ export default function NavBar( {hideSearch = false, hideAdd = false} ) {
 
     //TODO: якщо юзер залогінився виводити аву
     const [profilePicture, setProfilePicture] = useState('/NavBarElements/profile_icon.svg');
+
+    const protectedDestination = '/add-picture';
+    setIntendedDestination(protectedDestination);
 
     function handleOpenFilters() {
         setOpenFilters(openFilters => !openFilters);
@@ -41,7 +45,7 @@ export default function NavBar( {hideSearch = false, hideAdd = false} ) {
                             />
                         </button>
                     </div>)}
-                    {!hideAdd && (<Link to={'/add-picture'}>
+                    {!hideAdd && (<Link to={protectedDestination}>
                         <img src='/NavBarElements/add_picture.svg' alt='Add new picture' />
                     </Link>)}
                     <button onClick={handleDropdown}>

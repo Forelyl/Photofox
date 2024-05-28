@@ -2,6 +2,7 @@ import {useSearchParams, json, Link, Form, redirect, useActionData, useNavigatio
 import {useEffect} from "react";
 import {setBackground} from "../../utils/bannerChange.js";
 import './SignPage.css'
+import {getIntendedDestination} from "../../utils/independentDestination.js";
 
 export default function SignPage() {
     const [searchParams] = useSearchParams();
@@ -107,6 +108,7 @@ export async function action({request}) {
     const token = resData.access_token;
 
     localStorage.setItem('token', token);
+    const destination = getIntendedDestination();
 
-    return redirect('/');
+    return redirect(destination);
 }

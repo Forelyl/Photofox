@@ -2,10 +2,13 @@ import './AddPicture.css'
 import NavBar from "../../components/Menu/NavBar.jsx";
 import { useState } from "react";
 import {Form, Link, redirect} from "react-router-dom";
+import {clearIntendedDestination} from "../../utils/independentDestination.js";
 
 export default function AddPicturePage() {
     const [tags, setTags] = useState([]);
+    clearIntendedDestination();
     function handleAddTagClick() {
+        console.log();
         setTags(oldTags => [...oldTags,])
     }
 
@@ -24,7 +27,7 @@ export default function AddPicturePage() {
                 <div>
                     <input type='text' placeholder={'Title...'} name='title' required></input>
                     <div id='tags'>
-                        <button>+</button>
+                        <button type='button' onClick={handleAddTagClick}>+</button>
                     </div>
                     <textarea placeholder='Add description' name='description'></textarea>
                     <div id='navigate'>

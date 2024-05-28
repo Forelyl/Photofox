@@ -16,5 +16,4 @@ export function loaderCheckToken() {
     } else {
         return null;
     }
-    return null;
 }
