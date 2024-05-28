@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { Link } from "react-router-dom";
 
 const ImageRow = forwardRef(function ImageRow({ images, className= undefined}, ref) {
     return (
