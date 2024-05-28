@@ -25,7 +25,7 @@ export default function ImageScroller() {
     console.log(rows.length, "lol")
     return (
         <>
-            <div className="images-container">
+            {(rows.length !== 0) ? <div className="images-container">
                 {rows.map((row, index) => {
                     if (index + 1 === rows.length) {
                         console.log('sd')
@@ -35,8 +35,10 @@ export default function ImageScroller() {
                         return <ImageRow key={index} images={row}/>;
                     }
                 })}
-            </div>
-            <div>{loading && <span>Loading...</span>}</div>
+            </div> : 
+            <div className='text-images-info'>No images were found</div>
+            }
+            {loading && <div className='text-images-info'>Loading...</div>}
         </>
     );
 }
