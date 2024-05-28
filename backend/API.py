@@ -9,7 +9,7 @@ from File_client import DropBox_client, DropBox
 from typing import Annotated
 
 from pydantic import BaseModel
-from fastapi import Body, FastAPI, Path, HTTPException, Header, status, Depends, Request, UploadFile, File
+from fastapi import Body, FastAPI, Path, HTTPException, Header, status, Depends, Request, UploadFile, File, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -237,12 +237,13 @@ async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
 @app.post('/image', tags=['image'], response_model=str)
 async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()], 
-                        title: Annotated[str, Header(max_length=100, min_length=1)], 
-                        description: Annotated[str, Header(max_length=255)] = "",
+                        title: Annotated[str, Form(max_length=100, min_length=1)], 
+                        description: Annotated[str, Form(max_length=500)] = "",
                         width: Annotated[int, Header()], height: Annotated[int, Header()],
                         tags: Annotated[list[int] | None, Body()] = None,
-                        download_permission: Annotated[bool, Header()] = False): 
+                        download_permission: Annotated[bool, Form()] = False): 
     # TODO: add tags check to not just raise an error and forget about all of the tags
+    print("a")
     result: DropBox_client.Add_file_return = await DropBox.add_file(image, str(user.id))
     image_id = await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
     if (tags is not None):

@@ -1,8 +1,15 @@
 .images-container {
-    .image-row {
+    .row {
+        width: 80vw;
+        display: flex;
         
+        > a > img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }   
     }
-    .image-last-row {
+    .last-row {
 
     }
 }

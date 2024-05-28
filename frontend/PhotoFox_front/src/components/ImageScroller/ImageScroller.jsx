@@ -37,7 +37,7 @@ export default function ImageScroller() {
             {(rows.length !== 0) ? <div className="images-container">
                 {rows.map((row, index) => {
                     if (index + 1 === rows.length) {
-                        return <ImageRow key={index} images={row} ref={lastRowRef} className={(imagesLeft) ? 'row' : 'last-row' }/>;
+                        return <ImageRow key={index} images={row} ref={lastRowRef} className={(imagesLeft) ? 'row' : 'row last-row' }/>;
                     }
                     else {
                         return <ImageRow key={index} images={row} className='row'/>;
@@ -59,8 +59,8 @@ function spreadImages(images, imagesLeft) {
 
     //Змінювати якщо треба змінити максимальну ширину суми
     const screenRation = screen.width / screen.height;
-    const maxRatio     = 11.42 * screenRation; // 80 / 7
-    const minRatio     =  6.15 * screenRation; // 80 / 13
+    const maxRatio     = 80 / 45 * screenRation; // 80 / 45
+    const minRatio     = 80 / 55 * screenRation; // 80 / 55
     images.map((image, index) => {
 
         //Можна замінити image.width на любий вираз
