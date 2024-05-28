@@ -1,7 +1,7 @@
 import {useState, useRef, useCallback} from "react";
 import useImageLoad from "../../utils/useImageLoad.js";
 import ImageRow from "./ImageRow.jsx";
-import './test.css';
+import './ImageScroller.css';
 
 export default function ImageScroller() {
     const [lastImage, setLastImage] = useState(-1);
@@ -24,8 +24,8 @@ export default function ImageScroller() {
     }, [loading, imagesLeft]);
     console.log(rows.length, "lol")
     return (
-        <div >
-            <div className="grid-container">
+        <>
+            <div className="images-container">
                 {rows.map((row, index) => {
                     if (index + 1 === rows.length) {
                         console.log('sd')
@@ -37,7 +37,7 @@ export default function ImageScroller() {
                 })}
             </div>
             <div>{loading && <span>Loading...</span>}</div>
-        </div>
+        </>
     );
 }
 
