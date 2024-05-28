@@ -15,7 +15,8 @@ export default function useImageLoad(lastImage, filters) {
         setError(false);
         const controller = new AbortController();
         const signal = controller.signal;
-
+        console.log('im here line 18')
+        console.log(lastImage)
         fetch(`http://127.0.0.1:3000/image/last?last_image_id=${lastImage}`, {
             method: 'GET',
             headers: {
@@ -25,11 +26,20 @@ export default function useImageLoad(lastImage, filters) {
         })
         .then(response => response.json())
         .then(values => {
-            setImages((prevImages) => { return [...prevImages, ...values] });
-            console.log(values);
-            setImagesLeft(values.length > 0);
-            setLoading(false);
-            console.log('fetch finished')
+            setImages((prevImages) => {
+                const allImages = [...prevImages, ...values];
+                const idMap = new Map();
+
+                return allImages.filter((image) => {
+                    if (!idMap.has(image.id)) {
+                        idMap.set(image.id, true);
+                        return true;
+                    }
+                    return false;
+                });
+            });
+            setImagesLeft(values.length === 30);
+            setTimeout(() => setLoading(false), 1000);
         })
         .catch(error => {
             if (error.name === 'AbortError') return;
@@ -37,7 +47,6 @@ export default function useImageLoad(lastImage, filters) {
         });
         return () => controller.abort();
     }, [lastImage, filters]);
-    //console.log(imagesLeft, 'images left');
 
     return {loading, images, imagesLeft, error};
 }

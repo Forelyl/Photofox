@@ -4,6 +4,11 @@ import ImageRow from "./ImageRow.jsx";
 import './ImageScroller.css';
 
 export default function ImageScroller() {
+    const renderCount = useRef(0);
+    renderCount.current += 1;
+    console.log('Render count:', renderCount.current);
+
+
     const [lastImage, setLastImage] = useState(-1);
     const [filters, setFilters] = useState([]);
 
@@ -13,17 +18,11 @@ export default function ImageScroller() {
 
     const lastRow = useRef();
     const lastRowRef = useCallback(node => {
-        //console.log(node);
-        //console.log(loading)
         if (loading) { return; }
         if (lastRow.current) { lastRow.current.disconnect(); }
 
         lastRow.current = new IntersectionObserver(entries => {
-            //console.log(imagesLeft, 'imagesLeft')
-            //console.log(entries[0], "intersecting");
             if (entries[0].isIntersecting && imagesLeft) {
-                // console.log('last id in intersect =', lastId);
-                console.log("see you");
                 setLastImage(lastId);
             }
         }, {
@@ -33,20 +32,15 @@ export default function ImageScroller() {
     }, [loading, imagesLeft]);
 
 
-
-    //console.log(rows.length, "num of rows")
-    //console.log(lastId)
     return (
         <>
             {(rows.length !== 0) ? <div className="images-container">
                 {rows.map((row, index) => {
                     if (index + 1 === rows.length) {
-                        //console.log('sd')
-                        //return <div ref={lastRowRef} key={index} className={(imagesLeft) ? 'row' : 'last-row'}>sdfdsf</div>
                         return <ImageRow key={index} images={row} ref={lastRowRef} className={(imagesLeft) ? 'row' : 'last-row' }/>;
                     }
                     else {
-                        return <ImageRow key={index} images={row}/>;
+                        return <ImageRow key={index} images={row} className='row'/>;
                     }
                 })}
             </div> : 
@@ -72,21 +66,20 @@ function spreadImages(images, imagesLeft) {
         //Можна замінити image.width на любий вираз
         expectedRatio += image.width / image.height;
 
-        //console.log(expectedWidth, image.id);
-
         if (expectedRatio <= maxRatio) {
             rowImages.push(image);
+            console.log(image.id, 'row');
         }
 
         if ((!imagesLeft && (index + 1) === images.length) || expectedRatio >= minRatio) {
             rows.push(rowImages);
-
+            console.log(expectedRatio >= minRatio, 'ration')
+            console.log((index + 1) === images.length, 'place')
+            console.log(image.id, 'row fineshed');
             rowImages = [];
             expectedRatio = 0;
-            lastId = image.id - 1;
+            lastId = image.id;
         }
     });
-    //console.log(rows)
-    //console.log(lastId)
     return {rows, lastId};
 }
