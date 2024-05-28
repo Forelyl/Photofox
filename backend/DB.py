@@ -120,10 +120,10 @@ class DB_Returns:
 class PhotoFox: 
     # INIT
     def __init__(self) -> None:
-        self.__DBNAME   = "photofox";
-        self.__USER     = "fox";
-        self.__PASSWORD = "qweasd12"
-        # self.__PASSWORD = "1234";
+        self.__DBNAME   = "photofox"
+        self.__USER     = "fox"
+#         self.__PASSWORD = "qweasd12"
+        self.__PASSWORD = "1234"
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
