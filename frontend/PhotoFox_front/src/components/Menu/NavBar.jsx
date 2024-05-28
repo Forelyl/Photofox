@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Link, useRouteLoaderData } from "react-router-dom";
+import { Link } from "react-router-dom";
 import FilterMenu from "./FilterMenu.jsx";
 import DropdownMenu from "./DropdownMenu.jsx";
 import "./NavBar.css";
+import { getToken } from "../../utils/auth.js";
 
 
 export default function NavBar( {hideSearch = false, hideAdd = false} ) {
-    const token = useRouteLoaderData('root');
+    const token = getToken();
     const [openFilters, setOpenFilters] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
 

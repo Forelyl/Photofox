@@ -1,9 +1,10 @@
 import {Link, useNavigate, useRouteLoaderData} from "react-router-dom";
 import { action as logOut } from '../../utils/logout.js'
 import './DropdownMenu.css'
+import {getToken} from "../../utils/auth.js";
 
 export default function DropdownMenu({ onClose, className }) {
-    const token = useRouteLoaderData('root');
+    const token = getToken();
     const navigate = useNavigate();
     const name = "hi";
     return (

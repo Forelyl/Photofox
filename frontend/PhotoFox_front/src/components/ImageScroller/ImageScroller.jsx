@@ -6,13 +6,13 @@ import './ImageScroller.css';
 export default function ImageScroller() {
     const renderCount = useRef(0);
     renderCount.current += 1;
-    console.log('Render count:', renderCount.current);
+    //console.log('Render count:', renderCount.current);
 
 
     const [lastImage, setLastImage] = useState(-1);
     const [filters, setFilters] = useState([]);
 
-    const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters);
+    const {images, imagesLeft, loading} = useImageLoad(lastImage, filters);
 
     const {rows, lastId} = spreadImages(images, imagesLeft);
 
@@ -28,7 +28,7 @@ export default function ImageScroller() {
         }, {
             threshold: 0.5,
         })
-        if (node) { lastRow.current.observe(node); console.log('wtf')};
+        if (node) lastRow.current.observe(node);
     }, [loading, imagesLeft]);
 
 
@@ -45,7 +45,7 @@ export default function ImageScroller() {
                 })}
             </div>
             }
-            {(rows.length !== 0 || imagesLeft) && <div className='text-images-info'><div>No images were found</div></div>}
+            {(rows.length === 0 || !imagesLeft) && <div className='text-images-info'><div>No images were found</div></div>}
             {loading && <div className='text-images-info'><div>Loading...</div></div>}
         </>
     );
@@ -68,14 +68,14 @@ function spreadImages(images, imagesLeft) {
 
         if (expectedRatio <= maxRatio) {
             rowImages.push(image);
-            console.log(image.id, 'row');
+            //console.log(image.id, 'row');
         }
 
         if ((!imagesLeft && (index + 1) === images.length) || expectedRatio >= minRatio) {
             rows.push(rowImages);
-            console.log(expectedRatio >= minRatio, 'ration')
-            console.log((index + 1) === images.length, 'place')
-            console.log(image.id, 'row fineshed');
+            //console.log(expectedRatio >= minRatio, 'ration')
+            //console.log((index + 1) === images.length, 'place')
+            //console.log(image.id, 'row fineshed');
             rowImages = [];
             expectedRatio = 0;
             lastId = image.id;

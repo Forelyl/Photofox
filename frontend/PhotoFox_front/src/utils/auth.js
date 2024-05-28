@@ -9,17 +9,12 @@ export function getToken() {
     else return token;
 }
 
-export function tokenLoader() {
-    const token = getToken();
-    return token;
-}
-
 export function loaderCheckToken() {
     const token = getToken();
-    console.log(token);
     if (!token) {
         return redirect('/sign?mode=in');
     } else {
         return null;
     }
+    return null;
 }

@@ -15,8 +15,8 @@ export default function useImageLoad(lastImage, filters) {
         setError(false);
         const controller = new AbortController();
         const signal = controller.signal;
-        console.log('im here line 18')
-        console.log(lastImage)
+        //console.log('im here line 18')
+        //console.log(lastImage)
         fetch(`http://127.0.0.1:3000/image/last?last_image_id=${lastImage}`, {
             method: 'GET',
             headers: {
