@@ -2,12 +2,19 @@ import './AddPicture.css'
 import NavBar from "../../components/Menu/NavBar.jsx";
 import { useState } from "react";
 import {Form, Link, redirect} from "react-router-dom";
+import {clearIntendedDestination} from "../../utils/independentDestination.js";
 
 export default function AddPicturePage() {
     // const [tags, setTags] = useState([]);
     // function handleAddTagClick() {
     //     setTags(oldTags => [...oldTags,])
     // }
+    const [tags, setTags] = useState([]);
+    clearIntendedDestination();
+    function handleAddTagClick() {
+        console.log();
+        setTags(oldTags => [...oldTags,])
+    }
 
 
     return (
@@ -32,6 +39,7 @@ export default function AddPicturePage() {
                     <div id='description-wrapper'>
                         <textarea placeholder='Add description' name='description' maxlength="500"></textarea>
                         <div><span>0</span>/500</div>
+                        <button type='button' onClick={handleAddTagClick}>+</button>
                     </div>
                     <div id='navigate'>
                         <Link to='/'>Cancel</Link>
