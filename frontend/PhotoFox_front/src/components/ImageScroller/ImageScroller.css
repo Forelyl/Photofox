@@ -1,8 +1,18 @@
 .images-container {
+    padding-top: 4vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vw;
     .row {
-        width: 80vw;
+        gap: 1vw;
+        width: 92vw;
         display: flex;
-        
+        justify-content: center;
+        justify-items: center;
+        max-height: 65vh;
+        min-height: 35vh;
+
         > a > img {
             height: 100%;
             width: 100%;
@@ -10,7 +20,7 @@
         }   
     }
     .last-row {
-
+        justify-content: left;
     }
 }
 
