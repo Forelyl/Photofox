@@ -25,5 +25,5 @@ dist-ssr
 README.md
 ./src/components/ff.html
 .gitignore
-.vite.config.js
+.vite.config1.js
 ./.idea
