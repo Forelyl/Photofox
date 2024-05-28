@@ -36,8 +36,8 @@ CREATE TABLE comment (
     user_id BIGINT NOT NULL,
     report_counter INT DEFAULT 0,
     adding_date DATE NOT NULL,
-    CONSTRAINT fk_comment_to_user FOREIGN KEY (user_id) REFERENCES "user"(id),
-    CONSTRAINT fk_comment_to_image FOREIGN KEY (image_id) REFERENCES image(id)
+    CONSTRAINT fk_comment_to_user FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
+    CONSTRAINT fk_comment_to_image FOREIGN KEY (image_id) REFERENCES image(id) ON DELETE CASCADE
 );
 
 CREATE TABLE subscribe (
