@@ -6,15 +6,11 @@ import {clearIntendedDestination} from "../../utils/independentDestination.js";
 
 export default function AddPicturePage() {
     // const [tags, setTags] = useState([]);
+    clearIntendedDestination();
     // function handleAddTagClick() {
+    //     console.log();
     //     setTags(oldTags => [...oldTags,])
     // }
-    const [tags, setTags] = useState([]);
-    clearIntendedDestination();
-    function handleAddTagClick() {
-        console.log();
-        setTags(oldTags => [...oldTags,])
-    }
 
 
     return (
