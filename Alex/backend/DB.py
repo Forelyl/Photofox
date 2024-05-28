@@ -122,8 +122,8 @@ class PhotoFox:
     def __init__(self) -> None:
         self.__DBNAME   = "photofox";
         self.__USER     = "fox";
-        self.__PASSWORD = "qweasd12"
-        # self.__PASSWORD = "1234";
+        #self.__PASSWORD = "qweasd12"
+        self.__PASSWORD = "1234";
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
@@ -217,7 +217,6 @@ class PhotoFox:
         else:
             query: str =  """SELECT id, image_url as path, width, height FROM image WHERE id < $1 AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query, last_image_id))
-        print(list(x for x in result))
         return list(DB_Returns.Image_PC(**x) for x in result)
     
     async def get_images_mobile(self, last_image_id: int) -> list[DB_Returns.Image_mobile]:

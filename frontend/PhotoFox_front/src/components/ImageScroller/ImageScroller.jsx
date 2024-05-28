@@ -7,29 +7,43 @@ export default function ImageScroller() {
     const [lastImage, setLastImage] = useState(-1);
     const [filters, setFilters] = useState([]);
 
-    const {images, imagesLeft, loading} = useImageLoad(lastImage, filters);
+    const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters);
 
     const {rows, lastId} = spreadImages(images, imagesLeft);
 
     const lastRow = useRef();
     const lastRowRef = useCallback(node => {
-        if (loading) return;
-        if (lastRow.current) lastRow.current.disconnect();
+        //console.log(node);
+        //console.log(loading)
+        if (loading) { return; }
+        if (lastRow.current) { lastRow.current.disconnect(); }
+
         lastRow.current = new IntersectionObserver(entries => {
+            //console.log(imagesLeft, 'imagesLeft')
+            //console.log(entries[0], "intersecting");
             if (entries[0].isIntersecting && imagesLeft) {
+                // console.log('last id in intersect =', lastId);
+                console.log("see you");
                 setLastImage(lastId);
             }
+        }, {
+            threshold: 0.5,
         })
-        if (node) lastRow.current.observe(node);
+        if (node) { lastRow.current.observe(node); console.log('wtf')};
     }, [loading, imagesLeft]);
-    console.log(rows.length, "lol")
+
+
+
+    //console.log(rows.length, "num of rows")
+    //console.log(lastId)
     return (
         <>
             {(rows.length !== 0) ? <div className="images-container">
                 {rows.map((row, index) => {
                     if (index + 1 === rows.length) {
-                        console.log('sd')
-                        return <ImageRow key={index} images={row} ref={lastRowRef} className={(imagesLeft) ? undefined : 'last-row' }/>;
+                        //console.log('sd')
+                        //return <div ref={lastRowRef} key={index} className={(imagesLeft) ? 'row' : 'last-row'}>sdfdsf</div>
+                        return <ImageRow key={index} images={row} ref={lastRowRef} className={(imagesLeft) ? 'row' : 'last-row' }/>;
                     }
                     else {
                         return <ImageRow key={index} images={row}/>;
@@ -47,7 +61,7 @@ function spreadImages(images, imagesLeft) {
     let rows = [];
     let rowImages = [];
     let expectedRatio = 0;
-    let lastId;
+    let lastId = -1;
 
     //Змінювати якщо треба змінити максимальну ширину суми
     const screenRation = screen.width / screen.height;
@@ -58,7 +72,7 @@ function spreadImages(images, imagesLeft) {
         //Можна замінити image.width на любий вираз
         expectedRatio += image.width / image.height;
 
-        console.log(expectedRatio, image.id);
+        //console.log(expectedWidth, image.id);
 
         if (expectedRatio <= maxRatio) {
             rowImages.push(image);
@@ -72,5 +86,7 @@ function spreadImages(images, imagesLeft) {
             lastId = image.id - 1;
         }
     });
+    //console.log(rows)
+    //console.log(lastId)
     return {rows, lastId};
 }
