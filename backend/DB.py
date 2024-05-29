@@ -136,8 +136,108 @@ class DB_Models:
 
         dateN = 'new',
         dateO = 'old'
-        
 
+def one_or_none(elements: set[Any], check_with: set[Any]) -> bool:
+    """
+    @returns true if there is no such element in elements, that is also in check_with, or only one such
+    """
+    counter: int = 0
+    for element in elements:
+        if element in check_with:
+            if counter == 1: return False
+            counter += 1
+    return True
+
+def filters_is_ok (filters: set[DB_Models.Image_filters], user_id: int = -1) -> bool:
+    check_with: list[set[DB_Models.Image_filters]] = [
+        {DB_Models.Image_filters.proportionV, DB_Models.Image_filters.proportionH, DB_Models.Image_filters.proportionS},
+        {DB_Models.Image_filters.like1k, DB_Models.Image_filters.like1k_10k, DB_Models.Image_filters.like10k},
+        {DB_Models.Image_filters.sizeS, DB_Models.Image_filters.sizeM, DB_Models.Image_filters.sizeB},
+        {DB_Models.Image_filters.published, DB_Models.Image_filters.subscribed},
+        {DB_Models.Image_filters.dateN, DB_Models.Image_filters.dateO}
+    ]
+
+    for check in check_with:
+        if not one_or_none(filters, check): return False
+
+    if (user_id != -1): return True
+
+    check_user_for: set[DB_Models.Image_filters] = {
+        DB_Models.Image_filters.subscribed,
+        DB_Models.Image_filters.published,
+        DB_Models.Image_filters.saved,
+        DB_Models.Image_filters.liked
+    }
+
+    for check in check_user_for:
+        if check in filters: return False
+
+    return True
+
+
+def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, last_image_id: int = -1, limit: int = 0) -> str:
+    where_query: list[str] = list()
+
+    up_down_filter: str = ""
+    order_filter:   str = ""
+
+    if DB_Models.Image_filters.dateN in filters:
+        order_filter = f" LIMIT{limit} "
+        up_down_filter = "<"
+    elif DB_Models.Image_filters.dateO in filters:
+        order_filter = f" ORDER id BY ASC LIMIT{limit} "
+        up_down_filter = ">"
+
+
+    last_id_query:       str = "" if last_image_id == -1 else f" AND id {up_down_filter} {last_image_id}"
+    # last_image_id_query: str = "" if last_image_id == -1 else f" AND image_id {up_down_filter} {last_image_id}"
+    last_id_image_query: str = "" if last_image_id == -1 else f" AND id_image {up_down_filter} {last_image_id}"
+
+    if not filters_is_ok(filters, user_id): return ""
+
+    # Add filters =====================================================
+    if DB_Models.Image_filters.subscribed in filters:
+        where_query.append(f"author_id in (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber={user_id})")
+    elif DB_Models.Image_filters.published in filters:
+        where_query.append(f"author_id={user_id}")
+    if DB_Models.Image_filters.saved in filters:
+        where_query.append(f"id in (SELECT id_image FROM saved WHERE id_user={user_id} {last_id_image_query})")
+    if DB_Models.Image_filters.liked in filters:
+        where_query.append(f"id in (SELECT id_image FROM liked WHERE id_user={user_id} {last_id_image_query})")
+
+    if DB_Models.Image_filters.proportionV in filters:
+        where_query.append("width < height")
+    elif DB_Models.Image_filters.proportionH in filters:
+        where_query.append("width > height")
+    elif DB_Models.Image_filters.proportionS in filters:
+        where_query.append("width = height")
+
+    if DB_Models.Image_filters.like1k in filters:
+        where_query.append("like_counter <= 1000")
+    elif DB_Models.Image_filters.like1k_10k in filters:
+        where_query.append("like_counter => 1000 AND like_counter <= 10000")
+    elif DB_Models.Image_filters.like10k in filters:
+        where_query.append("like_counter => 10000")
+
+    if DB_Models.Image_filters.sizeS in filters:
+        where_query.append("width <= 500 OR height <= 500")
+    elif DB_Models.Image_filters.sizeM in filters:
+        where_query.append("(width >= 500 and width <= 1200) and (height >= 500 and height <= 1200)")
+    elif DB_Models.Image_filters.sizeB in filters:
+        where_query.append("width >= 1200 OR height >= 1200")
+
+
+    # Return ==========================================================
+    if len(filters) == 0: return ""
+    
+    filters: list = list(filters)
+    result: str = ' (SELECT is_blocked FROM "user" WHERE "user".id=author_id)'
+    if last_id_query != "": result += " AND " + last_id_query
+
+    for filter_var in filters:
+        result += " AND " + filter_var
+
+    return result + order_filter
 
 
 
@@ -243,24 +343,17 @@ class PhotoFox:
 
         return list(DB_Returns.Image_PC(**x) for x in result)
     
-    async def get_images_mobile(self, last_image_id: int) -> list[DB_Returns.Image_mobile]:
-        
-        if last_image_id == -1:
-            query: str = """
-            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
-               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
-            FROM image JOIN "user" ON image.author_id = "user".id WHERE NOT "user".is_blocked 
-            ORDER BY id DESC LIMIT 10;
-            """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
-        else:
-            query: str = """
-            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
-               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
-            FROM image JOIN "user" ON image.author_id = "user".id
-            WHERE image.id < $1 AND NOT "user".is_blocked ORDER BY id DESC LIMIT 10;
-            """    
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id))     
+    async def get_images_mobile(self, user_id: int,
+                                filters: list[DB_Models.Image_filters],
+                                tags: list[str], last_image_id: int) -> list[DB_Returns.Image_mobile]:
+
+        query: str = """
+        SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
+           "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
+        FROM image JOIN "user" ON image.author_id = "user".id WHERE NOT "user".is_blocked 
+        ORDER BY id DESC LIMIT 10;
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         
         return list(DB_Returns.Image_mobile(**x) for x in result)
 
