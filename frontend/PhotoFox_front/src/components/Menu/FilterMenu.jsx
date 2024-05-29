@@ -1,5 +1,5 @@
 import {useState} from "react";
-import Tags from "../Tags/Tags.jsx";
+import Tags from "./Tags.jsx";
 import useFilterRoulette from "../../utils/useFilterRoulette.js";
 
 export default function FilterMenu({onClose, sets}) {
@@ -29,9 +29,7 @@ export default function FilterMenu({onClose, sets}) {
                         <div>any</div>
                     </button>
                 </div>
-                <div>
-                    <Tags></Tags>
-                </div>
+                <Tags></Tags>
                 <div>
                     <div>
                         <button onClick={() => setDate(-1)}>
