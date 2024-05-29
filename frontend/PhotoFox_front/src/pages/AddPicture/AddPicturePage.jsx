@@ -101,8 +101,8 @@ export async function action({request}) {
     const file = document.getElementById('image').files[0];
 
     const reader = new FileReader();
-    let width;
-    let height;
+    var width = 0;
+    var height = -1;
 
     // Set up a callback for when the file is read
     reader.onload = function(e) {

@@ -239,7 +239,7 @@ async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user
 async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()], 
                         title: Annotated[str, Form(max_length=100, min_length=1)], 
                         description: Annotated[str, Form(max_length=500)] = "",
-                        width: Annotated[int, Header()], height: Annotated[int, Header()],
+                        width: Annotated[int, Header(ge=1)], height: Annotated[int, Header(ge=1)],
                         tags: Annotated[list[int] | None, Body()] = None,
                         download_permission: Annotated[bool, Form()] = False): 
     # TODO: add tags check to not just raise an error and forget about all of the tags
