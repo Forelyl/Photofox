@@ -24,7 +24,7 @@ export default function SignPage() {
     // TODO: на реєстрацію за неправильних даних (s, 1, 1) - логін, пошта й пароль відповідно кидається помилка 500
     return (
         <div id='background'>
-            <Form method="post">
+            <Form method="post" disabled={submitting}>
                 <div id='top'>
                     <Link to='/'>
                         <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
@@ -56,7 +56,7 @@ export default function SignPage() {
                     <div>
                         <Link to={`/sign?mode=${(signMode) ? 'up' : 'in'}`}>{(signMode) ? 'Go to register' : 'Go to log in'}</Link>
                     </div>
-                    <button disabled={submitting}>
+                    <button>
                         {(submitting) ? 'In proses...' : ((signMode) ? 'Log in' : 'Register')}
                     </button>
                 </div>

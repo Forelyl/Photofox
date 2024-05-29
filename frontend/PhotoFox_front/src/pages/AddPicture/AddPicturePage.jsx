@@ -7,15 +7,19 @@ import { getToken } from '../../utils/auth.js';
 
 export default function AddPicturePage() {
     const [input, setInput] = useState('/AddImage/File.svg');
+    const [dimensions, setDimensions] = useState({width: 300, height: 300});
     const [imageDownloadable, setImageDownloadable] = useState(undefined);
-    const [dimensions, setDimensions] = useState({})
-    const navigation = useNavigation();
-    const submitting = navigation.state === 'submitting';
-    
+    const [submitting, setSubmitting] = useState(false);
     clearIntendedDestination();
 
     function handleImageUpload(e) {
         const file = e.target.files[0];
+
+        if (!file) {
+            setInput(oldValue => oldValue);
+            return;
+        }
+
         const reader = new FileReader();
 
         reader.onload = function(e) {
@@ -31,6 +35,33 @@ export default function AddPicturePage() {
         reader.readAsDataURL(file);
     }
 
+    async function handleOnSubmit(e) {
+        e.preventDefault();
+        setSubmitting(true);
+        const data = new FormData(e.target);
+
+        const headers = {
+            'Authorization': getToken(),
+            'width': data.get('width'),
+            'height': data.get('height')
+        }
+
+        data.delete('width');
+        setTimeout(() => {data.delete('height');}, 3000);
+
+        const response = await fetch('http://127.0.0.1:3000/image', {
+            method: 'POST',
+            headers: headers,
+            body: data
+        })
+
+        setSubmitting(false);
+        if (!response.ok) {
+            return response;
+        }
+        return redirect('/');
+    }
+
     function hangleCheckBoxChanged(e) {
         setImageDownloadable((imageDownloadable === "downloadable") ? undefined : "downloadable");
     }
@@ -38,7 +69,7 @@ export default function AddPicturePage() {
     return (
         <div id='add'>
             <NavBar hideAdd={true} hideSearch={true}/>
-            <Form method={"POST"} id='add-form'>
+            <Form method={"POST"} id='add-form' onSubmit={handleOnSubmit}>
                 <div id='left'>
                     <label htmlFor='image' id='image-wrapper' className={imageDownloadable}>
                         <input type="file" accept="image/*" name='image' id='image' onChange={handleImageUpload} required/>
@@ -67,35 +98,14 @@ export default function AddPicturePage() {
                     <div id='navigate'>
                         <Link to='/'>Cancel</Link>
                         <hr />
-                        <button type='submit'>Publish</button>
+                        <button type='submit' disabled={submitting}>{submitting ? "Publishing...": "Publish"}</button>
                     </div>
                 </div>
             </Form>
         </div>
     );
 }
-
-export async function action({request}) {
-    const data = await request.formData();
-
-    console.log('Width:', data.get('width'));
-    console.log('Height:', data.get('height'));
-    const headers = {
-        // 'Content-Type': 'multipart/form-data',
-        'Authorization': getToken(),
-        'width': data.get('width'),
-        'height': data.get('height')
-    }
-    data.delete('width');
-    data.delete('height');
-    console.log(headers)
-    const response = await fetch('http://127.0.0.1:3000/image', {
-        method: 'POST',
-        headers: headers,
-        body: data
-    })
-    if (!response.ok) {
-        return response;
-    }
-    return redirect('/');
-}
+//
+// export async function action({request}) {
+//
+// }

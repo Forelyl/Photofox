@@ -7,7 +7,7 @@ import ProfileEdit from "./pages/ProfileEdit.jsx";
 import ProfilePictures from "./pages/ProfilePictures.jsx";
 import ProfileSubs from "./pages/ProfileSubs.jsx";
 import PicturePage from "./pages/PicturePage.jsx";
-import AddPicturePage, { action as publishAction } from "./pages/AddPicture/AddPicturePage.jsx";
+import AddPicturePage /*, { action as publishAction } */ from "./pages/AddPicture/AddPicturePage.jsx";
 import {loaderCheckToken} from "./utils/auth.js";
 import InfoPage from "./pages/InfoPage.jsx";
 
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
             { path: 'subs', element: <ProfileSubs /> },
             { path: 'picture/:pictureId',  element: <PicturePage /> }
         ]},
-        { path: 'add-picture', element: <AddPicturePage />, loader: loaderCheckToken, action: publishAction },
+        { path: 'add-picture', element: <AddPicturePage />, loader: loaderCheckToken /*, action: publishAction */},
         { path: 'picture/:pictureId', element: <PicturePage /> },
         { path: 'info', element: <InfoPage /> }
     ], }
