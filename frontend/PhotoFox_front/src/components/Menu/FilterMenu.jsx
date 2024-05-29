@@ -3,13 +3,24 @@ import Tags from "./Tags.jsx";
 import useFilterRoulette from "../../utils/useFilterRoulette.js";
 
 export default function FilterMenu({onClose, sets}) {
-    const [ currentLikeKey, setCurrentLikeKey ] = useState([0, null]);
-    const [ currentSizeKey, setCurrentSizeKey ] = useState([0, null]);
-    const [ currentDateKey, setCurrentDateKey ] = useState([0, 'new']);
+    const [ currentLikeKey, setCurrentLikeKey ] = useState([0, null, 'default']);
+    const [ currentSizeKey, setCurrentSizeKey ] = useState([0, null, 'default']);
+    const [ currentDateKey, setCurrentDateKey ] = useState([0, 'new', 'new']);
 
-    const [ currentLike, setLikes ] = useFilterRoulette([null, 'like1k', 'like1k_10k', 'like10k'], currentLikeKey, setCurrentLikeKey);
-    const [ currentSize, setSize ] = useFilterRoulette([null, 'sizeS', 'sizeM', 'sizeB'], currentSizeKey, setCurrentSizeKey);
-    const [ currentDate, setDate ] = useFilterRoulette(['new', 'old'], currentDateKey, setCurrentDateKey);
+    const [ currentLike, currentLikeTitle, setLikes ] = useFilterRoulette(
+        [null, 'like1k', 'like1k_10k', 'like10k'],
+        ['default', '< 1k', ' > 1k and < 10k', ' > 10k'],
+        currentLikeKey, setCurrentLikeKey
+    );
+    const [ currentSize, currentSizeTitle, setSize ] = useFilterRoulette(
+        [null, 'sizeS', 'sizeM', 'sizeB'],
+        ['default', 'small', 'medium', 'big'],
+        currentSizeKey, setCurrentSizeKey
+    );
+    const [ currentDate, currentDateTitle, setDate ] = useFilterRoulette(
+        ['new', 'old'],
+        ['new', 'old'],
+        currentDateKey, setCurrentDateKey);
 
     return (
         <div>
@@ -35,7 +46,7 @@ export default function FilterMenu({onClose, sets}) {
                         <button onClick={() => setDate(-1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change back'/>
                         </button>
-                        <span>By date {currentDate}</span>
+                        <span>By date {currentDateTitle}</span>
                         <button onClick={() => setDate(1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change forvard'/>
                         </button>
@@ -44,7 +55,7 @@ export default function FilterMenu({onClose, sets}) {
                         <button onClick={() => setLikes(-1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change back'/>
                         </button>
-                        <span>By likes {(!currentLike) ? 'default' : currentLike}</span>
+                        <span>By likes {currentLikeTitle}</span>
                         <button onClick={() => setLikes(1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change forvard'/>
                         </button>
@@ -53,7 +64,7 @@ export default function FilterMenu({onClose, sets}) {
                         <button onClick={() => setSize(-1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change back'/>
                         </button>
-                        <span>By size {(!currentSize) ? 'default' : currentSize}</span>
+                        <span>By size {currentDateTitle}</span>
                         <button onClick={() => setSize(1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change forvard'/>
                         </button>

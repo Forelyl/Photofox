@@ -1,7 +1,8 @@
 import {useState, useEffect} from "react";
 
-export default function useFilterRoulette (valuesArray, currentElement, setCurrentElement) {
+export default function useFilterRoulette (valuesArray, titlesArray, currentElement, setCurrentElement) {
     const values = valuesArray;
+    const titles = titlesArray;
     const length = valuesArray.length;
 
     function changeCurrentPoint(move) {
@@ -15,10 +16,11 @@ export default function useFilterRoulette (valuesArray, currentElement, setCurre
                 new_key = length - 1;
             }
             let new_value = values[new_key];
-            return [new_key, new_value];
+            let new_title = titles[new_key];
+            return [new_key, new_title, new_value];
         });
 
     }
 
-    return [ currentElement[1], changeCurrentPoint ];
+    return [ currentElement[1], currentElement[2], changeCurrentPoint ];
 }
