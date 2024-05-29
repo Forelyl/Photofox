@@ -55,7 +55,6 @@ export default function AddPicturePage() {
                 <div id='right'>
                     <div id='title-wrapper'>
                         <input type='text' placeholder={'Title...'} name='title' maxLength="100" minLength="1" required></input>
-                        <div><span>0</span>/100</div>
                     </div>
                     <div id='tags'>
                         <button type='button'>+</button>
@@ -67,6 +66,7 @@ export default function AddPicturePage() {
                     </div>
                     <div id='navigate'>
                         <Link to='/'>Cancel</Link>
+                        <hr />
                         <button type='submit'>Publish</button>
                     </div>
                 </div>

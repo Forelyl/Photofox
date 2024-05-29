@@ -155,8 +155,8 @@
             gap: 3%;
             > div {
                 border-radius: 1.2vh;
-                background-color: #17245C;
                 display: flex;
+                background-color: #17245C;
                 align-items: center;
                 justify-content: center;
                 font-family: 'Days One';
@@ -164,11 +164,17 @@
                 height: 100%;
                 width: 100%;
                 > a {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    width: 100%;
                     color: floralwhite;
                     text-decoration: none;
                 }
             }
             > button {
+                cursor: pointer;
                 border-radius: 1.2vh;
                 background-color: #5E68CA;
                 padding: 0;
