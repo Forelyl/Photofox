@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {forwardRef, useState} from "react";
 import { Link } from "react-router-dom";
 import FilterMenu from "./FilterMenu.jsx";
 import DropdownMenu from "./DropdownMenu.jsx";
@@ -6,8 +6,7 @@ import "./NavBar.css";
 import { getToken } from "../../utils/auth.js";
 import {setIntendedDestination} from "../../utils/independentDestination.js";
 
-
-export default function NavBar( {hideSearch = false, hideAdd = false} ) {
+const NavBar = forwardRef( function NavBar( {hideSearch = false, hideAdd = false}, ref ) {
     const token = getToken();
     const [openFilters, setOpenFilters] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
@@ -16,7 +15,6 @@ export default function NavBar( {hideSearch = false, hideAdd = false} ) {
     const [profilePicture, setProfilePicture] = useState('/NavBarElements/profile_icon.svg');
 
     const protectedDestination = '/add-picture';
-    setIntendedDestination(protectedDestination);
 
     function handleOpenFilters() {
         setOpenFilters(openFilters => !openFilters);
@@ -28,8 +26,12 @@ export default function NavBar( {hideSearch = false, hideAdd = false} ) {
         setOpenFilters(false);
     }
 
+    function handleAddImageRedirect(){
+        setIntendedDestination(protectedDestination);
+    }
+
     return (
-        <div id='menu-wrapper'>
+        <div id='menu-wrapper' ref={ref}>
             <menu id='menu'>
                 <Link to={'/'} id='left'>
                     <img src='/NavBarElements/site_logo.svg' alt='logo' />
@@ -45,7 +47,7 @@ export default function NavBar( {hideSearch = false, hideAdd = false} ) {
                             />
                         </button>
                     </div>)}
-                    {!hideAdd && (<Link to={protectedDestination}>
+                    {!hideAdd && (<Link to={protectedDestination} onClick={handleAddImageRedirect}>
                         <img src='/NavBarElements/add_picture.svg' alt='Add new picture' />
                     </Link>)}
                     <button onClick={handleDropdown}>
@@ -60,4 +62,7 @@ export default function NavBar( {hideSearch = false, hideAdd = false} ) {
             <DropdownMenu onClose={handleDropdown}  className={(openDropdown)? 'opened' : undefined} />
         </div>
     );
-}
+});
+
+
+export default NavBar
