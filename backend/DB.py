@@ -164,11 +164,10 @@ def filters_is_ok (filters: set[DB_Models.Image_filters], user_id: int = -1) -> 
 
     check_user_for: set[DB_Models.Image_filters] = {
         DB_Models.Image_filters.subscribed,
-        DB_Models.Image_filters.published,
         DB_Models.Image_filters.saved,
         DB_Models.Image_filters.liked
     }
-
+    #TODO написати кастомний ерор
     for check in check_user_for:
         if check in filters: return False
 
