@@ -1,15 +1,17 @@
 # WARNING: don't use username(login) to provide processes except login, use user.id instead
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
+from enum import Enum
+
 from asyncpg import exceptions
 from fastapi.params import Param
-from DB import DB, DB_Returns, db
+from DB import DB, DB_Models, DB_Returns, db
 
 from File_client import DropBox_client, DropBox
 
 from typing import Annotated
 
 from pydantic import BaseModel
-from fastapi import Body, FastAPI, Path, HTTPException, Header, status, Depends, Request, UploadFile, File, Form
+from fastapi import Body, FastAPI, Path, HTTPException, Header, status, Depends, Request, UploadFile, File, Form, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -120,6 +122,9 @@ async def process_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     
     return user
 
+async def process_token_optional(token: Annotated[str | None, Depends(oauth2_scheme)]) -> User | None:
+    if token is None: return None
+    return await process_token(token)
 
 def access_admin(user: Annotated[User, Depends(process_token)]) -> User:
     if user.is_admin: return user
@@ -141,7 +146,12 @@ async def access_user(user: Annotated[User, Depends(process_token)], login: Anno
     
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                         detail={"message":"Don't allowed to use method due to access level or username"})
-    
+
+
+async def access_user_optional(user: Annotated[User | None, Depends(process_token_optional)],
+                      login: Annotated[str | None, Header(pattern=login_regex)] = None) -> User | None:
+    if user is None: return None
+    return await access_user(user, login)
 
 async def create_access_token(data: dict[str, str | bool | int], expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
@@ -193,7 +203,7 @@ async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
 class Tag(BaseModel):
     title: str
-    id: int   
+    id: int
 
 #============================================
 # Tag
@@ -214,25 +224,43 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 #============================================
 # Image
 #============================================
-@app.get('/image/last', tags=['image'], response_model=list[DB_Returns.Image_PC])
-async def get_last_images_pc(last_image_id: int = -1):
-    return await db.get_images_pc(last_image_id)
+@app.get('/image/pc', tags=['image'], response_model=list[DB_Returns.Image_PC])
+async def get_images_pc(user: Annotated[User | None, Depends(access_user_optional)],
+                        filters: Annotated[list[DB_Models.Image_filters] | None, Query()] = None,
+                        tags: Annotated[list[str] | None, Query()] = None,
+                        last_image_id: int = -1):
+    if filters is None: filters = []
+    if tags is None:    tags = []
 
-@app.get('/image/last/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
-async def get_last_images_mobile(last_image_id: int = -1):
-    return await db.get_images_mobile(last_image_id)
+    user_id: int = -1
+    if user is not None: user_id = user.id
 
-@app.get('/image/', tags=['image'], response_model=DB_Returns.Image_full)
-async def get_images(image_id: int):
-    return await db.get_image(image_id)
+    return await db.get_images_pc(user_id, filters, tags, last_image_id)
 
-@app.get('/image/subscribed', tags=['image'], response_model=list[DB_Returns.Image_PC])
-async def get_subscribed_images_pc(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
-    return await db.get_subscribed_images_pc(user.id, last_image_id)
 
-@app.get('/image/subscribed/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
-async def get_subscribed_images_mobile(user: Annotated[User, Depends(access_user)], last_image_id: int = -1):
-    return await db.get_subscribed_images_mobile(user.id, last_image_id)
+@app.get('/image/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
+async def get_images_mobile(user: Annotated[User | None, Depends(access_user_optional)],
+                            filters: list[DB_Models.Image_filters] | None = None,
+                            tags: list[str] | None = None,
+                            last_image_id: int = -1):
+
+    if filters is None: filters = []
+    if tags is None:    tags = []
+
+    user_id: int = -1
+    if user is not None: user_id = user.id
+
+    return await db.get_images_mobile(user_id, filters, tags, last_image_id)
+
+
+@app.get('/image', tags=['image'], response_model=DB_Returns.Image_full)
+async def get_images(user: Annotated[User | None, Depends(access_user_optional)], image_id: int):
+
+    user_id: int = -1
+    if user is not None: user_id = user.id
+
+    return await db.get_image(user_id, image_id)
+
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
 @app.post('/image', tags=['image'], response_model=str)

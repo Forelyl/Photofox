@@ -1,9 +1,9 @@
+from enum import Enum
+
 import asyncpg as postgres
 from typing import Any
 import asyncio
-from asyncpg.connect_utils import pathlib
 from pydantic import BaseModel
-from pydantic_core.core_schema import NoInfoValidatorFunction
 
 
 class DB:
@@ -112,6 +112,29 @@ class DB_Returns:
 
         report_score: float
         is_blocked: bool
+
+class DB_Models:
+    # TODO: add indexes for fast search
+    class Image_filters(str, Enum):
+        subscribed = 'subscribed',
+        saved = 'saved',
+        published = 'published',
+        liked = 'liked',
+
+        proportionH = 'proportionH',
+        proportionS = 'proportionS',
+        proportionV = 'proportionV',
+
+        likeAsc = 'like1k',
+        likeDes = 'like1k_10k',
+        like10k = 'like10k',
+
+        sizeS = 'sizeS',
+        sizeM = 'sizeM',
+        sizeB = 'sizeB',
+
+        dateN = 'new',
+        dateO = 'old'
         
 
 
@@ -122,8 +145,8 @@ class PhotoFox:
     def __init__(self) -> None:
         self.__DBNAME   = "photofox"
         self.__USER     = "fox"
-        self.__PASSWORD = "qweasd12"
-        # self.__PASSWORD = "1234"
+#         self.__PASSWORD = "qweasd12"
+        self.__PASSWORD = "1234"
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
@@ -209,7 +232,9 @@ class PhotoFox:
 
         return function_result
 
-    async def get_images_pc(self, last_image_id: int) -> list[DB_Returns.Image_PC]:
+    async def get_images_pc(self, user_id: int,
+                            filters: DB_Models.Image_filters,
+                            tags: list[str], last_image_id: int) -> list[DB_Returns.Image_PC]:
         result: list[dict[str, Any]] = []
         if last_image_id == -1:
             query: str =  """SELECT id, image_url as path, width, height FROM image WHERE NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
@@ -217,6 +242,8 @@ class PhotoFox:
         else:
             query: str =  """SELECT id, image_url as path, width, height FROM image WHERE id < $1 AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
             result = DB.process_return(await self.__DB.execute(query, last_image_id))
+
+
         return list(DB_Returns.Image_PC(**x) for x in result)
     
     async def get_images_mobile(self, last_image_id: int) -> list[DB_Returns.Image_mobile]:
@@ -227,7 +254,7 @@ class PhotoFox:
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
             FROM image JOIN "user" ON image.author_id = "user".id WHERE NOT "user".is_blocked 
             ORDER BY id DESC LIMIT 10;
-            """    
+            """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         else:
             query: str = """
@@ -252,9 +279,9 @@ class PhotoFox:
         
         
         return DB_Returns.Image_full(**result[0])
-    
+
     async def get_subscribed_images_pc(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image_PC]:
-        
+
         if last_image_id == -1:
             query: str = """
             SELECT id, image_url as path, width, height FROM image
@@ -263,7 +290,7 @@ class PhotoFox:
                     WHERE id_subscriber = $1 
                 ) AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id)
             ORDER BY id DESC LIMIT 30;
-            """    
+            """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
         else:
             query: str = """
@@ -275,7 +302,7 @@ class PhotoFox:
             ORDER BY id DESC LIMIT 30;
             """
             result = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
-        
+
         return list(DB_Returns.Image_PC(**x) for x in result)
 
 
