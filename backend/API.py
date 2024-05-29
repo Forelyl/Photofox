@@ -202,8 +202,6 @@ class Tag(BaseModel):
 #============================================
 @app.get('/tag/all', response_model=list[Tag], tags=['tag'])
 async def get_all_tags():
-    await email_exists("cat@gmail.com")
-    await email_exists("2")
     return await db.select_all_tags()
 
 @app.post('/tag', tags=['tag'], dependencies=[Depends(access_user)])
