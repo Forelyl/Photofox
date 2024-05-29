@@ -125,9 +125,10 @@ class DB_Models:
         proportionS = 'proportionS',
         proportionV = 'proportionV',
 
-        likeAsc = 'like1k',
-        likeDes = 'like1k_10k',
+        like1k = 'like1k',
+        like1k_10k = 'like1k_10k',
         like10k = 'like10k',
+
 
         sizeS = 'sizeS',
         sizeM = 'sizeM',
@@ -236,13 +237,9 @@ class PhotoFox:
                             filters: list[DB_Models.Image_filters],
                             tags: list[str], last_image_id: int) -> list[DB_Returns.Image_PC]:
         result: list[dict[str, Any]] = []
-        if last_image_id == -1:
-            query: str =  """SELECT id, image_url as path, width, height FROM image WHERE NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
-            result = DB.process_return(await self.__DB.execute(query))
-        else:
-            query: str =  """SELECT id, image_url as path, width, height FROM image WHERE id < $1 AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
-            result = DB.process_return(await self.__DB.execute(query, last_image_id))
 
+        query: str =  """SELECT id, image_url as path, width, height FROM image WHERE NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
+        result = DB.process_return(await self.__DB.execute(query))
 
         return list(DB_Returns.Image_PC(**x) for x in result)
     
