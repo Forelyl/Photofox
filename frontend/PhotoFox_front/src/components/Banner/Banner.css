@@ -1,4 +1,5 @@
 #banner {
+    scroll-behavior: smooth;
     position: relative;
     z-index: 300;
     display: flex;

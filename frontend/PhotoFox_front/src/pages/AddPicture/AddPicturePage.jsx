@@ -7,6 +7,7 @@ import { getToken } from '../../utils/auth.js';
 
 export default function AddPicturePage() {
     const [input, setInput] = useState('/AddImage/File.svg');
+    const [imageDownloadable, setImageDownloadable] = useState(undefined);
     const [dimensions, setDimensions] = useState({})
     clearIntendedDestination();
 
@@ -27,20 +28,24 @@ export default function AddPicturePage() {
         reader.readAsDataURL(file);
     }
 
+    function hangleCheckBoxChanged(e) {
+        setImageDownloadable((imageDownloadable === "downloadable") ? undefined : "downloadable");
+    }
+    // TODO: update input sizing when image is been inserted (on horizontal change label sizing to horizontal and so on)
     return (
         <div id='add'>
             <NavBar hideAdd={true} hideSearch={true}/>
             <Form method={"POST"} id='add-form'>
                 <div id='left'>
-                    <label htmlFor='image' id='image-wrapper'>
+                    <label htmlFor='image' id='image-wrapper' className={imageDownloadable}>
                         <input type="file" accept="image/*" name='image' id='image' onChange={handleImageUpload} required/>
                         <img src={input} alt='add image' id='image-preview'/>
                     </label>
                     <input type='hidden' value={dimensions.width} name='width'/>
                     <input type='hidden' value={dimensions.height} name='height'/>
                     <label htmlFor='download-permission' className='checkbox-container'> 
-                        <input type="checkbox" name='download_permission' id='download-permission' className='checkbox'/>
-                        <div className='checkbox-mark'></div>
+                        <input type="checkbox" name='download_permission' id='download-permission' className='checkbox' onChange={hangleCheckBoxChanged}/>
+                        <div className={`checkbox-mark ${imageDownloadable}`}></div>
                         Allow downloading
                     </label>
                 </div>
