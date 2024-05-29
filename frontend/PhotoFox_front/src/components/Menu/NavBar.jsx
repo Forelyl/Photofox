@@ -6,7 +6,8 @@ import "./NavBar.css";
 import { getToken } from "../../utils/auth.js";
 import {setIntendedDestination} from "../../utils/independentDestination.js";
 
-const NavBar = forwardRef( function NavBar( {hideSearch = false, hideAdd = false}, ref ) {
+const NavBar = forwardRef( function NavBar( {hideSearch = false,
+                                                hideAdd = false, setFilters = undefined}, ref ) {
     const token = getToken();
     const [openFilters, setOpenFilters] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
@@ -57,7 +58,7 @@ const NavBar = forwardRef( function NavBar( {hideSearch = false, hideAdd = false
                 </div>
             </menu>
             {openFilters && (
-                <FilterMenu onClose={handleOpenFilters}/>
+                <FilterMenu onClose={handleOpenFilters} setFilters={setFilters}/>
             )}
             <DropdownMenu onClose={handleDropdown}  className={(openDropdown)? 'opened' : undefined} />
         </div>

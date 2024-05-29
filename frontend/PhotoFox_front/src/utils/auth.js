@@ -17,3 +17,12 @@ export function loaderCheckToken() {
         return null;
     }
 }
+
+export function getLogin() {
+    const login = localStorage.getItem("login");
+
+    if (!login) {
+        return null;
+    }
+    else return login;
+}

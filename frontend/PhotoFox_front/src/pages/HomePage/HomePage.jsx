@@ -2,10 +2,11 @@ import './HomePage.css'
 import Banner from "../../components/Banner/Banner.jsx";
 import NavBar from "../../components/Menu/NavBar.jsx";
 import ImageScroller from "../../components/ImageScroller/ImageScroller.jsx";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export default function HomePage() {
     const elementRef = useRef(null);
+    const [filters, setFilters] = useState([]);
 
     function handleScrollClick() {
         elementRef.current.scrollIntoView({
@@ -13,11 +14,14 @@ export default function HomePage() {
             block: "start"
         })
     }
+
     return (
         <div id='home'>
             <Banner scrollToElement={handleScrollClick}/>
-            <NavBar ref={elementRef}/>
-            <ImageScroller />
+            <NavBar ref={elementRef} setFilters={setFilters}>
+
+            </NavBar>
+            <ImageScroller filters={filters}/>
         </div>
     );
 }

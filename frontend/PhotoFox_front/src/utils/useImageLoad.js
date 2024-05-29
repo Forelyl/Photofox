@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function useImageLoad(lastImage, filters) {
+export default function useImageLoad(lastImage, filters, ) {
     const [loading, setLoading] = useState(true);
     const [images, setImages] = useState([]);
     const [imagesLeft, setImagesLeft] = useState(false);

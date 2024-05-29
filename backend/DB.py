@@ -239,15 +239,17 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
 
     return result + order_filter
 
-
+def tags_to_sql(tags: tuple[int]) -> str:
+    if len(tags) == 0: return ""
+    else:              return f"id IN (SELECT image_id FROM image_tag WHERE tag_id IN {str(tags)}) AND"
 
 class PhotoFox: 
     # INIT
     def __init__(self) -> None:
         self.__DBNAME   = "photofox"
         self.__USER     = "fox"
-        self.__PASSWORD = "qweasd12"
-        # self.__PASSWORD = "1234"
+#         self.__PASSWORD = "qweasd12"
+        self.__PASSWORD = "1234"
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
@@ -335,11 +337,15 @@ class PhotoFox:
 
     async def get_images_pc(self, user_id: int,
                             filters: list[DB_Models.Image_filters],
-                            tags: list[str], last_image_id: int) -> list[DB_Returns.Image_PC]:
-        result: list[dict[str, Any]] = []
+                            tags: tuple[int], last_image_id: int) -> list[DB_Returns.Image_PC]:
+        tags: str = tags_to_sql(tags)
+        filters_line: str = filters_to_sql(filters, user_id, last_image_id, 30)
 
-        query: str =  """SELECT id, image_url as path, width, height FROM image WHERE NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id) ORDER BY id DESC LIMIT 30;"""
-        result = DB.process_return(await self.__DB.execute(query))
+        query: str =  f"""
+            SELECT id, image_url as path, width, height FROM image 
+            WHERE {tags} {filters_line};
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
 
         return list(DB_Returns.Image_PC(**x) for x in result)
     
@@ -347,11 +353,13 @@ class PhotoFox:
                                 filters: list[DB_Models.Image_filters],
                                 tags: list[str], last_image_id: int) -> list[DB_Returns.Image_mobile]:
 
-        query: str = """
+        tags: str = tags_to_sql(tags)
+        filters_line: str = filters_to_sql(filters, user_id, last_image_id, 10)
+
+        query: str = f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
            "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
-        FROM image JOIN "user" ON image.author_id = "user".id WHERE NOT "user".is_blocked 
-        ORDER BY id DESC LIMIT 10;
+        FROM image JOIN "user" ON image.author_id = "user".id WHERE {tags} {filters_line};
         """
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         

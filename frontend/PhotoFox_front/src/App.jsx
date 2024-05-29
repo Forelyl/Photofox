@@ -7,7 +7,7 @@ import ProfileEdit from "./pages/ProfileEdit.jsx";
 import ProfilePictures from "./pages/ProfilePictures.jsx";
 import ProfileSubs from "./pages/ProfileSubs.jsx";
 import PicturePage from "./pages/PicturePage.jsx";
-import AddPicturePage /*, { action as publishAction } */ from "./pages/AddPicture/AddPicturePage.jsx";
+import AddPicturePage from "./pages/AddPicture/AddPicturePage.jsx";
 import {loaderCheckToken} from "./utils/auth.js";
 import InfoPage from "./pages/InfoPage.jsx";
 
@@ -19,12 +19,11 @@ const router = createBrowserRouter([
         { path: ':profileName', children: [ //TODO add loader that checks if logined and showes editing tools
             { index: true, element: <ProfilePage /> },
             { path: 'edit', element: <ProfileEdit />, loader: loaderCheckToken },
-            { path: 'pictures/published', element: <ProfilePictures />, },
-            { path: 'pictures/saved', element: <ProfilePictures />, },
+            { path: 'pictures', element: <ProfilePictures />, loader: loaderCheckToken },
             { path: 'subs', element: <ProfileSubs /> },
             { path: 'picture/:pictureId',  element: <PicturePage /> }
         ]},
-        { path: 'add-picture', element: <AddPicturePage />, loader: loaderCheckToken /*, action: publishAction */},
+        { path: 'add-picture', element: <AddPicturePage />, loader: loaderCheckToken },
         { path: 'picture/:pictureId', element: <PicturePage /> },
         { path: 'info', element: <InfoPage /> }
     ], }

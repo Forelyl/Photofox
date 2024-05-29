@@ -227,7 +227,7 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 @app.get('/image/pc', tags=['image'], response_model=list[DB_Returns.Image_PC])
 async def get_images_pc(user: Annotated[User | None, Depends(access_user_optional)],
                         filters: Annotated[list[DB_Models.Image_filters] | None, Header()] = None,
-                        tags: Annotated[list[str] | None, Header()] = None,
+                        tags: Annotated[tuple[int] | None, Header()] = None,
                         last_image_id: int = -1):
     if filters is None: filters = []
     if tags is None:    tags = []

@@ -1,12 +1,12 @@
-import {Link, useNavigate, useRouteLoaderData} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { action as logOut } from '../../utils/logout.js'
 import './DropdownMenu.css'
-import {getToken} from "../../utils/auth.js";
+import {getLogin, getToken} from "../../utils/auth.js";
 
 export default function DropdownMenu({ onClose, className }) {
     const token = getToken();
     const navigate = useNavigate();
-    const name = "hi";
+    const name = getLogin();
     return (
         <div id='dropdown-menu' className={className}>
             {!token && (
@@ -21,13 +21,13 @@ export default function DropdownMenu({ onClose, className }) {
                         <img src='/DropdownElements/profile.svg' alt='Profile'/>
                         <span>Profile</span>
                     </Link>
-                    <Link to={`/${name}/pictures/saved`}>
+                    <Link to={`/${name}/pictures?type=saved`}>
                         <img src='/DropdownElements/saved.svg' alt='Saved pictures'/>
                         <span>Saved</span>
                     </Link>
-                    <Link to={`/${name}/pictures/published`}>
-                        <img src='/DropdownElements/published.svg' alt='Published pictures'/>
-                        <span>Published</span>
+                    <Link to={`/${name}/pictures?type=liked`}>
+                        <img src='/DropdownElements/like.svg' alt='Published pictures'/>
+                        <span>Liked</span>
                     </Link>
                     <button onClick={() => logOut(onClose, navigate)}>
                         <img src='/DropdownElements/log_out.svg' alt='Log out'/>

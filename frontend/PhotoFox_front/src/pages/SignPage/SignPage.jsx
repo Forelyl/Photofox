@@ -106,8 +106,8 @@ export async function action({request}) {
 
     const resData = await response.json();
     const token = resData.access_token;
-
     localStorage.setItem('token', "Bearer " + token);
+    localStorage.setItem('login', data.get('username'));
     const destination = getIntendedDestination();
 
     return redirect(destination);
