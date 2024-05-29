@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function useImageLoad(lastImage, filters, ) {
+export default function useImageLoad(lastImage, filters, tags) {
     const [loading, setLoading] = useState(true);
     const [images, setImages] = useState([]);
     const [imagesLeft, setImagesLeft] = useState(false);
@@ -8,16 +8,28 @@ export default function useImageLoad(lastImage, filters, ) {
 
     useEffect(() => {
         setImages([]);
-    }, [filters]);
+    }, [filters, tags]);
 
     useEffect(() => {
         setLoading(true);
         setError(false);
         const controller = new AbortController();
         const signal = controller.signal;
-        //console.log('im here line 18')
-        //console.log(lastImage)
-        fetch(`http://127.0.0.1:3000/image/last?last_image_id=${lastImage}`, {
+
+        let filters_string = '';
+        if (filters && filters.length > 0) {
+            for (let one_filter in filters_string) {
+                filters_string += '&filters=' + one_filter;
+            }
+        }
+        let tags_string = '';
+        if (tags && tags.length > 0) {
+            for (let one_tag in tags) {
+                tags_string += '&tags=' + one_tag;
+            }
+        }
+
+        fetch(`http://127.0.0.1:3000/image/last?last_image_id=${lastImage}` + filters_string + tags_string, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -46,8 +58,8 @@ export default function useImageLoad(lastImage, filters, ) {
             setError(true);
         });
         return () => controller.abort();
-    }, [lastImage, filters]);
+    }, [lastImage, filters, tags]);
 
-    return {loading, images, imagesLeft, error};
+    return { loading, images, imagesLeft, error };
 }
 

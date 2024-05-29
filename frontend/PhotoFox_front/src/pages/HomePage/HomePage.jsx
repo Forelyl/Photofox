@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 export default function HomePage() {
     const elementRef = useRef(null);
     const [filters, setFilters] = useState([]);
-
+    const [tags, setTags] = useState([]);
     function handleScrollClick() {
         elementRef.current.scrollIntoView({
             behavior: "smooth",
@@ -18,10 +18,8 @@ export default function HomePage() {
     return (
         <div id='home'>
             <Banner scrollToElement={handleScrollClick}/>
-            <NavBar ref={elementRef} setFilters={setFilters}>
-
-            </NavBar>
-            <ImageScroller filters={filters}/>
+            <NavBar ref={elementRef} sets={[setFilters, setTags]}/>
+            <ImageScroller filters={filters} tags={tags}/>
         </div>
     );
 }

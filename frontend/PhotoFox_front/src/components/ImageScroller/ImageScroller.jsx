@@ -3,14 +3,10 @@ import useImageLoad from "../../utils/useImageLoad.js";
 import ImageRow from "./ImageRow.jsx";
 import './ImageScroller.css';
 
-export default function ImageScroller({ filters = [], }) {
+export default function ImageScroller({ filters = [], tags = [] }) {
     const [lastImage, setLastImage] = useState(-1);
 
-    const images = []
-    const imagesLeft = false
-    const loading= false
-    const error= false
-    //const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters);
+    const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters, tags);
 
     const {rows, lastId} = spreadImages(images, imagesLeft);
 
