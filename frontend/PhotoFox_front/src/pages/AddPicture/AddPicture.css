@@ -117,10 +117,9 @@
                 padding: 0;
                 resize: none;
             }
-            >input::placeholder {
+            > input::placeholder {
                 user-select: none;
                 color: rgb(149, 149, 149);
-
             }
         }
         > #tags {
@@ -133,24 +132,43 @@
             height: 100%;
             position: relative;
             > textarea {
+                font-size: 3vh;
                 border-radius: 20px;
                 background-color: #17245C;
                 font-family: 'Epilogue';
+                color: floralwhite;
                 height: 100%;
                 width: 100%;
                 border: 0;
                 outline: none;
                 padding: 0;
                 padding: 20px;
+                padding-bottom: 300px;
                 box-sizing: border-box;
                 resize: none;
+                overflow: scroll;
+            }
+            > textarea::-webkit-scrollbar {
+                display: none;
+            }
+            > textarea::placeholder {
+                color: floralwhite;
             }
             > div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 pointer-events: none;
                 user-select: none;
                 position: absolute;
-                bottom: 2%;
+                bottom: -3vh;
                 right: 3%;
+                font-size: 2vh;
+                height: 3vh;
+                text-align: center;
+                color: #0affff;
+                font-weight: 500;
+                
             }
         }
         > #navigate {

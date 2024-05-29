@@ -145,8 +145,8 @@ class PhotoFox:
     def __init__(self) -> None:
         self.__DBNAME   = "photofox"
         self.__USER     = "fox"
-#         self.__PASSWORD = "qweasd12"
-        self.__PASSWORD = "1234"
+        self.__PASSWORD = "qweasd12"
+        # self.__PASSWORD = "1234"
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
@@ -233,7 +233,7 @@ class PhotoFox:
         return function_result
 
     async def get_images_pc(self, user_id: int,
-                            filters: DB_Models.Image_filters,
+                            filters: list[DB_Models.Image_filters],
                             tags: list[str], last_image_id: int) -> list[DB_Returns.Image_PC]:
         result: list[dict[str, Any]] = []
         if last_image_id == -1:
