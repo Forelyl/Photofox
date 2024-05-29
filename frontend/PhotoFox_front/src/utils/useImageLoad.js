@@ -29,7 +29,7 @@ export default function useImageLoad(lastImage, filters, tags) {
             }
         }
 
-        fetch(`http://127.0.0.1:3000/image/last?last_image_id=${lastImage}` + filters_string + tags_string, {
+        fetch(`http://127.0.0.1:3000/image/pc?last_image_id=${lastImage}` + filters_string + tags_string, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

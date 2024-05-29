@@ -8,7 +8,7 @@ from DB import DB, DB_Models, DB_Returns, db
 
 from File_client import DropBox_client, DropBox
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from pydantic import BaseModel
 from fastapi import Body, FastAPI, Path, HTTPException, Header, status, Depends, Request, UploadFile, File, Form, Query
@@ -122,9 +122,6 @@ async def process_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     
     return user
 
-async def process_token_optional(token: Annotated[str | None, Depends(oauth2_scheme)]) -> User | None:
-    if token is None: return None
-    return await process_token(token)
 
 def access_admin(user: Annotated[User, Depends(process_token)]) -> User:
     if user.is_admin: return user
@@ -147,11 +144,6 @@ async def access_user(user: Annotated[User, Depends(process_token)], login: Anno
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                         detail={"message":"Don't allowed to use method due to access level or username"})
 
-
-async def access_user_optional(user: Annotated[User | None, Depends(process_token_optional)],
-                      login: Annotated[str | None, Header(pattern=login_regex)] = None) -> User | None:
-    if user is None: return None
-    return await access_user(user, login)
 
 async def create_access_token(data: dict[str, str | bool | int], expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
@@ -225,41 +217,55 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 # Image
 #============================================
 @app.get('/image/pc', tags=['image'], response_model=list[DB_Returns.Image_PC])
-async def get_images_pc(user: Annotated[User | None, Depends(access_user_optional)],
+async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None, Header()] = None,
+                        tags: Annotated[tuple[int] | None, Header()] = None,
+                        last_image_id: int = -1):
+    tags_r = tuple()
+    if filters is None:  filters = []
+    if tags is not None: tags_r = tags
+
+    
+    return await db.get_images_pc(filters, tags_r, last_image_id)
+
+@app.get('/image/pc/user', tags=['image'], response_model=list[DB_Returns.Image_PC])
+async def get_images_pc_with_user(user: Annotated[User, Depends(access_user)],
                         filters: Annotated[list[DB_Models.Image_filters] | None, Header()] = None,
                         tags: Annotated[tuple[int] | None, Header()] = None,
                         last_image_id: int = -1):
-    if filters is None: filters = []
-    if tags is None:    tags = []
+    tags_r = tuple()
+    if filters is None:  filters = []
+    if tags is not None: tags_r = tags
 
-    user_id: int = -1
-    if user is not None: user_id = user.id
-
-    return await db.get_images_pc(user_id, filters, tags, last_image_id)
+    return await db.get_images_pc(filters, tags_r, last_image_id, user.id)
 
 
 @app.get('/image/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
-async def get_images_mobile(user: Annotated[User | None, Depends(access_user_optional)],
-                            filters: list[DB_Models.Image_filters] | None = None,
-                            tags: list[str] | None = None,
+async def get_images_mobile(filters: list[DB_Models.Image_filters] | None = None,
+                            tags: tuple[str] | None = None,
                             last_image_id: int = -1):
 
-    if filters is None: filters = []
-    if tags is None:    tags = []
+    tags_r = tuple()
+    if filters is None:  filters = []
+    if tags is not None: tags_r = tags
 
-    user_id: int = -1
-    if user is not None: user_id = user.id
+    return await db.get_images_mobile(filters, tags_r, last_image_id)
 
-    return await db.get_images_mobile(user_id, filters, tags, last_image_id)
+@app.get('/image/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
+async def get_images_mobile_with_user(user: Annotated[User, Depends(access_user)],
+                            filters: list[DB_Models.Image_filters] | None = None,
+                            tags: tuple[str] | None = None,
+                            last_image_id: int = -1):
+
+    tags_r = tuple()
+    if filters is None:  filters = []
+    if tags is not None: tags_r = tags
+
+    return await db.get_images_mobile(filters, tags_r, last_image_id, user.id)
 
 
 @app.get('/image', tags=['image'], response_model=DB_Returns.Image_full)
-async def get_images(user: Annotated[User | None, Depends(access_user_optional)], image_id: int):
-
-    user_id: int = -1
-    if user is not None: user_id = user.id
-
-    return await db.get_image(user_id, image_id)
+async def get_images(image_id: int):
+    return await db.get_image(image_id)
 
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 

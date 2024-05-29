@@ -229,7 +229,6 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     # Return ==========================================================
     if len(filters) == 0: return ""
     
-    filters: list = list(filters)
     result: str = ' (SELECT is_blocked FROM "user" WHERE "user".id=author_id)'
     if last_id_query != "": result += " AND " + last_id_query
 
@@ -247,8 +246,8 @@ class PhotoFox:
     def __init__(self) -> None:
         self.__DBNAME   = "photofox"
         self.__USER     = "fox"
-#         self.__PASSWORD = "qweasd12"
-        self.__PASSWORD = "1234"
+        self.__PASSWORD = "qweasd12"
+        # self.__PASSWORD = "1234"
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
@@ -334,31 +333,31 @@ class PhotoFox:
 
         return function_result
 
-    async def get_images_pc(self, user_id: int,
+    async def get_images_pc(self,
                             filters: list[DB_Models.Image_filters],
-                            tags: tuple[int], last_image_id: int) -> list[DB_Returns.Image_PC]:
-        tags: str = tags_to_sql(tags)
-        filters_line: str = filters_to_sql(filters, user_id, last_image_id, 30)
+                            tags: tuple, last_image_id: int, user_id: int = -1) -> list[DB_Returns.Image_PC]:
+        tags_str: str = tags_to_sql(tags)
+        filters_line: str = filters_to_sql(set(filters), user_id, last_image_id, 30)
 
         query: str =  f"""
             SELECT id, image_url as path, width, height FROM image 
-            WHERE {tags} {filters_line};
+            WHERE {tags_str} {filters_line};
         """
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
 
         return list(DB_Returns.Image_PC(**x) for x in result)
     
-    async def get_images_mobile(self, user_id: int,
+    async def get_images_mobile(self,
                                 filters: list[DB_Models.Image_filters],
-                                tags: list[str], last_image_id: int) -> list[DB_Returns.Image_mobile]:
+                                tags: tuple, last_image_id: int, user_id: int = -1) -> list[DB_Returns.Image_mobile]:
 
-        tags: str = tags_to_sql(tags)
-        filters_line: str = filters_to_sql(filters, user_id, last_image_id, 10)
+        tags_str: str = tags_to_sql(tags)
+        filters_line: str = filters_to_sql(set(filters), user_id, last_image_id, 10)
 
         query: str = f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
            "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
-        FROM image JOIN "user" ON image.author_id = "user".id WHERE {tags} {filters_line};
+        FROM image JOIN "user" ON image.author_id = "user".id WHERE {tags_str} {filters_line};
         """
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         
