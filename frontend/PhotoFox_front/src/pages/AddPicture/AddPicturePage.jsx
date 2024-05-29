@@ -72,13 +72,14 @@ export async function action({request}) {
 
     console.log('Width:', data.get('width'));
     console.log('Height:', data.get('height'));
-
     const headers = {
         // 'Content-Type': 'multipart/form-data',
         'Authorization': getToken(),
         'width': data.get('width'),
         'height': data.get('height')
     }
+    data.delete('width');
+    data.delete('height');
     console.log(headers)
     const response = await fetch('http://127.0.0.1:3000/image', {
         method: 'POST',
