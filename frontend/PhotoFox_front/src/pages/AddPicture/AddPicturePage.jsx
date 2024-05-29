@@ -1,17 +1,59 @@
 import './AddPicture.css'
 import NavBar from "../../components/Menu/NavBar.jsx";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {Form, Link, redirect, useActionData} from "react-router-dom";
 import {clearIntendedDestination} from "../../utils/independentDestination.js";
 import { getToken } from '../../utils/auth.js';
 
 export default function AddPicturePage() {
-    // const [tags, setTags] = useState([]);
+    const [input, setInput] = useState('/AddImage/File.svg');
     clearIntendedDestination();
     // function handleAddTagClick() {
     //     console.log();
     //     setTags(oldTags => [...oldTags,])
     // }
+
+    function handleImageUpload(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        // Set up a callback for when the file is read
+        reader.onload = function(e) {
+            // Create a new Image object
+            const img = new Image();
+
+            // Set up a callback for when the image is loaded
+            img.onload = function() {
+                console.log(img.scr);
+            };
+            // Set the source of the Image object to the data URL
+            img.src = e.target.result;
+            setInput(img.src);
+        };
+
+        // Read the file as a data URL
+        reader.readAsDataURL(file);
+    }
+    //
+    // useEffect(() => {
+    //     const reader = new FileReader();
+    //
+    //     // Set up a callback for when the file is read
+    //     reader.onload = function(e) {
+    //         // Create a new Image object
+    //         const img = new Image();
+    //
+    //         // Set up a callback for when the image is loaded
+    //         img.onload = function() {
+    //             console.log(img.scr);
+    //         };
+    //         // Set the source of the Image object to the data URL
+    //         img.src = e.target.result;
+    //     };
+    //
+    //     // Read the file as a data URL
+    //     reader.readAsDataURL(input);
+    // }, [input]);
     const errordata = useActionData();
     console.log(errordata);
 
@@ -22,8 +64,8 @@ export default function AddPicturePage() {
             <Form method={"POST"} id='add-form'>
                 <div id='left'>
                     <label htmlFor='image' id='image-wrapper'>
-                        <input type="file" accept="image/*" name='image' id='image' required/>
-                        <img src='/AddImage/File.svg' alt='add image' id='image-preview'/>
+                        <input type="file" accept="image/*" name='image' id='image' onChange={handleImageUpload} required/>
+                        <img src={input} alt='add image' id='image-preview'/>
                     </label>
                     <label htmlFor='download-permission' className='checkbox-container'> 
                         <input type="checkbox" name='download_permission' id='download-permission' className='checkbox'/>
@@ -42,8 +84,7 @@ export default function AddPicturePage() {
                     <div id='description-wrapper'>
                         <textarea placeholder='Add description' name='description' maxLength="500"></textarea>
                         <div><span>0</span>/500</div>
-                        {/* <button type='button' onClick={handleAddTagClick}>+</button> */}
-                        <button type='button'>+</button>
+
                     </div>
                     <div id='navigate'>
                         <Link to='/'>Cancel</Link>
@@ -67,7 +108,7 @@ export async function action({request}) {
     reader.onload = function(e) {
         // Create a new Image object
         const img = new Image();
-    
+
         // Set up a callback for when the image is loaded
         img.onload = function() {
             width  = img.width;
@@ -80,9 +121,9 @@ export async function action({request}) {
         // Set the source of the Image object to the data URL
         img.src = e.target.result;
     };
-    
+
     // Read the file as a data URL
-    reader.readAsDataURL(file);
+    await reader.readAsDataURL(file);
     console.log(getToken());
 
     console.log('Width:', width);
