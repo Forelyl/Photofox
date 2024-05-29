@@ -13,7 +13,7 @@ export default function ImageScroller() {
     const [filters, setFilters] = useState([]);
 
     const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters);
-    console.log("Error: ", error);
+
     const {rows, lastId} = spreadImages(images, imagesLeft);
 
     const lastRow = useRef();
@@ -45,8 +45,9 @@ export default function ImageScroller() {
                 })}
             </div>
             }
-            {(rows.length === 0 || !imagesLeft) && <div className='text-images-info'><div>No images were found</div></div>}
-            {loading && <div className='text-images-info'><div>Loading...</div></div>}
+            {(rows.length === 0 || !imagesLeft) && !error && ! loading && <div className='text-images-info'><div>No images were found</div></div>}
+            {loading && !error && <div className='text-images-info'><div>Loading...</div></div>}
+            {error && <div className='text-images-info'><div>An error occurred when requesting the server!<br/>Please reload page</div></div>}
         </>
     );
 }

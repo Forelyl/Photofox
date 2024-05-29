@@ -1,13 +1,16 @@
 import './AddPicture.css'
 import NavBar from "../../components/Menu/NavBar.jsx";
 import { useState } from "react";
-import { Form, Link, redirect } from "react-router-dom";
+import {Form, Link, redirect, useNavigation} from "react-router-dom";
 import {clearIntendedDestination} from "../../utils/independentDestination.js";
 import { getToken } from '../../utils/auth.js';
 
 export default function AddPicturePage() {
     const [input, setInput] = useState('/AddImage/File.svg');
-    const [dimensions, setDimensions] = useState({})
+    const [dimensions, setDimensions] = useState({width: 300, height: 300});
+    const navigation = useNavigation();
+
+    const submitting = navigation.state === 'submitting';
     clearIntendedDestination();
 
     function handleImageUpload(e) {
