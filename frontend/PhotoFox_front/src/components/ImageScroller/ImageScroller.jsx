@@ -12,8 +12,8 @@ export default function ImageScroller() {
     const [lastImage, setLastImage] = useState(-1);
     const [filters, setFilters] = useState([]);
 
-    const {images, imagesLeft, loading} = useImageLoad(lastImage, filters);
-
+    const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters);
+    console.log("Error: ", error);
     const {rows, lastId} = spreadImages(images, imagesLeft);
 
     const lastRow = useRef();
