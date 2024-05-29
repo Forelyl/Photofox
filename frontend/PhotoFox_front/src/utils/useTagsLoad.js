@@ -1,7 +1,7 @@
 
 
 export default function useTagsLoad(setTags) {
-    fetch(`http://127.0.0.1:3000/tag/add`, {
+    fetch(`http://127.0.0.1:3000/tag/all`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

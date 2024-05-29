@@ -64,7 +64,7 @@ export default function FilterMenu({onClose, sets}) {
                         <button onClick={() => setSize(-1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change back'/>
                         </button>
-                        <span>By size {currentDateTitle}</span>
+                        <span>By size {currentSizeTitle}</span>
                         <button onClick={() => setSize(1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change forvard'/>
                         </button>

@@ -222,7 +222,6 @@ async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None,
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
-
     return await db.get_images_pc(filters, tags_r, last_image_id)
 
 @app.get('/image/pc/user', tags=['image'], response_model=list[DB_Returns.Image_PC])

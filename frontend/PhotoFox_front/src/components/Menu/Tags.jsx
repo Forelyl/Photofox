@@ -4,9 +4,7 @@ import useTagsLoad from "../../utils/useTagsLoad.js";
 
 export default function Tags( { select = true } ) {
     const [allTags, setAllTags] = useState()
-
-    useTagsLoad(setAllTags);
-
+    useEffect(() => {useTagsLoad(setAllTags);}, []);
 
     return (
         <div>

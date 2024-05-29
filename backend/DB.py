@@ -279,7 +279,8 @@ class PhotoFox:
 
 
     async def select_all_tags(self) -> list[dict[str, Any]]:
-        return DB.process_return(await self.__DB.execute("SELECT * FROM tag"))
+        DB.process_return(await self.__DB.execute("SELECT * FROM tag;"))
+        return []
     
     async def email_exists(self, email: str) -> bool:
         result: list[dict] = DB.process_return(await self.__DB.execute(
