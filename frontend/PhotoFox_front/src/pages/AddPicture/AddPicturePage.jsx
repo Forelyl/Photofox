@@ -85,7 +85,7 @@ export default function AddPicturePage() {
                 </div>
                 <div id='right'>
                     <div id='title-wrapper'>
-                        <input type='text' placeholder={'Title...'} name='title' maxLength="100" minLength="1" required></input>
+                        <input type='text' placeholder={'Enter title'} name='title' maxLength="100" minLength="1" required></input>
                     </div>
                     <div id='tags'>
                         <button type='button'>+</button>

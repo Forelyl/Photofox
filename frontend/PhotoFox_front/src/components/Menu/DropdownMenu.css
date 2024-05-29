@@ -15,6 +15,7 @@
         text-decoration: none;
     }
     button {
+        cursor: pointer;
         background-color: transparent;
         border: 0;
         padding: 0;
@@ -45,7 +46,7 @@
     }
     > hr {
         border-width: 0;
-        border-top: 6px solid floralwhite;
+        border-top: 0.5vh solid floralwhite;
         width: 100%;
     }
 }

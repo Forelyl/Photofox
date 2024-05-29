@@ -8,13 +8,14 @@
     justify-content: space-around;
 
     > #left {
+        user-select: none;
         height: 85%;
         width: 40%;
         display: flex;
         flex-direction: column;
         align-items: center;
         > #image-wrapper {
-            
+            user-select: none;
             width: 65%;
             height: 100%;
             cursor: pointer;
@@ -27,6 +28,7 @@
                 display: none;
             }
             > img {
+                user-select: none;
                 width: 30%;
             }
         }
@@ -104,7 +106,10 @@
         grid-template-rows: 1fr 1fr 5fr 2fr;
         > #title-wrapper {
             > input {
+                padding: 10px 0;
                 font-family: 'Days One';
+                background: none;
+                font-size: 5.3vh;
                 width: 100%;
                 height: 100%;
                 border: 0;
@@ -112,28 +117,44 @@
                 padding: 0;
                 resize: none;
             }
+            >input::placeholder {
+                user-select: none;
+                color: rgb(149, 149, 149);
+
+            }
         }
         > #tags {
+            > button {
+                user-select: none;
+                cursor: pointer;
+            }
         }
         > #description-wrapper {
             height: 100%;
             position: relative;
             > textarea {
+                border-radius: 20px;
+                background-color: #17245C;
                 font-family: 'Epilogue';
                 height: 100%;
                 width: 100%;
                 border: 0;
                 outline: none;
                 padding: 0;
+                padding: 20px;
+                box-sizing: border-box;
                 resize: none;
             }
             > div {
+                pointer-events: none;
+                user-select: none;
                 position: absolute;
                 bottom: 2%;
-                right: 2%;
+                right: 3%;
             }
         }
         > #navigate {
+            user-select: none;
             display: grid;
             grid-template-columns: auto auto auto;
             align-items: top;
