@@ -25,10 +25,11 @@ export default function AddPicturePage() {
                         <input type="file" accept="image/*" name='image' id='image' required/>
                         <img src='/AddImage/File.svg' alt='add image' id='image-preview'/>
                     </label>
-                    <div>
-                        <input type="checkbox" name='download_permission' id='download-permission'/>
-                        <label htmlFor='download-permission'>Allow downloading</label>
-                    </div>
+                    <label htmlFor='download-permission' className='checkbox-container'> 
+                        <input type="checkbox" name='download_permission' id='download-permission' className='checkbox'/>
+                        <div className='checkbox-mark'></div>
+                        Allow downloading
+                    </label>
                 </div>
                 <div id='right'>
                     <div id='title-wrapper'>
@@ -86,7 +87,7 @@ export async function action({request}) {
 
     console.log('Width:', width);
     console.log('Height:', height);
-    
+
     const headers = {
         // 'Content-Type': 'multipart/form-data',
         'Authorization': getToken(),
