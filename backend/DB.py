@@ -181,10 +181,10 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     order_filter:   str = ""
 
     if DB_Models.Image_filters.dateO in filters:
-        order_filter = f" ORDER BY id ASC LIMIT{limit} "
+        order_filter = f" ORDER BY id ASC LIMIT {limit} "
         up_down_filter = ">"
     else:
-        order_filter = f" ORDER BY id DESC LIMIT{limit} "
+        order_filter = f" ORDER BY id DESC LIMIT {limit} "
         up_down_filter = "<"
 
 
@@ -246,7 +246,7 @@ class PhotoFox:
     def __init__(self) -> None:
         self.__DBNAME   = "photofox"
         self.__USER     = "fox"
-#         self.__PASSWORD = "qweasd12"
+        # self.__PASSWORD = "qweasd12"
         self.__PASSWORD = "1234"
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
