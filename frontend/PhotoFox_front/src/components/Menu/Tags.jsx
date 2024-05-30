@@ -1,13 +1,11 @@
-import {Suspense, useEffect, useState} from "react";
-import {Await, useLoaderData} from "react-router-dom";
+import {useEffect, useState} from "react";
 import useTagsLoad from "../../utils/useTagsLoad.js";
 
 
-export default function Tags( { select = true, isOpened = false} ) {
-    const [tags, setTags] = useState([]);
+export default function Tags( { select = true, isOpened = false, setTags} ) {
 
     useEffect(() => {
-        if (isOpened) {
+        if (isOpened && select) {
             useTagsLoad(setTags);
         }
     }, [isOpened]);

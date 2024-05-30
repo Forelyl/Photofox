@@ -6,6 +6,8 @@ export default function FilterMenu({onClose, sets, isOpened}) {
     const [ currentLikeKey, setCurrentLikeKey ] = useState([0, null, 'default']);
     const [ currentSizeKey, setCurrentSizeKey ] = useState([0, null, 'default']);
     const [ currentDateKey, setCurrentDateKey ] = useState([0, 'new', 'new']);
+    const [imageForm, setImageForm] = useState(null);
+    const [tags, setTags] = useState([]);
 
     const [ currentLike, currentLikeTitle, setLikes ] = useFilterRoulette(
         [null, 'like1k', 'like1k_10k', 'like10k'],
@@ -21,6 +23,10 @@ export default function FilterMenu({onClose, sets, isOpened}) {
         ['new', 'old'],
         ['new', 'old'],
         currentDateKey, setCurrentDateKey);
+
+    function handleImageFormChange (value) {
+        setImageForm(value);
+    }
 
     return (
         <div>
@@ -40,7 +46,7 @@ export default function FilterMenu({onClose, sets, isOpened}) {
                         <div>any</div>
                     </button>
                 </div>
-                <Tags isOpened={isOpened}></Tags>
+                <Tags isOpened={isOpened} setTags={setTags}></Tags>
                 <div>
                     <div>
                         <button onClick={() => setDate(-1)}>
