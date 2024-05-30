@@ -250,13 +250,20 @@ def tags_to_sql(tags: tuple[int]) -> str:
     if len(tags) == 0: return ""
     else:              return f"id IN (SELECT image_id FROM image_tag WHERE tag_id IN {str(tags)}) AND"
 
-class PhotoFox: 
+class PhotoFox:
+    @staticmethod
+    def __get_password() -> str:
+        result: str = ""
+        with open('database_pass.data', 'r') as file:
+            result = file.readline()
+            if len(result) == 0: raise RuntimeError("No password in backend/database_pass.data")
+        return result
+
     # INIT
     def __init__(self) -> None:
         self.__DBNAME   = "photofox"
         self.__USER     = "fox"
-        # self.__PASSWORD = "qweasd12"
-        self.__PASSWORD = "1234"
+        self.__PASSWORD = PhotoFox.__get_password()
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
