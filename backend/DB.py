@@ -9,27 +9,36 @@ from pydantic import BaseModel
 class DB:
 
     def __init__(self, dbname: str, user: str, password: str) -> None:
-        self.__PORT = "5432"
-        self.__IP = "127.0.0.1"
-        self.dbname = dbname
-        self.user = user
-        self.password = password
+        self.__PORT: str = "5432"
+        self.__IP: str = "127.0.0.1"
+        self.dbname: str = dbname
+        self.user: str = user
+        self.password: str = password
+        self.__CONNECTION_MIN_SIZE: int = 10
+        self.__CONNECTION_MAX_SIZE: int = 100
     
     async def setup (self):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-        self.database = await postgres.connect(database=self.dbname, user=self.user, password=self.password, port=self.__PORT, host=self.__IP)
+        self.database_pool = await postgres.create_pool(
+            database=self.dbname, 
+            user=self.user, 
+            password=self.password, 
+            port=self.__PORT, 
+            host=self.__IP,
+            min_size=self.__CONNECTION_MIN_SIZE,
+            max_size=self.__CONNECTION_MAX_SIZE)
         
     async def close(self) -> None:
-        await self.database.close()
+        if self.database_pool is None: raise RuntimeError("Database pool wasn't settuped yet it was attemped to close the pool")
+        await self.database_pool.close()
 
     async def execute(self, query: str, *args) -> list[str]: 
         result: list[str] = []
         #async with con.transaction():
+        if self.database_pool is None: raise RuntimeError("Database pool wasn't settuped yet it was attemped to use it")
         
-        async with self.database.transaction():
-            async for x in self.database.cursor(query, *args):
-                result.append(x)
-        return result
+        async with self.database_pool.acquire() as connecion:
+            return await connecion.fetch(query, *args)
 
     @staticmethod
     def process_return(values: list[postgres.Record]) -> list[dict[str, Any]]:
