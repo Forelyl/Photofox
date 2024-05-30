@@ -1,8 +1,9 @@
 import {useState} from "react";
 import Tags from "./Tags.jsx";
 import useFilterRoulette from "../../utils/useFilterRoulette.js";
+import './FilterMenu.css'
 
-export default function FilterMenu({onClose, sets, isOpened}) {
+export default function FilterMenu({onClose, sets, isOpened, className}) {
     const [ currentLikeKey, setCurrentLikeKey ] = useState([0, null, 'default']);
     const [ currentSizeKey, setCurrentSizeKey ] = useState([0, null, 'default']);
     const [ currentDateKey, setCurrentDateKey ] = useState([0, 'new', 'new']);
@@ -29,10 +30,10 @@ export default function FilterMenu({onClose, sets, isOpened}) {
     }
 
     return (
-        <div>
+        <div id='filters-menu' className={className}>
             <h3>Filters</h3>
-            <div>
-                <div>
+            <div id='filters'>
+                <div id='left'>
                     <button onClick={() => handleImageFormChange('proportionH')}>
                         <div></div>
                     </button>
@@ -47,7 +48,7 @@ export default function FilterMenu({onClose, sets, isOpened}) {
                     </button>
                 </div>
                 <Tags isOpened={isOpened} setTags={setTags}></Tags>
-                <div>
+                <div id='right'>
                     <div>
                         <button onClick={() => setDate(-1)}>
                             <img src='/NavBarElements/change_filter.svg' alt='change back'/>
