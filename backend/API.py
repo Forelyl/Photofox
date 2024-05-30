@@ -212,10 +212,15 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 # Image
 #============================================
 @app.get('/image/pc', tags=['image'], response_model=list[DB_Returns.Image_PC])
-async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None, Header()] = None,
-                        tags: Annotated[tuple[int] | None, Header()] = None,
+async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None, Query()] = None,
+                        tags: Annotated[tuple[int] | None, Query()] = None,
                         last_image_id: int = -1):
     tags_r = tuple()
+    print("-1-1-1-1-1-1-1-1-1-1-")
+    print("-1-1-1-1-1-1-1-1-1-1-")
+    print(filters)
+    print("-1-1-1-1-1-1-1-1-1-1-")
+    print("-1-1-1-1-1-1-1-1-1-1-")
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
@@ -223,8 +228,8 @@ async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None,
 
 @app.get('/image/pc/user', tags=['image'], response_model=list[DB_Returns.Image_PC])
 async def get_images_pc_with_user(user: Annotated[User, Depends(access_user)],
-                        filters: Annotated[list[DB_Models.Image_filters] | None, Header()] = None,
-                        tags: Annotated[tuple[int] | None, Header()] = None,
+                        filters: Annotated[list[DB_Models.Image_filters] | None, Query()] = None,
+                        tags: Annotated[tuple[int] | None, Query()] = None,
                         last_image_id: int = -1):
     tags_r = tuple()
     if filters is None:  filters = []
@@ -244,7 +249,7 @@ async def get_images_mobile(filters: list[DB_Models.Image_filters] | None = None
 
     return await db.get_images_mobile(filters, tags_r, last_image_id)
 
-@app.get('/image/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
+@app.get('/image/mobile/user', tags=['image'], response_model=list[DB_Returns.Image_mobile])
 async def get_images_mobile_with_user(user: Annotated[User, Depends(access_user)],
                             filters: list[DB_Models.Image_filters] | None = None,
                             tags: tuple[str] | None = None,

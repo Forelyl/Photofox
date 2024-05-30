@@ -223,16 +223,16 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     if DB_Models.Image_filters.like1k in filters:
         where_query.append("like_counter <= 1000")
     elif DB_Models.Image_filters.like1k_10k in filters:
-        where_query.append("like_counter => 1000 AND like_counter <= 10000")
+        where_query.append("like_counter >= 1000 AND like_counter <= 10000")
     elif DB_Models.Image_filters.like10k in filters:
-        where_query.append("like_counter => 10000")
+        where_query.append("like_counter >= 10000")
 
     if DB_Models.Image_filters.sizeS in filters:
-        where_query.append("width <= 500 OR height <= 500")
+        where_query.append("(width <= 500 OR height <= 500)")
     elif DB_Models.Image_filters.sizeM in filters:
-        where_query.append("(width >= 500 and width <= 1200) and (height >= 500 and height <= 1200)")
+        where_query.append("(width >= 500 and width <= 1200) AND (height >= 500 and height <= 1200)")
     elif DB_Models.Image_filters.sizeB in filters:
-        where_query.append("width >= 1200 OR height >= 1200")
+        where_query.append("(width >= 1200 OR height >= 1200)")
 
 
     # Return ==========================================================
@@ -241,7 +241,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     result: str = ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)'
     if last_id_query != "": result += " AND " + last_id_query
 
-    for filter_var in filters:
+    for filter_var in where_query:
         result += " AND " + filter_var
 
     return result + order_filter
