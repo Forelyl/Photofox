@@ -37,6 +37,7 @@ export default function useImageLoad(lastImage, filters, tags) {
         })
         .then(response => response.json())
         .then(values => {
+            console.log(values);
             setImages((prevImages) => {
                 const allImages = [...prevImages, ...values];
                 const idMap = new Map();
@@ -50,6 +51,7 @@ export default function useImageLoad(lastImage, filters, tags) {
                 });
             });
             setImagesLeft(values.length === 30);
+            console.log('see ya')
             setTimeout(() => setLoading(false), 1000);
         })
         .catch(error => {

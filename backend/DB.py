@@ -246,8 +246,8 @@ class PhotoFox:
     def __init__(self) -> None:
         self.__DBNAME   = "photofox"
         self.__USER     = "fox"
-        self.__PASSWORD = "qweasd12"
-        # self.__PASSWORD = "1234"
+#         self.__PASSWORD = "qweasd12"
+        self.__PASSWORD = "1234"
         self.__DB = DB(self.__DBNAME, self.__USER, self.__PASSWORD)
     
     async def setup(self):
@@ -279,8 +279,7 @@ class PhotoFox:
 
 
     async def select_all_tags(self) -> list[dict[str, Any]]:
-        DB.process_return(await self.__DB.execute("SELECT * FROM tag;"))
-        return []
+        return DB.process_return(await self.__DB.execute("SELECT * FROM tag;"))
     
     async def email_exists(self, email: str) -> bool:
         result: list[dict] = DB.process_return(await self.__DB.execute(
