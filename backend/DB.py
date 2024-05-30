@@ -192,7 +192,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     # last_image_id_query: str = "" if last_image_id == -1 else f" AND image_id {up_down_filter} {last_image_id}"
     last_id_image_query: str = "" if last_image_id == -1 else f" AND id_image {up_down_filter} {last_image_id}"
 
-    if not filters_is_ok(filters, user_id): return order_filter
+    if not filters_is_ok(filters, user_id): return ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)' + last_id_query + order_filter
 
     # Add filters =====================================================
     if DB_Models.Image_filters.subscribed in filters:
@@ -227,7 +227,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
 
 
     # Return ==========================================================
-    if len(filters) == 0: return ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)' + order_filter
+    if len(filters) == 0: return ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)' + last_id_query + order_filter
     
     result: str = ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)'
     if last_id_query != "": result += " AND " + last_id_query
