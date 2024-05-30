@@ -73,7 +73,7 @@ export async function action({request}) {
     let response;
 
     if (signMode === 'in') {
-        response = await fetch('http://127.0.0.1:3000/login', {
+        response = await fetch('http://localhost:3000/login', {
             method: 'POST',
             body: data
         });
@@ -84,7 +84,7 @@ export async function action({request}) {
             email: data.get('email'),
             password: data.get('password')
         }
-        response = await fetch('http://127.0.0.1:3000/profile/add/user', {
+        response = await fetch('http://localhost:3000/profile/add/user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

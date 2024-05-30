@@ -1,0 +1,34 @@
+services:
+  db:
+    container_name: fox-db
+    image: postgres:latest
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: fox
+      POSTGRES_PASSWORD: qweasd123
+    volumes:
+      - database_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  front:
+    depends_on:
+      - back
+    container_name: fox-front
+    image: forelyl/photo-fox-front:0.0.1
+    restart: unless-stopped
+    ports:
+      - 5173:5173
+  back:
+    depends_on:
+      - db
+    container_name: fox-backend
+    image: forelyl/photo-fox-backend:0.0.1
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+
+
+volumes:
+  database_data:

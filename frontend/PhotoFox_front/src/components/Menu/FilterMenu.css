@@ -1,20 +1,26 @@
 #filters-menu {
+    box-sizing: border-box;
+    border: 0.65vh solid floralwhite;
+    border-left: 0;
+    border-right: 0;
+    display: flex;
+    flex-direction: column;
     position: absolute;
     top: 12vh;
     left: 0;
     width: 100%;
-    border-radius: 0 0 30px 30px;
     z-index: 5;
     transition: 0.3s ease-in-out;
-    transform: translateY(-100%);
+    transform: translateY(-101%);
     background-color: #0A0A1B;
     font-family: "Epilogue";
     > #filters {
         display: grid;
         grid-template-columns: auto auto auto;
-        background-color: rebeccapurple;
+        /* background-color: rebeccapurple; */
     }
     > h3 {
+        padding: 2%;
         font-family: "Days One";
         margin: 0;
         font-weight: 200;

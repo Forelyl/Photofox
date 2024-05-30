@@ -3,6 +3,7 @@ from enum import Enum
 import asyncpg as postgres
 from typing import Any
 import asyncio
+import selectors # for Linux
 from pydantic import BaseModel
 
 
@@ -10,7 +11,7 @@ class DB:
 
     def __init__(self, dbname: str, user: str, password: str) -> None:
         self.__PORT: str = "5432"
-        self.__IP: str = "127.0.0.1"
+        self.__IP: str = "db"
         self.dbname: str = dbname
         self.user: str = user
         self.password: str = password
@@ -18,7 +19,9 @@ class DB:
         self.__CONNECTION_MAX_SIZE: int = 100
     
     async def setup (self):
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+
         self.database_pool = await postgres.create_pool(
             database=self.dbname, 
             user=self.user, 

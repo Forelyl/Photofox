@@ -28,7 +28,7 @@ export default function useImageLoad(lastImage, filters, tags) {
         }
         const controller = new AbortController();
         const signal = controller.signal;
-        fetch(`http://127.0.0.1:3000/image/pc?last_image_id=${lastImage}` + filters_string + tags_string, {
+        fetch(`http://localhost:3000/image/pc?last_image_id=${lastImage}` + filters_string + tags_string, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
