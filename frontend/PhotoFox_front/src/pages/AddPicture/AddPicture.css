@@ -140,6 +140,11 @@
                 /* border: 1.5px dashed #49B1E9; */
                 background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%2349B1E9' stroke-width='4' stroke-dasharray='4%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
                 color: #49B1E9;
+                transition: 1s ease-in-out;
+            }
+            > button:hover {
+                color: #00fcf7;
+                transform: rotate(180deg);
             }
         }
         > #description-wrapper {
@@ -206,6 +211,9 @@
                 width: 40%;
                 border-radius: 0.7vw;
             }
+            > a:hover {
+                background-color: #6874dd;
+            }
             > hr {
                 display: flex;
                 align-items: center;
@@ -230,6 +238,9 @@
                 background: none;
                 height: 60%;
                 background-color: #17245C;
+            }
+            > button:hover {
+                background-color: #203179;
             }
         }
     }

@@ -35,6 +35,10 @@ export default function AddPicturePage() {
         reader.readAsDataURL(file);
     }
 
+    function handleDescrionInput(e) {
+        document.getElementById('description-length').innerHTML = e.target.value.length;
+    }
+
     async function handleOnSubmit(e) {
         e.preventDefault();
         setSubmitting(true);
@@ -91,8 +95,8 @@ export default function AddPicturePage() {
                         <button type='button'>+</button>
                     </div>
                     <div id='description-wrapper'>
-                        <textarea placeholder='Add description' name='description' maxLength="500"></textarea>
-                        <div><span>0</span>/500</div>
+                        <textarea placeholder='Add description' name='description' maxLength="500" onInput={handleDescrionInput}></textarea>
+                        <div><span id='description-length'>0</span>/500</div>
 
                     </div>
                     <div id='navigate'>
