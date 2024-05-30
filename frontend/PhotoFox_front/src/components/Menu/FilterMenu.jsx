@@ -55,11 +55,11 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
     function handleClose () {
         if (changes) {
             passFilters(old_filter => {
+                console.log([currentSize, currentDate, currentLike, imageForm])
                 return {
                     primary_filter: old_filter.primary_filter,
                     secondary_filter: [currentSize, currentDate, currentLike, imageForm]
                 }
-
             });
             passTags(tags);
         }

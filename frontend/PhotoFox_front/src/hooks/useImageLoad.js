@@ -21,8 +21,8 @@ export default function useImageLoad(lastImage, filters, tags) {
                 filters_string += '&filters=' + filters.primary_filter;
             }
             for (let one_filter in filters.secondary_filter) {
-                if (filters[one_filter]) {
-                    filters_string += '&filters=' + filters[one_filter];
+                if (filters.secondary_filter[one_filter]) {
+                    filters_string += '&filters=' + filters.secondary_filter[one_filter];
                     console.log(11)
                 }
             }

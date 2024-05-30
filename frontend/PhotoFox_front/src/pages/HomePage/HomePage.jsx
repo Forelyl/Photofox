@@ -11,7 +11,7 @@ export default function HomePage() {
         secondary_filter : [],
     });
     const [tags, setTags] = useState([]);
-
+    console.log(filters, "it`s filters");
     function handleScrollClick() {
         elementRef.current.scrollIntoView({
             behavior: "smooth",
