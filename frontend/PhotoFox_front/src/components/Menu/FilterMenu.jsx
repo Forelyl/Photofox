@@ -40,7 +40,7 @@ export default function FilterMenu({onClose, sets}) {
                         <div>any</div>
                     </button>
                 </div>
-                <Tags></Tags>
+
                 <div>
                     <div>
                         <button onClick={() => setDate(-1)}>

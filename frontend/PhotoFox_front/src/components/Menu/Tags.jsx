@@ -1,16 +1,22 @@
-import {useEffect, useState} from "react";
-import useTagsLoad from "../../utils/useTagsLoad.js";
+import {Suspense, useEffect, useState} from "react";
+import {Await, useLoaderData} from "react-router-dom";
 
 
 export default function Tags( { select = true } ) {
-    const [allTags, setAllTags] = useState()
-    useEffect(() => {useTagsLoad(setAllTags);}, []);
+    const { tags } = useLoaderData();
 
     return (
-        <div>
-
-            <p>hello</p>
-        </div>
+        <Suspense fallback={<p>Loading...</p>}>
+            <Await resolve={ tags }>
+                {(loadedData) => {
+                    return (
+                        <div>
+                            <p>hello</p>
+                        </div>
+                    )
+                }}
+            </Await>
+        </Suspense>
     );
 }
 

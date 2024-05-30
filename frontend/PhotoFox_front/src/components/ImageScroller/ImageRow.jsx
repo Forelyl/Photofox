@@ -23,10 +23,9 @@ const ImageRow = forwardRef(function ImageRow({ images, className= undefined}, r
     return (
         <div ref={ref} className={className}>
             {images.map(image => 
-                <Link to={`/picture/${image.id}`}>
+                <Link to={`/picture/${image.id}`} key={image.id} >
                     <img 
-                        src={image.path} 
-                        key={image.id} 
+                        src={image.path}
                         id={'image-' + image.id}
                         onMouseMove={(event) => mouseMove(event)}
                         style={{ '--x': '0px', '--y': '0px', '--r': '0px'}}

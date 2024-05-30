@@ -13,8 +13,6 @@ export default function useImageLoad(lastImage, filters, tags) {
     useEffect(() => {
         setLoading(true);
         setError(false);
-        const controller = new AbortController();
-        const signal = controller.signal;
 
         let filters_string = '';
         if (filters && filters.length > 0) {
@@ -28,7 +26,8 @@ export default function useImageLoad(lastImage, filters, tags) {
                 tags_string += '&tags=' + one_tag;
             }
         }
-
+        const controller = new AbortController();
+        const signal = controller.signal;
         fetch(`http://127.0.0.1:3000/image/pc?last_image_id=${lastImage}` + filters_string + tags_string, {
             method: 'GET',
             headers: {
@@ -58,8 +57,8 @@ export default function useImageLoad(lastImage, filters, tags) {
             setError(true);
         });
         return () => controller.abort();
+
     }, [lastImage, filters, tags]);
 
     return { loading, images, imagesLeft, error };
 }
-
