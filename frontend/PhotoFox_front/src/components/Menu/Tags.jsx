@@ -11,8 +11,10 @@ export default function Tags( { select = true, isOpened = false, setTags} ) {
     }, [isOpened]);
 
     return (
-        <div>
-            <p>hello</p>
+        <div id='tags'>
+            <div>fox</div>
+            <div>cat</div>
+            <button type='button'>+</button>
         </div>
     );
 }

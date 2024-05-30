@@ -4,12 +4,14 @@ import { useState } from "react";
 import {Form, Link, redirect, useNavigation} from "react-router-dom";
 import {clearIntendedDestination} from "../../utils/independentDestination.js";
 import { getToken } from '../../utils/auth.js';
+import Tags from "../../components/Menu/Tags.jsx";
 
 export default function AddPicturePage() {
     const [input, setInput] = useState('/AddImage/File.svg');
     const [dimensions, setDimensions] = useState({width: 300, height: 300});
     const [imageDownloadable, setImageDownloadable] = useState(undefined);
     const [submitting, setSubmitting] = useState(false);
+    const [tags, setTags] = useState([]);
     clearIntendedDestination();
 
     function handleImageUpload(e) {
@@ -91,13 +93,10 @@ export default function AddPicturePage() {
                     <div id='title-wrapper'>
                         <input type='text' placeholder={'Enter title'} name='title' maxLength="100" minLength="1" required></input>
                     </div>
-                    <div id='tags'>
-                        <button type='button'>+</button>
-                    </div>
+                    <Tags setTags={setTags}/>
                     <div id='description-wrapper'>
                         <textarea placeholder='Add description' name='description' maxLength="500" onInput={handleDescrionInput}></textarea>
                         <div><span id='description-length'>0</span>/500</div>
-
                     </div>
                     <div id='navigate'>
                         <Link to='/'>Cancel</Link>
