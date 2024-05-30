@@ -2,7 +2,7 @@ import {useState} from "react";
 import Tags from "./Tags.jsx";
 import useFilterRoulette from "../../utils/useFilterRoulette.js";
 
-export default function FilterMenu({onClose, sets}) {
+export default function FilterMenu({onClose, sets, isOpened}) {
     const [ currentLikeKey, setCurrentLikeKey ] = useState([0, null, 'default']);
     const [ currentSizeKey, setCurrentSizeKey ] = useState([0, null, 'default']);
     const [ currentDateKey, setCurrentDateKey ] = useState([0, 'new', 'new']);
@@ -40,7 +40,7 @@ export default function FilterMenu({onClose, sets}) {
                         <div>any</div>
                     </button>
                 </div>
-
+                <Tags isOpened={isOpened}></Tags>
                 <div>
                     <div>
                         <button onClick={() => setDate(-1)}>

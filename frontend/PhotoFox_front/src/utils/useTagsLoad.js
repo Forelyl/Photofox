@@ -10,6 +10,5 @@ export default function useTagsLoad(setTags) {
     .then(response => response.json())
     .then(values => {
         setTags(values);
-        console.log("111");
     });
 }

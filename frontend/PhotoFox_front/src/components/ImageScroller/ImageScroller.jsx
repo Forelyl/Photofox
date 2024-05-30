@@ -5,11 +5,8 @@ import './ImageScroller.css';
 
 export default function ImageScroller({ filters = [], tags = [] }) {
     const [lastImage, setLastImage] = useState(-1);
-
     const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters, tags);
-
     const {rows, lastId} = spreadImages(images, imagesLeft);
-
     const lastRow = useRef();
     const lastRowRef = useCallback(node => {
         if (loading) { return; }
