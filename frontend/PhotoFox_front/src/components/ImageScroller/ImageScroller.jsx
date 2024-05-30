@@ -1,9 +1,9 @@
 import {useState, useRef, useCallback} from "react";
-import useImageLoad from "../../utils/useImageLoad.js";
+import useImageLoad from "../../hooks/useImageLoad.js";
 import ImageRow from "./ImageRow.jsx";
 import './ImageScroller.css';
 
-export default function ImageScroller({ filters = [], tags = [] }) {
+export default function ImageScroller({ filters, tags }) {
     const [lastImage, setLastImage] = useState(-1);
     const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters, tags);
     const {rows, lastId} = spreadImages(images, imagesLeft);

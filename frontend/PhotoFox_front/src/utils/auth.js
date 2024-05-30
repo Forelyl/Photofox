@@ -26,3 +26,10 @@ export function getLogin() {
     }
     else return login;
 }
+
+export function testAuthor(author_id, author_login){
+    const login = localStorage.getItem("login");
+    const id = localStorage.getItem("id");
+
+    return login === author_login && id === author_id;
+}

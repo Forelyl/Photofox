@@ -17,7 +17,7 @@ export default function useFilterRoulette (valuesArray, titlesArray, currentElem
             }
             let new_value = values[new_key];
             let new_title = titles[new_key];
-            return [new_key, new_title, new_value];
+            return [new_key, new_value, new_title];
         });
 
     }
