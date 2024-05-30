@@ -1,7 +1,7 @@
 
 
 export default function useTagsLoad(setTags) {
-    fetch(`http://localhost:3000/tag/all`, {
+    fetch(`http://photofox.pp.ua/api/tag/all`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

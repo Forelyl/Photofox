@@ -73,7 +73,7 @@ export async function action({request}) {
     let response;
 
     if (signMode === 'in') {
-        response = await fetch('http://localhost:3000/login', {
+        response = await fetch('https://photofox.pp.ua/api/login', {
             method: 'POST',
             body: data
         });
@@ -84,7 +84,7 @@ export async function action({request}) {
             email: data.get('email'),
             password: data.get('password')
         }
-        response = await fetch('http://localhost:3000/profile/add/user', {
+        response = await fetch('http://photofox.pp.ua/api/profile/add/user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

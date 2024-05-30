@@ -33,7 +33,10 @@ app = FastAPI(lifespan=lifespan)
 password_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
-origins = ["http://localhost:5173"]
+origins = [
+    "http://photofox.pp.ua",
+    "https://photofox.pp.ua"
+]
 
 app.add_middleware(
     CORSMiddleware,

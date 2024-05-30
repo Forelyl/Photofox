@@ -28,7 +28,7 @@ export default function useImageLoad(lastImage, filters, tags) {
         }
         const controller = new AbortController();
         const signal = controller.signal;
-        fetch(`http://localhost:3000/image/pc?last_image_id=${lastImage}` + filters_string + tags_string, {
+        fetch(`http://photofox.pp.ua/api/image/pc?last_image_id=${lastImage}` + filters_string + tags_string, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
