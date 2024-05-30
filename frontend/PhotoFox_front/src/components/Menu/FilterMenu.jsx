@@ -30,6 +30,9 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
 
     function handleImageFormChange (value) {
         setImageForm(value);
+        if (!changes){
+            setChanges(true);
+        }
     }
     function handleDateChange (value) {
         setDate(value);
