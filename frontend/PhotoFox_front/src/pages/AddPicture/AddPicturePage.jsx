@@ -55,7 +55,7 @@ export default function AddPicturePage() {
         data.delete('width');
         setTimeout(() => {data.delete('height');}, 3000);
 
-        const response = await fetch('http://127.0.0.1:3000/image', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/image`, {
             method: 'POST',
             headers: headers,
             body: data

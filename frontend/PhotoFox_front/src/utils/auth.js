@@ -30,6 +30,7 @@ export function getLogin() {
 export function testAuthor(author_id, author_login){
     const login = localStorage.getItem("login");
     const id = localStorage.getItem("id");
+    const token = localStorage.getItem("token");
 
-    return login === author_login && id === author_id;
+    return login === author_login && id === author_id && token;
 }

@@ -43,7 +43,7 @@
                 height: 100%;
                 object-fit: cover;
                 z-index: -1;
-                border-radius: 14px;                
+                border-radius: 14px;
             }
         }
         > #image-wrapper.downloadable {
@@ -79,7 +79,7 @@
                 display: none;
                 left: 30%;
                 top: 10%;
-                width: 30%; 
+                width: 30%;
                 height: 60%;
                 border: solid aqua;
                 border-width: 0 0.5vh 0.5vh 0;
@@ -188,12 +188,12 @@
                 color: #0affff;
                 font-weight: 500;
                 letter-spacing: 1px;
-                
+
             }
         }
         > #navigate {
             padding-top: 3%;
-            
+
             user-select: none;
             display: flex;
             align-items: top;

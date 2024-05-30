@@ -38,7 +38,7 @@ export default function useImageLoad(lastImage, filters, tags) {
         }
         const controller = new AbortController();
         const signal = controller.signal;
-        let fetch_string = `http://127.0.0.1:3000/image/pc?last_image_id=${newStart}` + filters_string + tags_string;
+        let fetch_string = `${import.meta.env.VITE_API_URL}/image/pc?last_image_id=${newStart}` + filters_string + tags_string;
         console.log(fetch_string);
         fetch(fetch_string, {
             method: 'GET',

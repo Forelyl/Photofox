@@ -258,7 +258,7 @@ async def get_images_mobile_with_user(user: Annotated[User, Depends(access_user)
 
 
 @app.get('/image', tags=['image'], response_model=DB_Returns.Image_full)
-async def get_images(image_id: int):
+async def get_image(image_id: int):
     return await db.get_image(image_id)
 
 
