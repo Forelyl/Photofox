@@ -75,7 +75,7 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
             <h3>Filters</h3>
             <div id='filters'>
                 <div id='left'>
-                    <div id='buttons'>
+                    <div id='buttons' className={(imageForm) ? imageForm : 'No'}>
                         <button id='H-button' onClick={() => handleImageFormChange('proportionH')}>
                             <div></div>
                         </button>

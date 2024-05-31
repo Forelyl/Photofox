@@ -45,19 +45,43 @@
                     aspect-ratio: 2;
                     width: 25%;
                 }
+                > #H-button:hover {
+                    border-color: #fba315;
+                }
                 > #V-button {
                     aspect-ratio: 0.5;
                     width: 12.5%;
                 }
+                > #V-button:hover {
+                    border-color: #fba315;
+                }
                 > #S-button {
                     aspect-ratio: 1;
                     width: 12.5%;
+                }
+                > #S-button:hover {
+                    border-color: #fba315;
                 }
                 > #No-button {
                     border: 0;
                     font-weight: 400;
                     font-size: 3.25vh;
                 }
+                > #No-button:hover {
+                    color: #fba315;
+                }
+            }
+            > #buttons.No > #No-button {
+                color: #FFD645;
+            }
+            > #buttons.proportionH > #H-button {
+                border-color: #FFD645;
+            }
+            > #buttons.proportionV > #V-button {
+                border-color: #FFD645;
+            }
+            > #buttons.proportionS > #S-button {
+                border-color: #FFD645;
             }
         }
         > #tags {
@@ -72,11 +96,11 @@
         }
     }
     > h3 {
-        padding: 2%;
+        padding: 1.5% 2%;
         font-family: "Days One";
         margin: 0;
         font-weight: 200;
-        font-size: 3vh;
+        font-size: 4vh;
         letter-spacing: 3px;
         /* background-color: red; */
     }
