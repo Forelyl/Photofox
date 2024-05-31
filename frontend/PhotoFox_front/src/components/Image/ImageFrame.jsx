@@ -1,102 +1,18 @@
-import {getToken, loaderCheckToken, testAuthor} from "../../utils/auth.js";
+import {testAuthor} from "../../utils/auth.js";
 import {useParams, Link, json, redirect} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
-import {useEffect, useState} from "react";
-import {clearIntendedDestination, setIntendedDestination} from "../../utils/independentDestination.js";
+import {useState} from "react";
+import CustomLikeButton from "../Buttons/CustomLikeButton.jsx";
+
 
 export default function ImageFrame({ setLoading, loading }) {
     const [subscribed, setSubscribed] = useState();
-    const [liked, setLiked] = useState();
     const { pictureId} = useParams();
-    const { error, imageParams} = useImageLoad(pictureId, setLoading, liked, subscribed);
-    const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags } = imageParams;
+    const { error, imageParams} = useImageLoad(pictureId, setLoading);
+    const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked } = imageParams;
 
-    useEffect(() => {
-        setSubscribed(imageParams.subscribed);
-        setLiked(imageParams.liked)
-    }, [])
     const isAuthor = testAuthor(authorId, authorLogin);
-
-    async function handleSubscribeClick() {
-        if (!getToken()) {
-            setIntendedDestination(`/pictures/${pictureId}`);
-            redirect('/sign?mode=in');
-        }
-        else {
-            clearIntendedDestination();
-        }
-        let response;
-        if(subscribed) {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribed_on_id=${authorId}`, {
-                method: "DELETE",
-                headers: {
-                    'Authorization': getToken(),
-                }
-            });
-            if (response.ok) {
-                setSubscribed(false);
-            }
-            else {
-                throw json({message: 'Could not authenticate user.'}, {status: response.status});
-            }
-        }
-        else {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribe_on_id=${authorId}`, {
-                method: "POST",
-                headers: {
-                    'Authorization': getToken(),
-                }
-            });
-            if (response.ok) {
-                setSubscribed(true);
-            }
-            else {
-                throw json({message: 'Could not authenticate user.'}, {status: response.status});
-            }
-        }
-    }
-
-    async function handleLikeClick() {
-        if (!getToken()) {
-            setIntendedDestination(`/pictures/${pictureId}`);
-            redirect('/sign?mode=in');
-        }
-        else {
-            clearIntendedDestination();
-        }
-        let response;
-        if(liked) {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/like?image_id=${pictureId}`, {
-                method: "DELETE",
-                headers: {
-                    'Authorization': getToken(),
-                    'content-type': 'application/json'
-                }
-            });
-            if (response.ok) {
-                setLiked(false);
-            }
-            else {
-                throw json({message: 'Could not authenticate user.'}, {status: response.status});
-            }
-        }
-        else {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/like?image_id=${pictureId}`, {
-                method: "POST",
-                headers: {
-                    'Authorization': getToken(),
-                    'content-type': 'application/json'
-                }
-            });
-            if (response.ok) {
-                setLiked(true);
-            }
-            else {
-                throw json({message: 'Could not authenticate user.'}, {status: response.status});
-            }
-        }
-    }
 
     function handleCommentClick() {
 
@@ -141,20 +57,14 @@ export default function ImageFrame({ setLoading, loading }) {
                             <span>{title}</span>
                             <span>by {authorLogin}</span>
                         </div>
-                        <button onClick={handleSubscribeClick} disabled={isAuthor}>
-                            {!subscribed ? 'Subscribe' : 'Unsubscribe'}
-                        </button>
+
                         <button>
                             <img src='/ImageModuleIcons/report_button.svg' alt='report button'/>
                             <span>Report</span>
                         </button>
                     </div>
                     <div>
-                        <button onClick={handleLikeClick}>
-                            <img src={(!liked) ? '/DropdownElements/like.svg' : '/ImageModuleIcons/like.svg'}
-                                 alt='like button'/>
-                            <span>{likeCounter} likes</span>
-                        </button>
+                        <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter}/>
                         <button onClick={handleCommentClick}>
                             <img src='/ImageModuleIcons/comment_icon.svg' alt='comment button'/>
                             <span>{(commentCounter > 0) ? commentCounter : 'No'} comments</span>
