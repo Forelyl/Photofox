@@ -10,9 +10,10 @@ import CustomSubscribeButton from "../Buttons/CustomSubscribeButton.jsx";
 export default function ImageFrame({ setLoading, loading }) {
     const { pictureId} = useParams();
     const { error, imageParams} = useImageLoad(pictureId, setLoading);
-    const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked, subscribed} = imageParams;
+    const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked, subscribed, saved} = imageParams;
 
     const isAuthor = testAuthor(authorId, authorLogin);
+
     function handleCommentClick() {
 
     }
