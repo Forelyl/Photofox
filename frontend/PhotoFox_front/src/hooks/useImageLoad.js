@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import {getToken} from "../utils/auth.js";
 
 export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
     const [error, setError] = useState(false);
@@ -19,14 +20,27 @@ export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
     useEffect(() => {
         setLoading(true);
         setError(false);
+        let response;
+        let token = getToken()
+        if (token) {
+            response = fetch(`${import.meta.env.VITE_API_URL}/image/user?image_id=${pictureId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token,
+                }
+            });
+        }
+        else {
+            response = fetch(`${import.meta.env.VITE_API_URL}/image?image_id=${pictureId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        }
 
-        fetch(`${import.meta.env.VITE_API_URL}/image?image_id=${pictureId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
+        response.then(response => response.json())
         .then((values) => {
             //console.log(values, 'values');
             setImageParams( {
