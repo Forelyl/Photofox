@@ -362,11 +362,11 @@ class PhotoFox:
             SELECT id, image_url as path, width, height FROM image 
             WHERE {tags_str} {filters_line};
         """
-        print("-------------------------------")
-        print("-------------------------------")
-        print(query)
-        print("-------------------------------")
-        print("-------------------------------")
+        # print("-------------------------------")
+        # print("-------------------------------")
+        # print(query)
+        # print("-------------------------------")
+        # print("-------------------------------")
         
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
 

@@ -73,7 +73,7 @@ export async function action({request}) {
     let response;
 
     if (signMode === 'in') {
-        response = await fetch('https://photofox.pp.ua/api/login', {
+        response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
             method: 'POST',
             body: data
         });
@@ -84,7 +84,7 @@ export async function action({request}) {
             email: data.get('email'),
             password: data.get('password')
         }
-        response = await fetch('http://photofox.pp.ua/api/profile/add/user', {
+        response = await fetch(`${import.meta.env.VITE_API_URL}/profile/add/user`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
