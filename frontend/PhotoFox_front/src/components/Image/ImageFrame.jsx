@@ -1,9 +1,9 @@
 import {getToken, loaderCheckToken, testAuthor} from "../../utils/auth.js";
-import {useParams, Link, json} from "react-router-dom";
+import {useParams, Link, json, redirect} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
 import {useEffect, useState} from "react";
-import {setIntendedDestination} from "../../utils/independentDestination.js";
+import {clearIntendedDestination, setIntendedDestination} from "../../utils/independentDestination.js";
 
 export default function ImageFrame({ setLoading, loading }) {
     const [subscribed, setSubscribed] = useState();
@@ -20,8 +20,13 @@ export default function ImageFrame({ setLoading, loading }) {
     const isAuthor = testAuthor(authorId, authorLogin);
 
     async function handleSubscribeClick() {
-        setIntendedDestination(`/pictures/${pictureId}`);
-        loaderCheckToken();
+        if (!getToken()) {
+            setIntendedDestination(`/pictures/${pictureId}`);
+            redirect('/sign?mode=in');
+        }
+        else {
+            clearIntendedDestination();
+        }
         let response;
         if(subscribed) {
             response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribed_on_id=${authorId}`, {
@@ -54,8 +59,13 @@ export default function ImageFrame({ setLoading, loading }) {
     }
 
     async function handleLikeClick() {
-        setIntendedDestination(`/pictures/${pictureId}`);
-        loaderCheckToken();
+        if (!getToken()) {
+            setIntendedDestination(`/pictures/${pictureId}`);
+            redirect('/sign?mode=in');
+        }
+        else {
+            clearIntendedDestination();
+        }
         let response;
         if(liked) {
             response = await fetch(`${import.meta.env.VITE_API_URL}/like?image_id=${pictureId}`, {
