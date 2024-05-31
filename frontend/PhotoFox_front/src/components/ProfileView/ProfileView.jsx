@@ -34,7 +34,7 @@ export default function ProfileView({loading, setLoading}) {
                     {(!isOwner) ?
                         <>
                             <button onClick={handleSubscribe}>Subscribe</button>
-                            <CustomReportButton type={"profile"} id_for_report={} ownerLogin={profileName} />
+                            <CustomReportButton type={"profile"} id_for_report={2} ownerLogin={profileName} />
                         </>
                         :
                         <Link to={'edit'}>Edit profile</Link>

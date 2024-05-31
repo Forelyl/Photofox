@@ -2,6 +2,7 @@ import {Link, useSearchParams, json} from "react-router-dom";
 import NavBar from "../../components/Menu/NavBar.jsx";
 import ImageScroller from "../../components/ImageScroller/ImageScroller.jsx";
 import { useState } from "react";
+import './UsersPictures.css'
 
 export default function UsersPictures() {
     const [searchParams] = useSearchParams();
@@ -18,6 +19,8 @@ export default function UsersPictures() {
     const [filters, setFilters] = useState(filter);
     const [tags, setTags] = useState([]);
 
+    const titlePage = pageType.charAt(0).toUpperCase() + pageType.slice(1);
+
     return (
         <>
             <NavBar sets={[setFilters, setTags]}/>
@@ -25,9 +28,9 @@ export default function UsersPictures() {
                 <Link to='/'>
                     <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                 </Link>
-                <h1>{pageType}</h1>
+                <h1>{titlePage}</h1>
             </div>
-            <ImageScroller filters={filters} tags={tags}/>
+            <ImageScroller filters={filters} tags={tags} userSpecific={true}/>
         </>
     );
 }

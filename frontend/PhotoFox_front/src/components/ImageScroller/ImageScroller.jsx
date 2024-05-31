@@ -2,10 +2,11 @@ import {useState, useRef, useCallback} from "react";
 import useImageScrollLoad from "../../hooks/useImageScrollLoad.js";
 import ImageRow from "./ImageRow.jsx";
 import './ImageScroller.css';
+import { getToken } from "../../utils/auth.js";
 
-export default function ImageScroller({ filters, tags }) {
+export default function ImageScroller({ filters, tags, userSpecific = false }) {
     const [lastImage, setLastImage] = useState(-1);
-    const {images, imagesLeft, loading, error} = useImageScrollLoad(lastImage, filters, tags);
+    const {images, imagesLeft, loading, error} = useImageScrollLoad(lastImage, filters, tags, userSpecific);
     const {rows, lastId} = spreadImages(images, imagesLeft);
     const lastRow = useRef();
     const lastRowRef = useCallback(node => {

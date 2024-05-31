@@ -368,10 +368,18 @@ async def get_is_subscribed(user: Annotated[User, Depends(access_user)], author_
 @app.get('/profile/email/exists', response_model=bool, tags=['profile'])
 async def get_email_exists(email: Annotated[str, Param(pattern=email_regex)]):
     return await email_exists(email)
-# TODO переглянути чи треба ці функції
+
 @app.get('/profile/login/exists', response_model=bool, tags=['profile'])
 async def get_login_exists(login: Annotated[str, Param(pattern=login_regex)]):
     return await login_exists(login)
+
+@app.get('/profile', response_model=DB_Returns.Profile_full, tags=['profile'])
+async def get_profile(login: Annotated[str, Param(pattern=login_regex)]):
+    return await db.get_user_profile(login)
+
+@app.get('/profile/image', response_model=DB_Returns.Profile_full, tags=['profile'])
+async def get_profile_image(login: Annotated[str, Param(pattern=login_regex)]):
+    return await db.get_user_profile_picture(login)
 
 @app.post('/admin/add/admin', tags=['admin'], dependencies=[Depends(access_admin)])
 async def add_admin(login: Annotated[str, Body(pattern=login_regex, min_length=1, max_length=50)], 
@@ -535,20 +543,20 @@ def i_am_user(user: Annotated[User, Depends(access_user)], image: Annotated[Uplo
     return "You are " + user.username
 
 
-# @app.middleware("http")
-# async def log_request_body(request: Request, call_next):
-#     # Access the request body
-#     body_bytes = await request.body()
-#     body_str = body_bytes.decode("utf-8")
-#     print('----------------------')
-#     print('----------------------')
-#     print(f"Request body: {body_str}")
-#     print(f"Headers: f{request.url}") 
-#     print('----------------------')
-#     print('----------------------')
+@app.middleware("http")
+async def log_request_body(request: Request, call_next):
+    # Access the request body
+    body_bytes = await request.body()
+    body_str = body_bytes.decode("utf-8")
+    print('----------------------')
+    print('----------------------')
+    print(f"Request body: {body_str}")
+    print(f"Headers: f{request.url}") 
+    print('----------------------')
+    print('----------------------')
     
-#     response = await call_next(request)
-#     return response
+    response = await call_next(request)
+    return response
 
 @app.get("/items/")
 async def read_items(q: Annotated[list[str] | None, Query()] = None):

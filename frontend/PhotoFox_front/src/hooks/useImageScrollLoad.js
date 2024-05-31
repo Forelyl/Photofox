@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { getToken } from "../utils/auth";
 
-export default function useImageScrollLoad(lastImage, filters, tags) {
+export default function useImageScrollLoad(lastImage, filters, tags, userSpecific = false) {
     const [loading, setLoading] = useState(true);
     const [images, setImages] = useState([]);
     const [imagesLeft, setImagesLeft] = useState(false);
@@ -23,7 +24,6 @@ export default function useImageScrollLoad(lastImage, filters, tags) {
             for (let one_filter in filters.secondaryFilter) {
                 if (filters.secondaryFilter[one_filter]) {
                     filtersString += '&filters=' + filters.secondaryFilter[one_filter];
-                    console.log(11)
                 }
             }
         }
@@ -32,20 +32,26 @@ export default function useImageScrollLoad(lastImage, filters, tags) {
             for (let one_tag in tags) {
                 if (tags[one_tag]){
                     tags_string += '&tags=' + tags[one_tag];
-                    console.log(22)
                 }
             }
         }
         const controller = new AbortController();
         const signal = controller.signal;
-        let fetch_string = `${import.meta.env.VITE_API_URL}/image/pc?last_image_id=${newStart}` + filtersString + tags_string;
+        let fetch_string = `${import.meta.env.VITE_API_URL}/image/pc${userSpecific ? '/user' : ''}?last_image_id=${newStart}` + filtersString + tags_string;
         console.log(fetch_string);
+        
+        let headersQuerry = {'Content-Type': 'application/json'}
+        if (userSpecific) {
+            headersQuerry = {
+                'Content-Type': 'application/json',
+                'Authorization': getToken()
+            }
+        }
+        
         fetch(fetch_string, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            signal: signal
+            headers: headersQuerry,
+            signal: signal,
         })
         .then(response => response.json())
         .then(values => {

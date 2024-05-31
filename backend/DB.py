@@ -5,6 +5,7 @@ from typing import Any
 import asyncio
 from pydantic import BaseModel
 from fastapi import HTTPException, status
+from starlette.status import HTTP_400_BAD_REQUEST
 
 
 class DB:
@@ -111,20 +112,19 @@ class DB_Returns:
         profile_image: str | None
         is_blocked: bool = False
 
-    class Profile_reported(BaseModel):
-        id: int
-        login: str
-        profile_image: str | None
+    class Profile_full(Profile):
         description: str | None
-
-        report_comment_counter: int
-        report_image_counter: int
-        report_profile_counter: int
+        
         subscribed_on: int
         subscribers: int
 
+    class Profile_reported(Profile_full):
+        report_comment_counter: int
+        report_image_counter: int
+        report_profile_counter: int
+        
         report_score: float
-        is_blocked: bool
+
 
 class DB_Models:
     # TODO: add indexes for fast search
@@ -215,7 +215,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     if DB_Models.Image_filters.saved in filters:
         where_query.append(f"id in (SELECT id_image FROM saved WHERE id_user={user_id} {last_id_image_query})")
     if DB_Models.Image_filters.liked in filters:
-        where_query.append(f"id in (SELECT id_image FROM liked WHERE id_user={user_id} {last_id_image_query})")
+        where_query.append(f'id in (SELECT id_image FROM "like" WHERE id_user={user_id} {last_id_image_query})')
 
     if DB_Models.Image_filters.proportionV in filters:
         where_query.append("width < height")
@@ -592,10 +592,39 @@ class PhotoFox:
 
         return list(DB_Returns.Profile(**x) for x in result)
 
-    async def get_user_subscribed(self, user_id: int, author_id: int):
+    async def get_user_subscribed(self, user_id: int, author_id: int) -> bool:
         query: str = "SELECT 1 FROM subscribe WHERE id_subscriber=$1 AND id_subscribed_on=$2;"
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, author_id))
         return len(result) == 1
+    
+    async def get_user_profile_picture(self, login: str) -> str:
+        query: str = 'SELECT profile_image_url FROM "user" WHERE login=$1;'
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
+        return result[0]['profile_image_url']
+    
+    #     class Profile(BaseModel):
+    #     id: int
+    #     login: str
+    #     profile_image: str | None
+    #     is_blocked: bool = False
+
+    # class Profile_full(Profile):
+    #     description: str | None
+        
+    #     subscribed_on: int
+    #     subscribers: int
+
+
+    async def get_user_profile(self, login: str) -> DB_Returns.Profile_full: 
+        query: str = """
+        SELECT id, login, profile_image_url AS profile_image, is_blocked,
+               description, subscribed AS subscribed_on, subscribers 
+        FROM "user" WHERE login=$1;
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
+        if (len(result) == 0): raise HTTPException(status_code=HTTP_400_BAD_REQUEST, 
+                                                  detail={'message': f"User with login {login} wasn't found"})
+        return DB_Returns.Profile_full(**result[0]['profile_image_url'])
 
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:

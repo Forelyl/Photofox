@@ -1,0 +1,8 @@
+#top {
+    display: flex;
+    > h1 {
+        font-family: 'Epilogue';
+        
+        background-color: rebeccapurple;
+    }
+}
