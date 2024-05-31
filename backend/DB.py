@@ -411,7 +411,7 @@ class PhotoFox:
     async def get_like_on_image(self, id_user: int, id_image: int) -> tuple[int, bool]:
         # SELECT EXISTS(SELECT 1 FROM "like" WHERE "like".id_image=2 AND "like".id_user=2), like_counter FROM image WHERE id = 134;
         query: str = 'SELECT EXISTS(SELECT 1 FROM "like" WHERE "like".id_image=$1 AND "like".id_user=$2), like_counter FROM image WHERE id = $1;'
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image))
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image, id_user))
 
         if len(result) == 0: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                                  detail={"message" : f"Unknown image with id {id_image}"})

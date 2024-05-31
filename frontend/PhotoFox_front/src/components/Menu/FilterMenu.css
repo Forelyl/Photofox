@@ -122,10 +122,10 @@
     }
     > button {
         cursor: pointer;
-        width: 2.8%;
+        width: 2.5%;
         position: absolute;
         bottom: 2%;
-        right: 1%;
+        right: 0.7%;
         outline: 0;
         border: 0;
         padding: 0;
@@ -159,7 +159,7 @@
 }
 
 .select-block {
-    width: 50%;
+    width: 75%;
     height: 20%;
     position: relative;
     border: 1.5px dashed #49B1E9;

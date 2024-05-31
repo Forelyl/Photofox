@@ -102,6 +102,7 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
                 </div>
                 <div id='right'>
                     <div className="select-block">
+                        
                         <select name="date" id="date">
                             <option value="new">By date new</option>
                             <option value="old">By date old</option>
