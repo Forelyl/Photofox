@@ -326,6 +326,18 @@ async def get_last_comment(image_id: Annotated[int, Param(ge=1)], last_commnet_i
     return await db.get_last_comments(image_id, last_commnet_id)
 
 #============================================
+# Save
+#============================================
+@app.post('/save', tags=['save'])
+async def add_save_image(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]) -> None:
+    pass
+
+@app.delete('/delete', tags=['save'])
+async def delete_save_image(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]) -> None:
+    await db.delete_saved_from_image(user.id, image_id)
+
+
+#============================================
 # Subscribing
 #============================================
 @app.post('/subscribe', tags=['subscribe'])

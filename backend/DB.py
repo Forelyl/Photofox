@@ -698,6 +698,9 @@ class PhotoFox:
         
     async def delete_subscribe(self, user_id: int, subscribed_on: int) -> None:
         await self.__DB.execute('DELETE FROM subscribe WHERE id_subscriber = $1 AND id_subscribed_on = $2', user_id, subscribed_on)
+    
+    async def delete_saved_from_image(self, user_id: int, image_id: int) -> None:
+        await self.__DB.execute('DELETE FROM saved WHERE id_user = $1 AND id_image = $2', user_id, image_id)
 
     #UPDATE
     
