@@ -268,7 +268,7 @@ async def get_image(image_id: int):
 
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
-@app.post('/image', tags=['image'], response_model=str)
+@app.post('/image', tags=['image'], response_model=int)
 async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()], 
                         title: Annotated[str, Form(max_length=100, min_length=1)], 
                         description: Annotated[str, Form(max_length=500)] = "",
@@ -281,7 +281,7 @@ async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: A
     image_id = await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
     if (tags is not None):
         await db.add_tag_to_image(image_id, tags)
-    return result.shared_link
+    return image_id
 
 
 @app.delete('/image', tags=['image'])
