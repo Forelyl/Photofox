@@ -1,15 +1,21 @@
 import {testAuthor} from "../../utils/auth.js";
 import Tags from "../Menu/Tags.jsx";
+import {useParams} from "react-router-dom";
+import useImageLoad from "../../hooks/useImageLoad.js";
+
 
 
 export default function ImageFrame() {
-    let likeCounter
-    let commentCounter
-    let title = "sdfsd"
-    let userName
-    let subscribed
-    let liked = false;
-    const isAuthor = testAuthor(1, 'sdf');
+    const { pictureId} = useParams();
+    //console.log(pictureId);
+    const { loading, error, imageParams} = useImageLoad(pictureId);
+    const {
+        authorId, authorLogin, authorPicture,
+        path, title, commentCounter, likeCounter,
+        description, tags, subscribed, liked
+    } = imageParams;
+
+    const isAuthor = testAuthor(authorId, authorLogin);
 
 
 
@@ -25,21 +31,24 @@ export default function ImageFrame() {
         <div id='image-frame'>
             <div id='top'>
                 <div id='left'>
-
+                    <button id='back'></button>
                 </div>
                 <div id='center'>
-                    {/*<img src={} alt='picture'/>*/}
+                    <img src={path} alt='picture'/>
                 </div>
                 <div id='right'>
+                    <button id='back'></button>
                     <button id='back'></button>
                 </div>
             </div>
             <div id='bottom'>
                 <div>
                     <div>
-                        {/*<img src={} alt='user icon'/>*/}
+                        <img src={
+                            (authorPicture) ? authorPicture : '/NavBarElements/profile_icon.svg'
+                        } alt='user icon'/>
                         <span>{title}</span>
-                        <span>by {userName}</span>
+                        <span>by {authorLogin}</span>
                     </div>
 
                     <button onClick={handleSubscribeClick} disabled={isAuthor}>
@@ -96,10 +105,3 @@ export default function ImageFrame() {
     )
 }
 
-function loadPicture(pictureId) {
-    const imageParams = {
-        path: '',
-        title: '',
-
-    }
-}
