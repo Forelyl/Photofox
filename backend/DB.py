@@ -593,6 +593,12 @@ class PhotoFox:
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, last_profile_id))
 
         return list(DB_Returns.Profile(**x) for x in result)
+
+    async def get_user_subscribed(self, user_id: int, author_id: int):
+        query: str = "SELECT 1 FROM subscribe WHERE id_subscriber=$1 AND id_subscribed_on=$2;"
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, author_id))
+        return len(result) == 1
+
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
         await self.__DB.execute(

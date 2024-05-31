@@ -346,6 +346,10 @@ async def get_all_profile_on_which_subscribed(user: Annotated[User, Depends(acce
 async def get_all_profile_which_are_subscribed(user: Annotated[User, Depends(access_user)], last_profile_id: int = -1):
     return await db.get_subscribers_on_profiles(user.id, last_profile_id)
 
+@app.get('/subscribe/check-subscription', tags=['subscribe'], response_model=bool)
+async def get_is_subscribed(user: Annotated[User, Depends(access_user)], author_id: Annotated[int, Header(ge=1)]):
+    return await db.get_user_subscribed(user.id, author_id)
+
 #============================================
 # Profile
 #============================================
