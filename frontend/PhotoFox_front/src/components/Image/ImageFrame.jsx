@@ -1,21 +1,18 @@
 import {testAuthor} from "../../utils/auth.js";
-import {useParams, Link, json, redirect} from "react-router-dom";
+import {useParams, Link} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
-import {useState} from "react";
 import CustomLikeButton from "../Buttons/CustomLikeButton.jsx";
 import CustomSubscribeButton from "../Buttons/CustomSubscribeButton.jsx";
 
 
 
 export default function ImageFrame({ setLoading, loading }) {
-    const [subscribed, setSubscribed] = useState();
     const { pictureId} = useParams();
     const { error, imageParams} = useImageLoad(pictureId, setLoading);
-    const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked } = imageParams;
+    const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked, subscribed} = imageParams;
 
     const isAuthor = testAuthor(authorId, authorLogin);
-    console.log(imageParams)
     function handleCommentClick() {
 
     }
@@ -59,7 +56,7 @@ export default function ImageFrame({ setLoading, loading }) {
                             <span>{title}</span>
                             <span>by {authorLogin}</span>
                         </div>
-                        <CustomSubscribeButton initialState={subscribed} authorId={authorId} isAuthor={isAuthor}/>
+                        <CustomSubscribeButton pictureId={pictureId} initialState={subscribed} authorId={authorId} isAuthor={isAuthor}/>
                         <button>
                             <img src='/ImageModuleIcons/report_button.svg' alt='report button'/>
                             <span>Report</span>

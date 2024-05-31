@@ -1,19 +1,21 @@
 import {getToken} from "../../utils/auth.js";
 import {clearIntendedDestination, setIntendedDestination} from "../../utils/independentDestination.js";
-import {json, redirect} from "react-router-dom";
+import {json, redirect, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
-export default function CustomSubscribeButton({ authorId, initialState, isAuthor = false }){
-    const [subscribed, setSubscribed] = useState(initialState);
+export default function CustomSubscribeButton({ pictureId, authorId, initialState, isAuthor = false }){
+    const [subscribed, setSubscribed] = useState();
 
     useEffect(() => {
         setSubscribed(initialState);
     }, [initialState]);
 
+    const navigate = useNavigate();
+
     async function handleSubscribeClick() {
         if (!getToken()) {
-            setIntendedDestination(`/pictures/${pictureId}`);
-            redirect('/sign?mode=in');
+            setIntendedDestination(`/picture/${pictureId}`);
+            return navigate('/sign?mode=in');
         }
         else {
             clearIntendedDestination();
