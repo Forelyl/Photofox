@@ -4,6 +4,7 @@ import asyncpg as postgres
 from typing import Any
 import asyncio
 from pydantic import BaseModel
+from fastapi import HTTPException, status
 
 
 class DB:
@@ -407,12 +408,15 @@ class PhotoFox:
         return DB_Returns.Image_full(**result[0])
 
 
-    async def get_like_on_image(self, id_user: int, id_image: int) -> bool:
-        query: str = """
-        SELECT * FROM "like" WHERE $2 = id_image AND $1 = id_user;
-        """
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user, id_image))
-        return len(result) == 1
+    async def get_like_on_image(self, id_user: int, id_image: int) -> tuple[int, bool]:
+        # SELECT EXISTS(SELECT 1 FROM "like" WHERE "like".id_image=2 AND "like".id_user=2), like_counter FROM image WHERE id = 134;
+        query: str = 'SELECT EXISTS(SELECT 1 FROM "like" WHERE "like".id_image=$1 AND "like".id_user=$2), like_counter FROM image WHERE id = $1;'
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image))
+
+        if len(result) == 0: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                                 detail={"message" : f"Unknown image with id {id_image}"})
+        
+        return (result[0]['like_counter'], result[0]['exists'])
     
 
     async def get_last_comments(self, id_image: int, last_id: int) -> list[DB_Returns.Comment]:

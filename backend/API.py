@@ -305,9 +305,10 @@ async def add_like(user: Annotated[User, Depends(access_user)], image_id: Annota
 async def remove_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
     await db.delete_like(user.id, image_id)
 
-@app.get('/like', tags=['like'], dependencies=[Depends(access_user)], response_model=bool)
-async def current_user_set_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
-    return await db.get_like_on_image(user.id, image_id)
+@app.get('/like', tags=['like'], dependencies=[Depends(access_user)], response_model=dict[str, bool | int])
+async def current_user_set_like_and_like_counter(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
+    result: tuple[int, bool] = await db.get_like_on_image(user.id, image_id)
+    return {"like_counter": result[0], "is_liked": result[1]}
 
 #============================================
 # Comment
