@@ -5,8 +5,13 @@ import {useEffect, useState} from "react";
 
 
 export default function CustomLikeButton({ pictureId, initialState, initialNumber, isAuthor = false }){
-    const [liked, setLiked] = useState(initialState);
-    const [likeCounter, setLikeCounter] = useState(initialNumber);
+    const [liked, setLiked] = useState();
+    const [likeCounter, setLikeCounter] = useState();
+    useEffect(() => {
+        setLiked(initialState);
+        setLikeCounter(initialNumber)
+    }, [initialState]);
+
     const navigate = useNavigate();
 
     async function handleLikeClick(navigate) {

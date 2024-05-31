@@ -3,8 +3,12 @@ import {clearIntendedDestination, setIntendedDestination} from "../../utils/inde
 import {json, redirect} from "react-router-dom";
 import {useEffect, useState} from "react";
 
-export default function CustomLikeButton({ authorId, initialState, isAuthor = false }){
+export default function CustomSubscribeButton({ authorId, initialState, isAuthor = false }){
     const [subscribed, setSubscribed] = useState(initialState);
+
+    useEffect(() => {
+        setSubscribed(initialState);
+    }, [initialState]);
 
     async function handleSubscribeClick() {
         if (!getToken()) {

@@ -4,6 +4,8 @@ import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
 import {useState} from "react";
 import CustomLikeButton from "../Buttons/CustomLikeButton.jsx";
+import CustomSubscribeButton from "../Buttons/CustomSubscribeButton.jsx";
+
 
 
 export default function ImageFrame({ setLoading, loading }) {
@@ -13,7 +15,7 @@ export default function ImageFrame({ setLoading, loading }) {
     const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked } = imageParams;
 
     const isAuthor = testAuthor(authorId, authorLogin);
-
+    console.log(imageParams)
     function handleCommentClick() {
 
     }
@@ -57,14 +59,14 @@ export default function ImageFrame({ setLoading, loading }) {
                             <span>{title}</span>
                             <span>by {authorLogin}</span>
                         </div>
-
+                        <CustomSubscribeButton initialState={subscribed} authorId={authorId} isAuthor={isAuthor}/>
                         <button>
                             <img src='/ImageModuleIcons/report_button.svg' alt='report button'/>
                             <span>Report</span>
                         </button>
                     </div>
                     <div>
-                        <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter}/>
+                        <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter} isAuthor={isAuthor}/>
                         <button onClick={handleCommentClick}>
                             <img src='/ImageModuleIcons/comment_icon.svg' alt='comment button'/>
                             <span>{(commentCounter > 0) ? commentCounter : 'No'} comments</span>
