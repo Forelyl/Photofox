@@ -72,7 +72,13 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
 
     return (
         <div id='filters-menu' className={className}>
-            <h3>Filters</h3>
+            <div>
+                <h3>Filters</h3>
+                {changes && <button onClick={handleClose}>
+                    <img src='/NavBarElements/submit_filters.svg'
+                         alt='Accept filters'/>
+                </button>}
+            </div>
             <div id='filters'>
                 <div id='left'>
                     <div id='buttons' className={(imageForm) ? imageForm : 'No'}>
@@ -122,8 +128,8 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
                     </div>
                 </div>
             </div>
-            <button onClick={handleClose}>
-                <img src={(!changes) ? '/NavBarElements/close_filters.svg' : '/NavBarElements/submit_filters.svg'} alt='Close filters'/>
+            <button onClick={onClose}>
+                <img src='/NavBarElements/close_filters.svg' alt='Close filters'/>
             </button>
         </div>
     );
