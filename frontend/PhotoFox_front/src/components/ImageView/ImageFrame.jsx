@@ -1,10 +1,12 @@
 import {testAuthor} from "../../utils/auth.js";
-import {useParams, Link} from "react-router-dom";
+import {useParams, Link, useNavigate} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
-import CustomLikeButton from "../Buttons/CustomLikeButton.jsx";
-import CustomSubscribeButton from "../Buttons/CustomSubscribeButton.jsx";
-import CustomSaveButton from "../Buttons/CustomSaveButton.jsx";
+import CustomLikeButton from "../CustomButtons/CustomLikeButton.jsx";
+import CustomSubscribeButton from "../CustomButtons/CustomSubscribeButton.jsx";
+import CustomSaveButton from "../CustomButtons/CustomSaveButton.jsx";
+import CustomShareButton from "../CustomButtons/CustomShareButton.jsx";
+import CustomReportButton from "../CustomButtons/CustomReportButton.jsx";
 
 
 
@@ -13,19 +15,21 @@ export default function ImageFrame({ setLoading, loading }) {
     const { error, imageParams} = useImageLoad(pictureId, setLoading);
     const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked, subscribed, saved} = imageParams;
 
+    const navigate = useNavigate();
     const isAuthor = testAuthor(authorId, authorLogin);
 
     function handleCommentClick() {
 
     }
 
-    function handleShareClick() {
-
-    }
-
     function handleEditClick() {
 
     }
+
+    function handleIconClick() {
+        return navigate(`/${authorLogin}`);
+    }
+
     return (
         <>
             {!error && <div id='image-frame'>
@@ -41,7 +45,7 @@ export default function ImageFrame({ setLoading, loading }) {
                         }
                     </div>
                     <div id='right'>
-                        <button id='exit'></button>
+                        <button id='exit' onClick={()=>{navigate('/')}}>exit</button>
                         <Link to={`/picture/${parseInt(pictureId) + 1}`} id='forvard'>
                             <img src='/ImageModuleIcons/move_forvard.svg' alt='move to previous picture'/>
                         </Link>
@@ -50,15 +54,13 @@ export default function ImageFrame({ setLoading, loading }) {
                 <div id='bottom'>
                     <div>
                         <div>
-                            <img src={(authorPicture) ? authorPicture : '/NavBarElements/profile_icon.svg'} alt='user icon'/>
+                            <img src={(authorPicture) ? authorPicture : '/NavBarElements/profile_icon.svg'} alt='user icon'
+                            onClick={handleIconClick}/>
                             <span>{title}</span>
-                            <span>by {authorLogin}</span>
+                            <span onClick={handleIconClick}>by {authorLogin}</span>
                         </div>
                         <CustomSubscribeButton pictureId={pictureId} initialState={subscribed} authorId={authorId} isAuthor={isAuthor}/>
-                        <button>
-                            <img src='/ImageModuleIcons/report_button.svg' alt='report button'/>
-                            <span>Report</span>
-                        </button>
+                        <CustomReportButton id_for_report={pictureId} type={'image'}>Report</CustomReportButton>
                     </div>
                     <div>
                         <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter} isAuthor={isAuthor}/>
@@ -66,10 +68,7 @@ export default function ImageFrame({ setLoading, loading }) {
                             <img src='/ImageModuleIcons/comment_icon.svg' alt='comment button'/>
                             <span>{(commentCounter > 0) ? commentCounter : 'No'} comments</span>
                         </button>
-                        <button onClick={handleShareClick}>
-                            <img src='/ImageModuleIcons/share.svg' alt='share button'/>
-                            <span>Share</span>
-                        </button>
+                        <CustomShareButton pictureId={pictureId}/>
                         <div>
                             {(!isAuthor) ?
                                 (
