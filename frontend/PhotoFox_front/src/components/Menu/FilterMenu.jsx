@@ -101,16 +101,19 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
                     <Tags isOpened={isOpened} setTags={setTags}></Tags>
                 </div>
                 <div id='right'>
-
+                    <button onClick={() => {
+                        document.getElementById('aoa').classList.toggle('active');
+                    }}>a</button>
 
                     <div className='select-block'>
                         <div className='select-result'>By date new</div>
                         <input type='hidden' name='date-filter'/>
-                        <ul className='select-dropdown active'>
+                        <ul className='select-dropdown active' id='aoa'>
                             <li id="new">By date new</li>
                             <li id="old">By date old</li>
                         </ul>
                     </div>
+                    
 
 
 

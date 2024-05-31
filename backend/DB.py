@@ -396,7 +396,7 @@ class PhotoFox:
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
                ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags,
                EXISTS(SELECT 1 FROM subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subscriber={user_id})) AS is_subscribed,
-               EXISTS(SELECT 1 FROM "like" WHERE ("like".id_image=image.id AND "like".id_user={user_id})) AS is_liked
+               EXISTS(SELECT 1 FROM "like" WHERE ("like".id_image=image.id AND "like".id_user={user_id})) AS is_liked,
                EXISTS(SELECT 1 FROM saved WHERE (saved.id_image=image.id AND saved.id_user={user_id})) AS is_saved
         FROM image JOIN "user" ON image.author_id = "user".id
         WHERE image.id = $1 AND NOT "user".is_blocked;
@@ -662,7 +662,7 @@ class PhotoFox:
         await self.__DB.execute('INSERT INTO image_tag(image_id, tag_id) VALUES ' + tags_str + ';')
 
     async def save_image(self, image_id: int, user_id: int) -> None:
-        await self.__DB.execute('INSERT INTO saved(id_user, id_image), VALUES($1, $2)', user_id, image_id)
+        await self.__DB.execute('INSERT INTO saved(id_user, id_image) VALUES($1, $2)', user_id, image_id)
 
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:
