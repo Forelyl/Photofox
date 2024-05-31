@@ -9,11 +9,12 @@ export default function PicturePage() {
         secondary_filter : [],
     });
     const [tags] = useState([]);
+    const [loading, setLoading] = useState(true);
     return (
         <>
             <NavBar hideSearch={true}/>
-            <ImageFrame />
-            <ImageScroller filters={filters} tags={tags}/>
+            <ImageFrame setLoading={setLoading}/>
+            {!loading && <ImageScroller filters={filters} tags={tags}/>}
         </>
     );
 }

@@ -16,15 +16,17 @@ const router = createBrowserRouter([
         children: [
         { index: true, element: <HomePage /> },
         { path: 'sign', element: <SignPage />, action: authAction },
-        { path: ':profileName', children: [ //TODO add loader that checks if logined and showes editing tools
+        { path: ':profileName', children: [
             { index: true, element: <ProfilePage /> },
             { path: 'edit', element: <ProfileEdit />, loader: loaderCheckToken },
             { path: 'pictures', element: <ProfilePictures />, loader: loaderCheckToken },
-            { path: 'subs', element: <ProfileSubs /> },
-            { path: 'picture/:pictureId',  element: <PicturePage /> }
+            { path: 'subs', element: <ProfileSubs /> }
         ]},
         { path: 'add-picture', element: <AddPicturePage />, loader: loaderCheckToken },
-        { path: 'picture/:pictureId', element: <PicturePage /> },
+        { path: 'picture/:pictureId', children: [
+            { index: true, element: <PicturePage /> },
+            { path: 'edit',  element: <PicturePage /> }
+        ]},
         { path: 'info', element: <InfoPage /> }
     ], }
 ]);
