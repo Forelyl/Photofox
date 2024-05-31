@@ -1,32 +1,9 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import Tags from "./Tags.jsx";
-import useFilterRoulette from "../../hooks/useFilterRoulette.js";
 import './FilterMenu.css'
 
-export default function FilterMenu({onClose, passFilters, passTags, isOpened, className}) {
-    const [ currentLikeKey, setCurrentLikeKey ] = useState([0, null, 'default']);
-    const [ currentSizeKey, setCurrentSizeKey ] = useState([0, null, 'default']);
-    const [ currentDateKey, setCurrentDateKey ] = useState([0, 'new', 'new']);
-    const [ changes, setChanges ] = useState(false);
 
-    //Для повернення як фільтри
-    const [ currentLike, currentLikeTitle, setLikes ] = useFilterRoulette(
-        [null, 'like1k', 'like1k_10k', 'like10k'],
-        ['default', '< 1k', ' > 1k and < 10k', ' > 10k'],
-        currentLikeKey, setCurrentLikeKey
-    );
-    const [ currentSize, currentSizeTitle, setSize ] = useFilterRoulette(
-        [null, 'sizeS', 'sizeM', 'sizeB'],
-        ['default', 'small', 'medium', 'big'],
-        currentSizeKey, setCurrentSizeKey
-    );
-    const [ currentDate, currentDateTitle, setDate ] = useFilterRoulette(
-        ['new', 'old'],
-        ['new', 'old'],
-        currentDateKey, setCurrentDateKey
-    );
-    const [ imageForm, setImageForm ] = useState(null);
-    const [ tags, setTags ] = useState([]);
+export default function FilterMenu({onClose, passFilters, passTags, isOpened, className}) {
 
     function handleImageFormChange (value) {
         setImageForm(value);
@@ -34,31 +11,45 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
             setChanges(true);
         }
     }
-    function handleDateChange (value) {
-        setDate(value);
-        if (!changes){
-            setChanges(true);
-        }
+
+    const [ changes, setChanges ] = useState(false);
+    const [currentDate, setCurrentDate] = useState('new');
+    const [currentSize, setCurrentSize] = useState(null);
+    const [currentLike, setCurrentLike] = useState(null);
+    const [ imageForm, setImageForm ] = useState(null);
+    const [ tags, setTags ] = useState([]);
+
+
+    function toggleDropdown(e) {
+        let chooseBox = e.target.parentElement;
+        chooseBox.children[1].classList.toggle('active');
+        chooseBox.children[1].classList.toggle('opened');
     }
 
-    function handleLikeChange (value) {
-        setLikes(value);
-        if (!changes){
-            setChanges(true);
+    function selectDropdown(e, setter) {
+        let box = e.target.parentElement.parentElement; // chooseBox
+        box.children[0].innerHTML = e.target.innerHTML;
+        let a = e.target.id
+        a = a === 'null' ? null : a;
+        
+        setter(a);
+
+        setChanges(true);
+        box.children[1].classList.toggle('active');
+    }
+    
+    function handleSimpleClose() {
+        let dropdownArray = Array.from(document.getElementsByClassName('select-dropdown'));
+        console.log(dropdownArray);
+        for (let key in dropdownArray) {
+            dropdownArray[key].classList.remove('active');
         }
+        onClose();
     }
 
-    function handleSizeChange (value) {
-        setSize(value);
-        if (!changes){
-            setChanges(true);
-        }
-    }
-
-    function handleClose () {
+    function handleClose() {
         if (changes) {
             passFilters(old_filter => {
-                console.log([currentSize, currentDate, currentLike, imageForm])
                 return {
                     primaryFilter: old_filter.primaryFilter,
                     secondaryFilter: [currentSize, currentDate, currentLike, imageForm]
@@ -67,8 +58,9 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
             passTags(tags);
         }
         setChanges(false);
-        onClose();
+        handleSimpleClose();
     }
+
 
     return (
         <div id='filters-menu' className={className}>
@@ -101,44 +93,38 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
                     <Tags isOpened={isOpened} setTags={setTags}></Tags>
                 </div>
                 <div id='right'>
-                    <button onClick={() => {
-                        document.getElementById('aoa').classList.toggle('active');
-                    }}>a</button>
 
                     <div className='select-block'>
-                        <div className='select-result'>By date new</div>
-                        <input type='hidden' name='date-filter'/>
-                        <ul className='select-dropdown active' id='aoa'>
-                            <li id="new">By date new</li>
-                            <li id="old">By date old</li>
+                        <div className='select-result' onClick={(e) => toggleDropdown(e)}>By date new</div>
+                        <ul className='select-dropdown' id='dropdown1' style={{'--amount': 2}}>
+                            <li id="new" onClick={(e) => {selectDropdown(e, setCurrentDate);}}>By date new</li>
+                            <li id="old" onClick={(e) => {selectDropdown(e, setCurrentDate);}}>By date old</li>
                         </ul>
                     </div>
                     
-
-
-
-
-
-
-                    <div className="select-block">
-                        <select name="likes" id="likes">
-                            <option value={null}>By likes all</option>
-                            <option value="like1k">{'likes < 1k'}</option>
-                            <option value="like1k_10k">{'1k < likes < 10k'}</option>
-                            <option value="like10k">{'likes > 10k'}</option>
-                        </select>  
+                    <div className='select-block'>
+                        <div className='select-result' onClick={(e) => toggleDropdown(e)}>By likes all</div>
+                        <ul className='select-dropdown' id='dropdown1' style={{'--amount': 4}}>
+                            <li id="null" onClick={(e) => {selectDropdown(e, setCurrentLike);}}>By likes all</li>
+                            <li id="like1k" onClick={(e) => {selectDropdown(e, setCurrentLike);}}>{'likes < 1k'}</li>
+                            <li id="like1k_10k" onClick={(e) => {selectDropdown(e, setCurrentLike);}}>{'1k < likes < 10k'}</li>
+                            <li id="like10k" onClick={(e) => {selectDropdown(e, setCurrentLike);}}>{'likes > 10k'}</li>
+                        </ul>
                     </div>
-                    <div className="select-block">
-                        <select name="size" id="size"> 
-                            <option value={null}>All sizes</option>
-                            <option value="sizeS">Small size</option>
-                            <option value="sizeM">Medium size</option>
-                            <option value="sizeB">Big size</option>
-                        </select>  
+
+                    <div className='select-block'>
+                        <div className='select-result' onClick={(e) => toggleDropdown(e)}>All sizes</div>
+                        <ul className='select-dropdown' id='dropdown1' style={{'--amount': 4}}>
+                            <li id="null"  onClick={(e) => {selectDropdown(e, setCurrentSize);}}>All sizes</li>
+                            <li id="sizeS" onClick={(e) => {selectDropdown(e, setCurrentSize);}}>Small size</li>
+                            <li id="sizeM" onClick={(e) => {selectDropdown(e, setCurrentSize);}}>Medium size</li>
+                            <li id="sizeB" onClick={(e) => {selectDropdown(e, setCurrentSize);}}>Big size</li>
+                        </ul>
                     </div>
+
                 </div>
             </div>
-            <button onClick={onClose}>
+            <button onClick={handleSimpleClose}>
                 <img src='/NavBarElements/close_filters.svg' alt='Close filters'/>
             </button>
         </div>

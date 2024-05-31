@@ -104,11 +104,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding-bottom: 1%;
+            padding-bottom: 2%;
             gap: 9%;
         }
     }
     > #title {
+        display: flex;
+        margin-bottom: 1%;
         > h3 {
             padding: 1.5% 2%;
             font-family: "Days One";
@@ -118,6 +120,17 @@
             letter-spacing: 3px;
             user-select: none;
             /* background-color: red; */
+        }
+        > button {
+            cursor: pointer;
+            background-color: transparent;
+            border: 0;
+            outline: 0;
+            padding: 0;
+            width: 2.6vw;
+            > img {
+                width: 100%;
+            }
         }
     }
     > button {
@@ -156,11 +169,15 @@
         width: 100%;
         height: 100%;
     }
+    > #add-tag:only-child {
+       justify-self: left;
+    }
 }
 
 .select-block {
+    padding: 5px 0;
     width: 75%;
-    height: 20%;
+    height: 30%;
     position: relative;
     border: 1.5px dashed #49B1E9;
     border-radius: 0.4vw;
@@ -170,6 +187,7 @@
     letter-spacing: 1px;
     font-weight: 600;
     cursor: pointer;
+    box-sizing: border-box;
     
     > .select-result {
         width: 100%;
@@ -177,46 +195,65 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        font-size: 1.5vh;
+        font-size: 2vh;
     }
     > .select-dropdown {
-        background-color: red;
+        border-radius: 0 0 10px 10px;
+        background-color: #2b2b4b;
         position: absolute;
         overflow: hidden;
-        overflow-y: auto;
-        width: 100%;
-        top: calc(100% + 2px);
-        left: 0;
+        overflow-y: hidden;
+        width: calc(100% + 3px);
+        top: calc(100%);
+        left: -1.5px;
         padding: 0;
         margin: 0;
         z-index: 20;
         height: 0;
         min-height: 0;
-        transition: 2s ease-in-out;
-    }
-
-    > .select-dropdown.active {
         max-height: 40vh;
-        min-height: 10vh;
-        /* height: 10vh; */
+        transition: min-height 0.5s cubic-bezier(0, 0.25, 0.5, 1);
+        box-sizing: border-box;
+        > li {
+            width: 100%;
+            height: 4.9vh;
+            font-size: 1.5vh;
+            border: 0px solid #483d72;
+            border-width: 0 0 2px 0;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        > li:hover {
+            background-color: #483d72;
+        }
     }
 
-    > select > option {
-        background-color: #22263a;
+    > .active {
+        height: 100%;
+        min-height: min(calc(var(--amount) * 5vh), 40vh);
+        border: 1.5px solid #49B1E9;
+        border-top: 0;
     }
+    
+    > .opened {
+        overflow-y: auto;
 
-
+    }
+    
 }
 
-/* <div className='select-block'>
-<div className='select-result'>By date new</div>
-<input type='hidden' name='date-filter'/>
-<ul class='select-dropdown'>
-    <li id="new">By date new</li>
-    <li id="old">By date old</li>
-</ul>
-</div> */
+.select-block:has(> .select-dropdown.active) {
+    border-bottom: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-style: solid;
+}
 
+.select-block:hover, .select-block:has(> .select-dropdown.active) {
+    background-color: #222243;
+}
 
 .select-block::after, .select-block::before {
     top: 15%;
