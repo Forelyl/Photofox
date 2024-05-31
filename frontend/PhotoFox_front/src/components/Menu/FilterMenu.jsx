@@ -75,18 +75,21 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
             <h3>Filters</h3>
             <div id='filters'>
                 <div id='left'>
-                    <button onClick={() => handleImageFormChange('proportionH')}>
-                        <div></div>
-                    </button>
-                    <button onClick={() => handleImageFormChange('proportionV')}>
-                        <div></div>
-                    </button>
-                    <button onClick={() => handleImageFormChange('proportionS')}>
-                        <div></div>
-                    </button>
-                    <button onClick={() => handleImageFormChange(null)}>
-                        <div>any</div>
-                    </button>
+                    <div id='buttons'>
+                        <button id='H-button' onClick={() => handleImageFormChange('proportionH')}>
+                            <div></div>
+                        </button>
+                        <button id='V-button' onClick={() => handleImageFormChange('proportionV')}>
+                            <div></div>
+                        </button>
+                        <button id='S-button' onClick={() => handleImageFormChange('proportionS')}>
+                            <div></div>
+                        </button>
+                        <button id='No-button' onClick={() => handleImageFormChange(null)}>
+                            <div>any</div>
+                        </button>
+                    </div>
+                    <div id='button-text'>Image form</div>
                 </div>
                 <Tags isOpened={isOpened} setTags={setTags}></Tags>
                 <div id='right'>

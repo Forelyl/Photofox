@@ -72,6 +72,8 @@ class DB_Returns:
         author_id: int
         author_login: str
         author_picture: str | None
+        is_liked: bool = False
+        is_subscribed: bool = False
     
     class Image_reported(Image):
         title: str | None
@@ -372,14 +374,19 @@ class PhotoFox:
     async def get_images_mobile(self,
                                 filters: list[DB_Models.Image_filters],
                                 tags: tuple, last_image_id: int, user_id: int = -1) -> list[DB_Returns.Image_mobile]:
-
+        #         is_liked: bool = False
+        # is_subscribed: bool = False
         tags_str: str = tags_to_sql(tags)
         filters_line: str = filters_to_sql(set(filters), user_id, last_image_id, 10)
-
+        
         query: str = f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
-           "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
-        FROM image JOIN "user" ON image.author_id = "user".id WHERE {tags_str} {filters_line};
+               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
+               EXIST(SELECT TRUE subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subcriber={user_id}) as is_subscribed,
+               EXIST(SELECT TRUE like WHERE (like.id_image=image.id AND like.id_user={user_id}) as is_liked
+        FROM image 
+        JOIN "user" ON image.author_id = "user".id 
+        WHERE {tags_str} {filters_line};
         """
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         
@@ -390,64 +397,15 @@ class PhotoFox:
         """
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter, image.description,
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
-               ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
+               ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags,
+               EXIST(SELECT TRUE subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subcriber={user_id}) as is_subscribed,
+               EXIST(SELECT TRUE like WHERE (like.id_image=image.id AND like.id_user={user_id}) as is_liked
         FROM image JOIN "user" ON image.author_id = "user".id
         WHERE image.id = $1 AND NOT "user".is_blocked;
         """, image_id))
         
         
         return DB_Returns.Image_full(**result[0])
-
-    async def get_subscribed_images_pc(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image_PC]:
-
-        if last_image_id == -1:
-            query: str = """
-            SELECT id, image_url as path, width, height FROM image
-                WHERE image.author_id IN
-                (SELECT id_subscribed_on FROM subscribe
-                    WHERE id_subscriber = $1 
-                ) AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id)
-            ORDER BY id DESC LIMIT 30;
-            """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
-        else:
-            query: str = """
-            SELECT id, image_url as path, width, height FROM image
-                WHERE id < $1 AND image.author_id IN
-                (SELECT id_subscribed_on FROM subscribe
-                    WHERE id_subscriber = $2
-                ) AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id)
-            ORDER BY id DESC LIMIT 30;
-            """
-            result = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
-
-        return list(DB_Returns.Image_PC(**x) for x in result)
-
-
-    async def get_subscribed_images_mobile(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image_mobile]:
-
-        if last_image_id == -1:
-            query: str = """
-            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
-            "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture 
-            FROM image JOIN "user" ON image.author_id = "user".id
-                WHERE image.author_id IN 
-                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1) AND NOT "user".is_blocked
-            ORDER BY image.id DESC LIMIT 30;
-            """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
-        else:
-            query: str = """
-            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
-            "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture 
-            FROM image JOIN "user" ON image.author_id = "user".id
-                WHERE image.id < $1 AND image.author_id IN 
-                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $2) AND NOT "user".is_blocked
-            ORDER BY image.id DESC LIMIT 30;
-            """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
-
-        return list(DB_Returns.Image_mobile(**x) for x in result)
 
 
     async def get_like_on_image(self, id_user: int, id_image: int) -> bool:
