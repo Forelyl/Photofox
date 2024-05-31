@@ -3,11 +3,11 @@ import {clearIntendedDestination, setIntendedDestination} from "../../utils/inde
 import {json, redirect, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
-export default function CustomSubscribeButton({ pictureId, authorId, initialState, isAuthor = false }){
-    const [subscribed, setSubscribed] = useState();
+export default function CustomSaveButton({ pictureId, authorId, initialState, isAuthor = false }){
+    const [saved, setSaved] = useState();
 
     useEffect(() => {
-        setSubscribed(initialState);
+        setSaved(initialState);
     }, [initialState]);
 
     const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function CustomSubscribeButton({ pictureId, authorId, initialStat
             clearIntendedDestination();
         }
         let response;
-        if(subscribed) {
+        if(saved) {
             response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribed_on_id=${authorId}`, {
                 method: "DELETE",
                 headers: {

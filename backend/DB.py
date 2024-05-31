@@ -660,7 +660,10 @@ class PhotoFox:
             if i != len(tag_id) - 1: tags_str += ", "
         
         await self.__DB.execute('INSERT INTO image_tag(image_id, tag_id) VALUES ' + tags_str + ';')
-    
+
+    async def save_image(self, image_id: int, user_id: int) -> None:
+        await self.__DB.execute('INSERT INTO saved(id_user, id_image), VALUES($1, $2)', user_id, image_id)
+
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('DELETE FROM "like" WHERE id_user = $1 AND id_image = $2;', id_user, id_image)
@@ -728,7 +731,8 @@ class PhotoFox:
     
     async def update_unblock_profile (self, user_id: int):
         await self.__DB.execute('UPDATE "user" SET is_blocked = false WHERE id = $1', user_id)
-    
+
+
 
 async def print_XD(db: PhotoFox):
     value = await db.select_all_tags()
