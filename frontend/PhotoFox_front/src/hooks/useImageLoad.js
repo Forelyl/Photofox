@@ -47,7 +47,7 @@ export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
             
             setTimeout(() => setLoading(false), 1000);
         })
-        .catch(error => {
+        .catch(() => {
             setError(true);
         });
     }, [pictureId, liked, subscribed]);

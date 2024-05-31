@@ -4,6 +4,7 @@ import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
 import CustomLikeButton from "../Buttons/CustomLikeButton.jsx";
 import CustomSubscribeButton from "../Buttons/CustomSubscribeButton.jsx";
+import CustomSaveButton from "../Buttons/CustomSaveButton.jsx";
 
 
 
@@ -19,10 +20,6 @@ export default function ImageFrame({ setLoading, loading }) {
     }
 
     function handleShareClick() {
-
-    }
-
-    function handleSaveClick() {
 
     }
 
@@ -76,10 +73,7 @@ export default function ImageFrame({ setLoading, loading }) {
                         <div>
                             {(!isAuthor) ?
                                 (
-                                    <button onClick={handleSaveClick}>
-                                        <img src='/DropdownElements/saved.svg' alt='save button'/>
-                                        <span>Save</span>
-                                    </button>
+                                    <CustomSaveButton initialState={saved} pictureId={pictureId}/>
                                 ) :
                                 (
                                     <Link to={`edit`} onClick={handleEditClick}>

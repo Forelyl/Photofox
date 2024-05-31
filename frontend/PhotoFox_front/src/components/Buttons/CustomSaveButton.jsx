@@ -1,9 +1,9 @@
 import {getToken} from "../../utils/auth.js";
 import {clearIntendedDestination, setIntendedDestination} from "../../utils/independentDestination.js";
-import {json, redirect, useNavigate} from "react-router-dom";
+import {json, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
-export default function CustomSaveButton({ pictureId, authorId, initialState, isAuthor = false }){
+export default function CustomSaveButton({ pictureId, initialState }){
     const [saved, setSaved] = useState();
 
     useEffect(() => {
@@ -12,7 +12,7 @@ export default function CustomSaveButton({ pictureId, authorId, initialState, is
 
     const navigate = useNavigate();
 
-    async function handleSubscribeClick() {
+    async function handleSaveClick() {
         if (!getToken()) {
             setIntendedDestination(`/picture/${pictureId}`);
             return navigate('/sign?mode=in');
@@ -22,28 +22,28 @@ export default function CustomSaveButton({ pictureId, authorId, initialState, is
         }
         let response;
         if(saved) {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribed_on_id=${authorId}`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/save/delete?image_id=${pictureId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': getToken(),
                 }
             });
             if (response.ok) {
-                setSubscribed(false);
+                setSaved(false);
             }
             else {
                 throw json({message: 'Could not authenticate user.'}, {status: response.status});
             }
         }
         else {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribe_on_id=${authorId}`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/save/add?image_id=${pictureId}`, {
                 method: "POST",
                 headers: {
                     'Authorization': getToken(),
                 }
             });
             if (response.ok) {
-                setSubscribed(true);
+                setSaved(true);
             }
             else {
                 throw json({message: 'Could not authenticate user.'}, {status: response.status});
@@ -51,7 +51,8 @@ export default function CustomSaveButton({ pictureId, authorId, initialState, is
         }
     }
 
-    return <button onClick={handleSubscribeClick} disabled={isAuthor}>
-        {!subscribed ? 'Subscribe' : 'Unsubscribe'}
+    return <button onClick={handleSaveClick}>
+        <img src='/DropdownElements/saved.svg' alt='save button'/>
+        <span>Save</span>
     </button>
 }
