@@ -16,7 +16,6 @@ export default function ImageFrame({ setLoading, loading }) {
         setSubscribed(imageParams.subscribed);
         setLiked(imageParams.liked)
     }, [])
-
     const isAuthor = testAuthor(authorId, authorLogin);
 
     async function handleSubscribeClick() {

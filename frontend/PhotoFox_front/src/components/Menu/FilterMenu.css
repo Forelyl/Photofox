@@ -16,7 +16,7 @@
     font-family: "Epilogue";
     > #filters {
         display: grid;
-        grid-template-columns: auto auto auto;
+        grid-template-columns: 1fr 1fr 1fr;
         > #left {
             display: flex;
             flex-direction: column;
@@ -90,51 +90,35 @@
                 border-color: #FFD645;
             }
         }
-        > #tags {
-            box-sizing: border-box;
-            /* background-color: rebeccapurple; */
+        > #tags-filter {
+            box-sizing: content-box;
             border: 3px solid floralwhite;
             border-top: 0;
             border-bottom: 0;
-            > button {
-                user-select: none;
-                cursor: pointer;
-                padding: 0;
-                border: 0;
-                outline: 0;
-                background: none;
-                width: 2.8vw;
-                border-radius: 100%;
-                height: 2.8vw;
-                font-size: 1.5vw;
-                line-height: 1.5vw;
-                border: 1.5px dashed #49B1E9;
-                color: #49B1E9;
-                transition: 1s ease-in-out;
-                transform: rotate(0deg);
-            }
-            > button:hover {
-                color: #00fcf7;
-                border-color: #00fcf7;
-                transform: rotate(180deg);
-            }
-            > #tags {
-                background-color: red;
-            }
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         > #right {
-            /* background-color: rgb(62, 187, 187); */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 1%;
+            gap: 9%;
         }
     }
-    > h3 {
-        padding: 1.5% 2%;
-        font-family: "Days One";
-        margin: 0;
-        font-weight: 200;
-        font-size: 4vh;
-        letter-spacing: 3px;
-        user-select: none;
-        /* background-color: red; */
+    > #title {
+        > h3 {
+            padding: 1.5% 2%;
+            font-family: "Days One";
+            margin: 0;
+            font-weight: 200;
+            font-size: 4vh;
+            letter-spacing: 3px;
+            user-select: none;
+            /* background-color: red; */
+        }
     }
     > button {
         cursor: pointer;
@@ -159,3 +143,62 @@
     transform: translateY(0%);
 }
 
+
+#tags {
+    display: grid;
+    grid-template: 1fr 1fr / 1fr 1fr;
+    width: 80%;
+    height: 80%;
+    gap: 1vw;
+    justify-items: center;
+    align-items: center;
+    > button {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.select-block {
+    width: 50%;
+    height: 20%;
+    position: relative;
+    border: 1.5px dashed #49B1E9;
+    border-radius: 0.4vw;
+    font-size: 1vh;
+    display: flex;
+    
+    > select {
+        font-family: "Epilogue";
+        font-weight: 600;
+        letter-spacing: 1px;
+        cursor: pointer;
+        width: 100%;
+        outline: none;
+        appearance: none;
+        border: 0;
+        text-align: center;
+        background-color: transparent;
+    }
+
+    > select > option {
+        background-color: #22263a;
+    }
+
+
+}
+.select-block::after, .select-block::before {
+    top: 15%;
+    position: absolute;
+    content: '';
+    height: 70%;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    border: 2px solid #FFD645;
+    box-sizing: border-box;
+}
+.select-block::after {
+    left: 1%;
+}
+.select-block::before {
+    right: 1%;
+}

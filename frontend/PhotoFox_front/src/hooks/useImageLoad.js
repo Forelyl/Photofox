@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import { getToken } from "../utils/auth";
 
 export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
     const [error, setError] = useState(false);
@@ -19,20 +20,21 @@ export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
     useEffect(() => {
         setLoading(true);
         setError(false);
+        let query_headers = {'Content-Type': 'application/json'};
+        if (getToken()) query_headers = {'Content-Type': 'application/json', 'Authorization': getToken()};
 
-        fetch(`${import.meta.env.VITE_API_URL}/image?image_id=${pictureId}`, {
+        fetch(`${import.meta.env.VITE_API_URL}/image${getToken() ? '/user' : ''}?image_id=${pictureId}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: query_headers
         })
         .then(response => response.json())
         .then((values) => {
-            //console.log(values, 'values');
             setImageParams( {
                 path: values.path,
                 title: values.title,
                 likeCounter: values.like_counter,
+                liked: values.is_liked,
+                subscribed: values.is_subscribed,
                 commentCounter: values.comment_counter,
                 authorId: values.author_id,
                 authorLogin: values.author_login,
@@ -40,6 +42,7 @@ export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
                 description: values.description,
                 tags: values.tags
             });
+            
             setTimeout(() => setLoading(false), 1000);
         })
         .catch(error => {

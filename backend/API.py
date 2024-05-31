@@ -265,7 +265,6 @@ async def get_image(image_id: int):
 async def get_image_with_user(user: Annotated[User, Depends(access_user)], image_id: int):
     return await db.get_image(image_id, user.id)
 
-
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
 @app.post('/image', tags=['image'], response_model=int)
 async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()], 
@@ -524,8 +523,13 @@ def i_am_user(user: Annotated[User, Depends(access_user)], image: Annotated[Uplo
 #     # Access the request body
 #     body_bytes = await request.body()
 #     body_str = body_bytes.decode("utf-8")
+#     print('----------------------')
+#     print('----------------------')
 #     print(f"Request body: {body_str}")
-
+#     print(f"Headers: f{request.url}") 
+#     print('----------------------')
+#     print('----------------------')
+    
 #     response = await call_next(request)
 #     return response
 

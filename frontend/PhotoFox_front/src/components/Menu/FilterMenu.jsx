@@ -72,7 +72,7 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
 
     return (
         <div id='filters-menu' className={className}>
-            <div>
+            <div id='title'>
                 <h3>Filters</h3>
                 {changes && <button onClick={handleClose}>
                     <img src='/NavBarElements/submit_filters.svg'
@@ -97,34 +97,31 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
                     </div>
                     <div id='button-text'>Image form</div>
                 </div>
-                <Tags isOpened={isOpened} setTags={setTags}></Tags>
+                <div id='tags-filter'>
+                    <Tags isOpened={isOpened} setTags={setTags}></Tags>
+                </div>
                 <div id='right'>
-                    <div>
-                        <button onClick={() => handleDateChange(-1)}>
-                            <img src='/NavBarElements/change_filter.svg' alt='change back'/>
-                        </button>
-                        <span>By date {currentDateTitle}</span>
-                        <button onClick={() => handleDateChange(1)}>
-                            <img src='/NavBarElements/change_filter.svg' alt='change forvard'/>
-                        </button>
+                    <div className="select-block">
+                        <select name="date" id="date">
+                            <option value="new">By date new</option>
+                            <option value="old">By date old</option>
+                        </select>
                     </div>
-                    <div>
-                        <button onClick={() => handleLikeChange(-1)}>
-                            <img src='/NavBarElements/change_filter.svg' alt='change back'/>
-                        </button>
-                        <span>By likes {currentLikeTitle}</span>
-                        <button onClick={() => handleLikeChange(1)}>
-                            <img src='/NavBarElements/change_filter.svg' alt='change forvard'/>
-                        </button>
+                    <div className="select-block">
+                        <select name="likes" id="likes">
+                            <option value={null}>By likes all</option>
+                            <option value="like1k">{'likes < 1k'}</option>
+                            <option value="like1k_10k">{'1k < likes < 10k'}</option>
+                            <option value="like10k">{'likes > 10k'}</option>
+                        </select>  
                     </div>
-                    <div>
-                        <button onClick={() => handleSizeChange(-1)}>
-                            <img src='/NavBarElements/change_filter.svg' alt='change back'/>
-                        </button>
-                        <span>By size {currentSizeTitle}</span>
-                        <button onClick={() => handleSizeChange(1)}>
-                            <img src='/NavBarElements/change_filter.svg' alt='change forvard'/>
-                        </button>
+                    <div className="select-block">
+                        <select name="size" id="size"> 
+                            <option value={null}>All sizes</option>
+                            <option value="sizeS">Small size</option>
+                            <option value="sizeM">Medium size</option>
+                            <option value="sizeB">Big size</option>
+                        </select>  
                     </div>
                 </div>
             </div>
