@@ -72,8 +72,8 @@ class DB_Returns:
         author_id: int
         author_login: str
         author_picture: str | None
-        is_liked: bool = False
-        is_subscribed: bool = False
+        is_liked: bool | None = None
+        is_subscribed: bool | None = None #
     
     class Image_reported(Image):
         title: str | None
@@ -361,11 +361,6 @@ class PhotoFox:
             SELECT id, image_url as path, width, height FROM image 
             WHERE {tags_str} {filters_line};
         """
-        print("-------------------------------")
-        print("-------------------------------")
-        print(query)
-        print("-------------------------------")
-        print("-------------------------------")
         
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
 
@@ -382,8 +377,8 @@ class PhotoFox:
         query: str = f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
-               EXIST(SELECT TRUE subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subcriber={user_id}) as is_subscribed,
-               EXIST(SELECT TRUE like WHERE (like.id_image=image.id AND like.id_user={user_id}) as is_liked
+               EXISTS(SELECT 1 FROM subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subscriber={user_id})) AS is_subscribed,
+               EXISTS(SELECT 1 FROM "like" WHERE ("like".id_image=image.id AND "like".id_user={user_id})) AS is_liked
         FROM image 
         JOIN "user" ON image.author_id = "user".id 
         WHERE {tags_str} {filters_line};
@@ -392,19 +387,19 @@ class PhotoFox:
         
         return list(DB_Returns.Image_mobile(**x) for x in result)
 
-    async def get_image(self, image_id: int) -> DB_Returns.Image_full:
+    async def get_image(self, image_id: int, user_id: int = -1) -> DB_Returns.Image_full:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
-        """
+        f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter, image.description,
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
                ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags,
-               EXIST(SELECT TRUE subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subcriber={user_id}) as is_subscribed,
-               EXIST(SELECT TRUE like WHERE (like.id_image=image.id AND like.id_user={user_id}) as is_liked
+               EXISTS(SELECT 1 FROM subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subscriber={user_id})) AS is_subscribed,
+               EXISTS(SELECT 1 FROM "like" WHERE ("like".id_image=image.id AND "like".id_user={user_id})) AS is_liked
         FROM image JOIN "user" ON image.author_id = "user".id
         WHERE image.id = $1 AND NOT "user".is_blocked;
         """, image_id))
         
-        
+
         return DB_Returns.Image_full(**result[0])
 
 

@@ -27,6 +27,7 @@
                 font-size: 2.3vh;
                 letter-spacing: 2px;
                 font-weight: 300;
+                user-select: none;
             }
             > #buttons {
                 width: 60%;
@@ -66,21 +67,26 @@
                     border: 0;
                     font-weight: 400;
                     font-size: 3.25vh;
+                    user-select: none;
                 }
                 > #No-button:hover {
                     color: #fba315;
                 }
             }
             > #buttons.No > #No-button {
+                cursor: default;
                 color: #FFD645;
             }
             > #buttons.proportionH > #H-button {
+                cursor: default;
                 border-color: #FFD645;
             }
             > #buttons.proportionV > #V-button {
+                cursor: default;
                 border-color: #FFD645;
             }
             > #buttons.proportionS > #S-button {
+                cursor: default;
                 border-color: #FFD645;
             }
         }
@@ -102,6 +108,7 @@
         font-weight: 200;
         font-size: 4vh;
         letter-spacing: 3px;
+        user-select: none;
         /* background-color: red; */
     }
     > button {

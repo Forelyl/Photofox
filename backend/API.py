@@ -216,11 +216,6 @@ async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None,
                         tags: Annotated[tuple[int] | None, Query()] = None,
                         last_image_id: int = -1):
     tags_r = tuple()
-    print("-1-1-1-1-1-1-1-1-1-1-")
-    print("-1-1-1-1-1-1-1-1-1-1-")
-    print(filters)
-    print("-1-1-1-1-1-1-1-1-1-1-")
-    print("-1-1-1-1-1-1-1-1-1-1-")
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
@@ -265,6 +260,10 @@ async def get_images_mobile_with_user(user: Annotated[User, Depends(access_user)
 @app.get('/image', tags=['image'], response_model=DB_Returns.Image_full)
 async def get_image(image_id: int):
     return await db.get_image(image_id)
+
+@app.get('/image/user', tags=['image'], response_model=DB_Returns.Image_full)
+async def get_image_with_user(user: Annotated[User, Depends(access_user)], image_id: int):
+    return await db.get_image(image_id, user.id)
 
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
