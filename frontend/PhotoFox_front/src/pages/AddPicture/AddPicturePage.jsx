@@ -108,7 +108,3 @@ export default function AddPicturePage() {
         </div>
     );
 }
-//
-// export async function action({request}) {
-//
-// }

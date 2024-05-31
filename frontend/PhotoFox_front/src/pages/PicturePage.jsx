@@ -13,7 +13,7 @@ export default function PicturePage() {
     return (
         <>
             <NavBar hideSearch={true}/>
-            <ImageFrame setLoading={setLoading}/>
+            <ImageFrame setLoading={setLoading} loading={loading}/>
             {!loading && <ImageScroller filters={filters} tags={tags}/>}
         </>
     );

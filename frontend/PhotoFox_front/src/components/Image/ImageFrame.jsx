@@ -1,27 +1,82 @@
-import { testAuthor } from "../../utils/auth.js";
-import Tags from "../Menu/Tags.jsx";
-import { useParams, Link } from "react-router-dom";
+import {getToken, testAuthor} from "../../utils/auth.js";
+import {useParams, Link, json} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
+import {useState} from "react";
 
-export default function ImageFrame({ setLoading }) {
+export default function ImageFrame({ setLoading, loading }) {
     const { pictureId} = useParams();
+    const { error, imageParams} = useImageLoad(pictureId, setLoading);
+    const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags } = imageParams;
+    const [subscribed, setSubscribed] = useState(imageParams.subscribed);
+    const [liked, setLiked] = useState(imageParams.liked);
 
-    const { loading, error, imageParams} = useImageLoad(pictureId);
-    const {
-        authorId, authorLogin, authorPicture,
-        path, title, commentCounter, likeCounter,
-        description, tags, subscribed, liked
-    } = imageParams;
-    setLoading(loading);
     const isAuthor = testAuthor(authorId, authorLogin);
 
-    function handleSubscribeClick() {
-
+    async function handleSubscribeClick() {
+        let response;
+        if(subscribed) {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribed_on_id=${authorId}`, {
+                method: "DELETE",
+                headers: {
+                    'Authorization': getToken(),
+                }
+            });
+            if (response.ok) {
+                setSubscribed(false);
+            }
+            else {
+                throw json({message: 'Could not authenticate user.'}, {status: response.status});
+            }
+        }
+        else {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribe_on_id=${authorId}`, {
+                method: "POST",
+                headers: {
+                    'Authorization': getToken(),
+                }
+            });
+            if (response.ok) {
+                setSubscribed(true);
+            }
+            else {
+                throw json({message: 'Could not authenticate user.'}, {status: response.status});
+            }
+        }
     }
 
-    function handleLikeClick() {
-
+    async function handleLikeClick() {
+        let response;
+        if(liked) {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/like?image_id=${pictureId}`, {
+                method: "DELETE",
+                headers: {
+                    'Authorization': getToken(),
+                    'content-type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                setLiked(false);
+            }
+            else {
+                throw json({message: 'Could not authenticate user.'}, {status: response.status});
+            }
+        }
+        else {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/like?image_id=${pictureId}`, {
+                method: "POST",
+                headers: {
+                    'Authorization': getToken(),
+                    'content-type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                setLiked(true);
+            }
+            else {
+                throw json({message: 'Could not authenticate user.'}, {status: response.status});
+            }
+        }
     }
 
     function handleCommentClick() {
@@ -44,7 +99,7 @@ export default function ImageFrame({ setLoading }) {
             {!error && <div id='image-frame'>
                 <div id='top'>
                     <div id='left'>
-                        <Link to={`/pictures/${parseInt(pictureId)-1}`} id='back'>
+                        <Link to={`/picture/${parseInt(pictureId)-1}`} id='back'>
                             <img src='/ImageModuleIcons/move_back.svg' alt='move to next picture' />
                         </Link>
                     </div>
@@ -55,7 +110,7 @@ export default function ImageFrame({ setLoading }) {
                     </div>
                     <div id='right'>
                         <button id='exit'></button>
-                        <Link to={`/pictures/${parseInt(pictureId) + 1}`} id='forvard'>
+                        <Link to={`/picture/${parseInt(pictureId) + 1}`} id='forvard'>
                             <img src='/ImageModuleIcons/move_forvard.svg' alt='move to previous picture'/>
                         </Link>
                     </div>
@@ -107,7 +162,7 @@ export default function ImageFrame({ setLoading }) {
                         </div>
                     </div>
                     <div>
-                        <p>description</p>
+                        <p>{description}</p>
                     </div>
                     <div id='tags-box'>
                         {tags.map((oneTag, i) => {

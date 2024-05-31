@@ -1,7 +1,6 @@
 import {useState, useEffect} from "react";
 
-export default function useImageLoad(pictureId) {
-    const [loading, setLoading] = useState(true);
+export default function useImageLoad(pictureId, setLoading) {
     const [error, setError] = useState(false);
     const [imageParams, setImageParams] = useState({
         path: '',
@@ -48,5 +47,5 @@ export default function useImageLoad(pictureId) {
         });
     }, [pictureId]);
 
-    return { imageParams, loading, error};
+    return { imageParams, error};
 }
