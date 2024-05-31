@@ -241,7 +241,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     if len(filters) == 0: return ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)' + last_id_query + order_filter
     
     result: str = ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)'
-    if last_id_query != "": result += " AND " + last_id_query
+    if last_id_query != "": result += last_id_query
 
     for filter_var in where_query:
         result += " AND " + filter_var
@@ -361,7 +361,11 @@ class PhotoFox:
             SELECT id, image_url as path, width, height FROM image 
             WHERE {tags_str} {filters_line};
         """
-        
+        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
+        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
+        print(query)
+        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
+        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
 
         return list(DB_Returns.Image_PC(**x) for x in result)

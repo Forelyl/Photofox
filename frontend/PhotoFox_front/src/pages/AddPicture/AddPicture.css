@@ -137,15 +137,18 @@
                 border-radius: 100%;
                 height: 2.8vw;
                 font-size: 1.5vw;
-                /* border: 1.5px dashed #49B1E9; */
-                background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%2349B1E9' stroke-width='4' stroke-dasharray='4%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+                line-height: 1.5vw;
+                border: 1.5px dashed #49B1E9;
                 color: #49B1E9;
                 transition: 1s ease-in-out;
+                transform: rotate(0deg);
             }
             > button:hover {
                 color: #00fcf7;
+                border-color: #00fcf7;
                 transform: rotate(180deg);
             }
+
         }
         > #description-wrapper {
             height: 90%;
