@@ -2,7 +2,7 @@ import {useSearchParams, json, Link, Form, redirect, useActionData, useNavigatio
 import {useEffect} from "react";
 import {setBackground} from "../../utils/bannerChange.js";
 import './SignPage.css'
-import {getIntendedDestination} from "../../utils/independentDestination.js";
+import {clearIntendedDestination, getIntendedDestination} from "../../utils/independentDestination.js";
 
 export default function SignPage() {
     const [searchParams] = useSearchParams();
@@ -20,13 +20,17 @@ export default function SignPage() {
         window.addEventListener('resize', handleResize);
     });
 
+    function handleBackClick() {
+        clearIntendedDestination();
+    }
+
     //TODO реалізувати скидання паролю
     // TODO: на реєстрацію за неправильних даних (s, 1, 1) - логін, пошта й пароль відповідно кидається помилка 500
     return (
         <div id='background'>
             <Form method="post" disabled={submitting}>
                 <div id='top'>
-                    <Link to='/'>
+                    <Link to='/' onClick={handleBackClick}>
                         <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                     </Link>
                     <h1>{(signMode) ? 'Log in' : 'Register'}</h1>

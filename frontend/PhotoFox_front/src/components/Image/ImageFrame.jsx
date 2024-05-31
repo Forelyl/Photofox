@@ -1,8 +1,9 @@
-import {getToken, testAuthor} from "../../utils/auth.js";
+import {getToken, loaderCheckToken, testAuthor} from "../../utils/auth.js";
 import {useParams, Link, json} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
 import {useEffect, useState} from "react";
+import {setIntendedDestination} from "../../utils/independentDestination.js";
 
 export default function ImageFrame({ setLoading, loading }) {
     const [subscribed, setSubscribed] = useState();
@@ -19,9 +20,10 @@ export default function ImageFrame({ setLoading, loading }) {
     const isAuthor = testAuthor(authorId, authorLogin);
 
     async function handleSubscribeClick() {
+        loaderCheckToken()
         let response;
         if(subscribed) {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribed_on_id=${authorId}`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe/user?subscribed_on_id=${authorId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': getToken(),
@@ -35,7 +37,7 @@ export default function ImageFrame({ setLoading, loading }) {
             }
         }
         else {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe?subscribe_on_id=${authorId}`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/subscribe/user?subscribe_on_id=${authorId}`, {
                 method: "POST",
                 headers: {
                     'Authorization': getToken(),
@@ -51,9 +53,11 @@ export default function ImageFrame({ setLoading, loading }) {
     }
 
     async function handleLikeClick() {
+        setIntendedDestination('.')
+        loaderCheckToken();
         let response;
         if(liked) {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/like?image_id=${pictureId}`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/like/user?image_id=${pictureId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': getToken(),
@@ -68,7 +72,7 @@ export default function ImageFrame({ setLoading, loading }) {
             }
         }
         else {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/like?image_id=${pictureId}`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/like/user?image_id=${pictureId}`, {
                 method: "POST",
                 headers: {
                     'Authorization': getToken(),
