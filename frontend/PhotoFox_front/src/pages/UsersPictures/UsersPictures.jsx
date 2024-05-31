@@ -1,9 +1,9 @@
 import {Link, useSearchParams, json} from "react-router-dom";
-import NavBar from "../components/Menu/NavBar.jsx";
-import ImageScroller from "../components/ImageScroller/ImageScroller.jsx";
+import NavBar from "../../components/Menu/NavBar.jsx";
+import ImageScroller from "../../components/ImageScroller/ImageScroller.jsx";
 import { useState } from "react";
 
-export default function ProfilePictures() {
+export default function UsersPictures() {
     const [searchParams] = useSearchParams();
     const pageType = searchParams.get("type") || "saved";
 

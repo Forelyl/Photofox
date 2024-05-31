@@ -10,6 +10,7 @@ export default function PicturePage() {
     });
     const [tags] = useState([]);
     const [loading, setLoading] = useState(true);
+    
     return (
         <>
             <NavBar hideSearch={true}/>
