@@ -2,14 +2,19 @@ import {getToken, testAuthor} from "../../utils/auth.js";
 import {useParams, Link, json} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export default function ImageFrame({ setLoading, loading }) {
+    const [subscribed, setSubscribed] = useState();
+    const [liked, setLiked] = useState();
     const { pictureId} = useParams();
-    const { error, imageParams} = useImageLoad(pictureId, setLoading);
+    const { error, imageParams} = useImageLoad(pictureId, setLoading, liked, subscribed);
     const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags } = imageParams;
-    const [subscribed, setSubscribed] = useState(imageParams.subscribed);
-    const [liked, setLiked] = useState(imageParams.liked);
+
+    useEffect(() => {
+        setSubscribed(imageParams.subscribed);
+        setLiked(imageParams.liked)
+    }, [])
 
     const isAuthor = testAuthor(authorId, authorLogin);
 

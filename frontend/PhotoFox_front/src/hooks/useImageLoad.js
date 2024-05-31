@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 
-export default function useImageLoad(pictureId, setLoading) {
+export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
     const [error, setError] = useState(false);
     const [imageParams, setImageParams] = useState({
         path: '',
@@ -45,7 +45,7 @@ export default function useImageLoad(pictureId, setLoading) {
         .catch(error => {
             setError(true);
         });
-    }, [pictureId]);
+    }, [pictureId, liked, subscribed]);
 
     return { imageParams, error};
 }
