@@ -12,21 +12,31 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
         }
     }
 
-    const [ changes, setChanges ] = useState(false);
+    const [changes, setChanges ] = useState(false);
     const [currentDate, setCurrentDate] = useState('new');
     const [currentSize, setCurrentSize] = useState(null);
     const [currentLike, setCurrentLike] = useState(null);
-    const [ imageForm, setImageForm ] = useState(null);
-    const [ tags, setTags ] = useState([]);
+    const [imageForm, setImageForm ] = useState(null);
+    const [tags, setTags ] = useState([]);
+    const [openedFilter, setOpenedFilter] = useState(null);
 
+    function toggleDropdown(e, keyId) {
+        // console.log(1);
+        let chooseList = e.target.parentElement.children[1];
 
-    function toggleDropdown(e) {
-        let chooseBox = e.target.parentElement;
-        chooseBox.children[1].classList.toggle('active');
-        chooseBox.children[1].classList.toggle('opened');
+        if (openedFilter !== null && openedFilter !== keyId) {
+            let dropdownArray = Array.from(document.getElementsByClassName('select-dropdown'));
+            dropdownArray[openedFilter - 1].classList.remove('active');
+        }
+        // console.log(chooseList);
+        chooseList.classList.toggle('active');
+        chooseList.classList.toggle('opened');
+        // console.log(chooseList);
+        setOpenedFilter(keyId);
     }
 
-    function selectDropdown(e, setter) {
+    function selectDropdown(e, setter, keyId) {
+        // console.log(4);
         let box = e.target.parentElement.parentElement; // chooseBox
         box.children[0].innerHTML = e.target.innerHTML;
         let a = e.target.id
@@ -34,13 +44,15 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
         
         setter(a);
 
-        setChanges(true);
         box.children[1].classList.toggle('active');
+        box.children[1].classList.toggle('opened');
+        setChanges(true);
+        setOpenedFilter(null);
     }
     
     function handleSimpleClose() {
+        console.log(5);
         let dropdownArray = Array.from(document.getElementsByClassName('select-dropdown'));
-        console.log(dropdownArray);
         for (let key in dropdownArray) {
             dropdownArray[key].classList.remove('active');
         }
@@ -95,30 +107,30 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
                 <div id='right'>
 
                     <div className='select-block'>
-                        <div className='select-result' onClick={(e) => toggleDropdown(e)}>By date new</div>
+                        <div className='select-result' onClick={(e) => toggleDropdown(e, 1)}>By date new</div>
                         <ul className='select-dropdown' id='dropdown1' style={{'--amount': 2}}>
-                            <li id="new" onClick={(e) => {selectDropdown(e, setCurrentDate);}}>By date new</li>
-                            <li id="old" onClick={(e) => {selectDropdown(e, setCurrentDate);}}>By date old</li>
+                            <li id="new" onClick={(e) => {selectDropdown(e, setCurrentDate, 1);}}>By date new</li>
+                            <li id="old" onClick={(e) => {selectDropdown(e, setCurrentDate, 1);}}>By date old</li>
                         </ul>
                     </div>
                     
                     <div className='select-block'>
-                        <div className='select-result' onClick={(e) => toggleDropdown(e)}>By likes all</div>
+                        <div className='select-result' onClick={(e) => toggleDropdown(e, 2)}>By likes all</div>
                         <ul className='select-dropdown' id='dropdown1' style={{'--amount': 4}}>
-                            <li id="null" onClick={(e) => {selectDropdown(e, setCurrentLike);}}>By likes all</li>
-                            <li id="like1k" onClick={(e) => {selectDropdown(e, setCurrentLike);}}>{'likes < 1k'}</li>
-                            <li id="like1k_10k" onClick={(e) => {selectDropdown(e, setCurrentLike);}}>{'1k < likes < 10k'}</li>
-                            <li id="like10k" onClick={(e) => {selectDropdown(e, setCurrentLike);}}>{'likes > 10k'}</li>
+                            <li id="null" onClick={(e) => {selectDropdown(e, setCurrentLike, 2);}}>By likes all</li>
+                            <li id="like1k" onClick={(e) => {selectDropdown(e, setCurrentLike, 2);}}>{'likes < 1k'}</li>
+                            <li id="like1k_10k" onClick={(e) => {selectDropdown(e, setCurrentLike, 2);}}>{'1k < likes < 10k'}</li>
+                            <li id="like10k" onClick={(e) => {selectDropdown(e, setCurrentLike, 2);}}>{'likes > 10k'}</li>
                         </ul>
                     </div>
 
                     <div className='select-block'>
-                        <div className='select-result' onClick={(e) => toggleDropdown(e)}>All sizes</div>
+                        <div className='select-result' onClick={(e) => toggleDropdown(e, 3)}>All sizes</div>
                         <ul className='select-dropdown' id='dropdown1' style={{'--amount': 4}}>
-                            <li id="null"  onClick={(e) => {selectDropdown(e, setCurrentSize);}}>All sizes</li>
-                            <li id="sizeS" onClick={(e) => {selectDropdown(e, setCurrentSize);}}>Small size</li>
-                            <li id="sizeM" onClick={(e) => {selectDropdown(e, setCurrentSize);}}>Medium size</li>
-                            <li id="sizeB" onClick={(e) => {selectDropdown(e, setCurrentSize);}}>Big size</li>
+                            <li id="null"  onClick={(e) => {selectDropdown(e, setCurrentSize, 3);}}>All sizes</li>
+                            <li id="sizeS" onClick={(e) => {selectDropdown(e, setCurrentSize, 3);}}>Small size</li>
+                            <li id="sizeM" onClick={(e) => {selectDropdown(e, setCurrentSize, 3);}}>Medium size</li>
+                            <li id="sizeB" onClick={(e) => {selectDropdown(e, setCurrentSize, 3);}}>Big size</li>
                         </ul>
                     </div>
 
