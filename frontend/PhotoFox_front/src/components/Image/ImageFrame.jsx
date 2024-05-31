@@ -109,7 +109,11 @@ export default function ImageFrame({ setLoading }) {
                     <div>
                         <p>description</p>
                     </div>
-                    <Tags select={false}/>
+                    <div id='tags-box'>
+                        {tags.map((oneTag, i) => {
+                            return <div key={i}>{oneTag}</div>
+                        })}
+                    </div>
                 </div>
             </div>}
             {loading && !error && <div><div>Loading...</div></div>}
