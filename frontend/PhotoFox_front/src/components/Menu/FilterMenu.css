@@ -166,18 +166,27 @@
     border-radius: 0.4vw;
     font-size: 1vh;
     display: flex;
+    font-family: "Epilogue";
+    letter-spacing: 1px;
+    font-weight: 600;
+    cursor: pointer;
     
-    > select {
-        font-family: "Epilogue";
-        font-weight: 600;
-        letter-spacing: 1px;
-        cursor: pointer;
+    > .select-result {
         width: 100%;
-        outline: none;
-        appearance: none;
-        border: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-align: center;
-        background-color: transparent;
+        font-size: 1.5vh;
+    }
+    > .select-dropdown {
+        display: none;
+        background-color: red;
+        position: absolute;
+    }
+
+    > .select-dropdown.active {
+        display: block;
     }
 
     > select > option {
@@ -186,6 +195,17 @@
 
 
 }
+
+/* <div className='select-block'>
+<div className='select-result'>By date new</div>
+<input type='hidden' name='date-filter'/>
+<ul class='select-dropdown'>
+    <li id="new">By date new</li>
+    <li id="old">By date old</li>
+</ul>
+</div> */
+
+
 .select-block::after, .select-block::before {
     top: 15%;
     position: absolute;

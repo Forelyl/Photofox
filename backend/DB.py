@@ -362,11 +362,6 @@ class PhotoFox:
             SELECT id, image_url as path, width, height FROM image 
             WHERE {tags_str} {filters_line};
         """
-        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
-        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
-        print(query)
-        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
-        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
 
         return list(DB_Returns.Image_PC(**x) for x in result)
@@ -629,6 +624,11 @@ class PhotoFox:
     
 
     async def add_like(self, id_user: int, id_image: int) -> None:
+        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
+        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
+        print("id_user", id_user, "id_image", id_image)
+        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
+        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
         await self.__DB.execute('INSERT INTO "like"(id_user, id_image) VALUES($1, $2);', id_user, id_image)
     
 

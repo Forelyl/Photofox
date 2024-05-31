@@ -101,13 +101,22 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
                     <Tags isOpened={isOpened} setTags={setTags}></Tags>
                 </div>
                 <div id='right'>
-                    <div className="select-block">
-                        
-                        <select name="date" id="date">
-                            <option value="new">By date new</option>
-                            <option value="old">By date old</option>
-                        </select>
+
+
+                    <div className='select-block'>
+                        <div className='select-result'>By date new</div>
+                        <input type='hidden' name='date-filter'/>
+                        <ul className='select-dropdown active'>
+                            <li id="new">By date new</li>
+                            <li id="old">By date old</li>
+                        </ul>
                     </div>
+
+
+
+
+
+
                     <div className="select-block">
                         <select name="likes" id="likes">
                             <option value={null}>By likes all</option>
