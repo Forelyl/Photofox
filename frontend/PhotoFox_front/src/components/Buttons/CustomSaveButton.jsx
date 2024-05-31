@@ -53,6 +53,6 @@ export default function CustomSaveButton({ pictureId, initialState }){
 
     return <button onClick={handleSaveClick}>
         <img src='/DropdownElements/saved.svg' alt='save button'/>
-        <span>Save</span>
+        <span>{saved ? "Saved": "Save"}</span>
     </button>
 }
