@@ -5,14 +5,14 @@ import { useState } from "react";
 
 export default function ProfilePictures() {
     const [searchParams] = useSearchParams();
-    const page_type = searchParams.get("type") || "saved";
+    const pageType = searchParams.get("type") || "saved";
 
-    if ( page_type !== "saved" && page_type !== "liked" ) {
+    if ( pageType !== "saved" && pageType !== "liked" ) {
         throw json({message: 'Unknown address'}, {status: 404});
     }
     const filter = {
-        primary_filter : page_type,
-        secondary_filter : [],
+        primaryFilter : pageType,
+        secondaryFilter : [],
     }
 
     const [filters, setFilters] = useState(filter);
@@ -25,7 +25,7 @@ export default function ProfilePictures() {
                 <Link to='/'>
                     <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                 </Link>
-                <h1>{page_type}</h1>
+                <h1>{pageType}</h1>
             </div>
             <ImageScroller filters={filters} tags={tags}/>
         </>
