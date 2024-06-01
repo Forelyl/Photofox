@@ -1,4 +1,30 @@
+#picture-section {
+    background-color: red;
+    display: flex;
+    > #center {
+        height: 75vh;
+        width: 90%;
+        background-color: aqua;
+        > img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+    }
+}
 
+
+
+
+
+
+
+
+
+
+
+
+
+/* -------------------------------------- */
 .lds-ellipsis,
 .lds-ellipsis div {
     box-sizing: border-box;

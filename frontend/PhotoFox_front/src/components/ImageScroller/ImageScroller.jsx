@@ -49,6 +49,7 @@ function spreadImages(images, imagesLeft) {
     let rowImages = [];
     let expectedRatio = 0;
     let lastId = -1;
+    let amountInRow = 0;
 
     //Змінювати якщо треба змінити максимальну ширину суми
     const screenRation = screen.width / screen.height;
@@ -58,8 +59,9 @@ function spreadImages(images, imagesLeft) {
 
         expectedRatio += image.width / image.height;
 
-        if (expectedRatio <= maxRatio) {
+        if (expectedRatio <= maxRatio || amountInRow === 0) {
             rowImages.push(image);
+            amountInRow++;
         }
 
         if ((!imagesLeft && (index + 1) === images.length) || expectedRatio >= minRatio) {
