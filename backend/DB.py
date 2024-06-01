@@ -624,7 +624,8 @@ class PhotoFox:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
         if (len(result) == 0): raise HTTPException(status_code=HTTP_400_BAD_REQUEST, 
                                                   detail={'message': f"User with login {login} wasn't found"})
-        return DB_Returns.Profile_full(**result[0]['profile_image_url'])
+        print(result)
+        return DB_Returns.Profile_full(**result[0])
 
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
