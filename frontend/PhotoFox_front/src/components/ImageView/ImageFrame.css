@@ -109,13 +109,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    > div {
-        width: 85%;
-        display: flex;
-        align-items: end;
-        justify-content: space-between;
-    }
     > div:nth-child(1) {
+        width: 85%;
+        display: grid;
+        justify-items: center;
+        grid-template-columns: 1fr 1fr 1fr;
         > div:nth-child(1) {
             display: grid;
             grid-template-columns: auto auto;
@@ -159,12 +157,12 @@
             border: 1.5px solid #45FFE2;
             color: #45FFE2;
             border-radius: 0.5vw;
-            min-width: 13%;
+            min-width: 40%;
             height: 4.5vh;
             font-family: 'Inter';
             font-size: 2.5vh;
             transition: 0.35s ease-in;
-            padding: 0;
+            padding: 0 10%;
         }
         > button.unsub {
             background-color: #161638;
@@ -200,9 +198,12 @@
         }
     }
     > div:nth-child(2) {
-        display: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         width: 95%;
-        background-color: rgba(102, 51, 153, 0.443);
+        
+        
     }
     > div:nth-child(3) {
         display: flex;

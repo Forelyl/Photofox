@@ -76,7 +76,7 @@ export default function CustomLikeButton({ pictureId, initialState, initialNumbe
         })
     }
 
-    return <button onClick={() => handleLikeClick(navigate)} disabled={isAuthor}>
+    return <button onClick={() => handleLikeClick(navigate)}>
         <img src={(!liked) ? '/DropdownElements/like.svg' : '/ImageModuleIcons/like.svg'}
              alt='like button'/>
         <span>{likeCounter} likes</span>
