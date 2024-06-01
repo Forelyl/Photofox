@@ -41,7 +41,7 @@ export default function ImageEdit() {
                 'Content-Type': 'application/json',
                 'Authorization': getToken(),
             },
-            body: data
+            body: '"' + data + '"'
         });
         const values = await response.json();
         console.log(values)
