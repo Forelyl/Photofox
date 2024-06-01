@@ -25,6 +25,19 @@ export default function ImageEdit() {
 
     }
 
+    async function handleDelete() {
+        await fetch(`${import.meta.env.VITE_API_URL}/image`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': getToken(),
+                'image-id': pictureId
+            }
+        });
+        return navigate('/', {replace: true});
+    }
+
+
     function handleImageLoaded(e) {
         let image = e.target;
         image.classList.add('added');
@@ -110,6 +123,7 @@ export default function ImageEdit() {
                     </div>
                     <Tags tags={tags}/>
                 </div>
+                <button id='delete' onClick={handleDelete}>Delete post</button>
             </div>}
             {error && <div>An error occurred when requesting the server!<br/>Please reload page</div>}
         </>
