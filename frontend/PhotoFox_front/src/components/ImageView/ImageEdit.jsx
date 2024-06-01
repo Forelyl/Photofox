@@ -1,5 +1,5 @@
 import {getToken, testAuthor} from "../../utils/auth.js";
-import {useParams, useNavigate, Form} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
 import CustomLikeButton from "../CustomButtons/CustomLikeButton.jsx";
@@ -41,15 +41,29 @@ export default function ImageEdit() {
                 'Content-Type': 'application/json',
                 'Authorization': getToken(),
             },
-            body: data
+            body: JSON.stringify(data)
         });
         const values = await response.json();
         console.log(values)
         setEditTitle(false);
     }
 
-    function handleEditDescription() {
-        setEditTitle(state => !state);
+    async function submitChange(e, type) {
+        const data = e.target.parentElement.parentElement.children[0].value;
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/image/${type}?image_id=${pictureId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': getToken(),
+            },
+            body: JSON.stringify(data)
+        });
+        if (type === "title"){
+            setEditTitle(false);
+        }
+        else {
+            setEditDescription(false);
+        }
     }
 
     return (
@@ -60,18 +74,20 @@ export default function ImageEdit() {
                         <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
                         <img src={path} alt='picture' onLoad={handleImageLoaded}/>
                     </div>
+                    <div id='right'>
+                        <button id='exit' onClick={()=>{navigate('/')}}>exit</button>
+                    </div>
                 </div>
                 <div id='info-section'>
                     <input name='new_title' defaultValue={title} disabled={!editTitle}/>
-                    {(!editTitle) ?
-                        <button onClick={() => { setEditTitle(true) }}>
-                            <img src='/edit.svg' alt='edit title'/>
-                        </button>
-                        :
-                        <button onClick={(event) => submitTitleChange(event)}>
-                            <img src='/NavBarElements/submit_filters.svg' alt='submit new title'/>
-                        </button>
-                    }
+                    <button onClick={
+                        (!editTitle) ? () => setEditTitle(true)
+                    :
+                        (event) => submitChange(event, "title")
+                    }>
+                        <img src={(!editTitle) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
+                             alt={(!editTitle) ? 'edit title' : 'submit new title'} />
+                    </button>
                     <div>
                         <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter}
                                           isAuthor={isAuthor}/>
@@ -82,8 +98,12 @@ export default function ImageEdit() {
                         <CustomShareButton pictureId={pictureId}/>
                     </div>
                     <div>
-                        <textarea disabled={!editDescription} defaultValue={description} />
-                        <button onClick={handleEditDescription} >
+                        <textarea disabled={!editDescription} defaultValue={description}/>
+                        <button onClick={
+                            (!editDescription) ? () => setEditDescription(true)
+                            :
+                            (event) => submitChange(event, "description")
+                        }>
                             <img src={(!editDescription) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
                                  alt={(!editDescription) ? 'edit description' : 'submit new description'}/>
                         </button>
