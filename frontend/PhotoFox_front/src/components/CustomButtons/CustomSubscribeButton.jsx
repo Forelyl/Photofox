@@ -29,9 +29,11 @@ export default function CustomSubscribeButton({ intendedDestination, authorId, i
                 }
             });
             if (response.ok) {
+                console.log("0");
                 setSubscribed(false);
             }
             else {
+                console.log("1");
                 throw json({message: 'Could not authenticate user.'}, {status: response.status});
             }
         }
@@ -43,15 +45,17 @@ export default function CustomSubscribeButton({ intendedDestination, authorId, i
                 }
             });
             if (response.ok) {
+                console.log("2");
                 setSubscribed(true);
             }
             else {
+                console.log("3");
                 throw json({message: 'Could not authenticate user.'}, {status: response.status});
             }
         }
     }
-
-    return <button onClick={handleSubscribeClick} disabled={isAuthor}>
+    
+    return <button onClick={handleSubscribeClick} disabled={isAuthor} className={!subscribed ? "sub" : "unsub"}>
         {!subscribed ? 'Subscribe' : 'Unsubscribe'}
     </button>
 }

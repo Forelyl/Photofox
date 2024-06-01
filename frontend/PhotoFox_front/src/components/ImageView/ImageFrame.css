@@ -82,6 +82,10 @@
             border: 0;
             background-color: #45FFE2;
             font-size: 1px;
+            transition: 0.4s ease-in-out;
+        }
+        > button:hover {
+            transform: scale(0.95);
         }
         > button::after, > button::before {
             content: '';
@@ -100,7 +104,113 @@
     }
 }
 
-
+#info-section {
+    margin-top: 2%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    > div {
+        width: 85%;
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+    }
+    > div:nth-child(1) {
+        > div:nth-child(1) {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-template-rows: auto;
+            > img {
+                cursor: pointer;
+                user-select: none;
+                height: 6.5vh;
+                max-width: 10vw;
+                object-fit: cover;
+            }
+            > img:hover {
+                transform: scale(1.05);
+            }
+            > div {
+                padding-left: 1vw;
+                display: flex;
+                flex-direction: column;
+                height: 7.5vh;
+                justify-content: space-between;
+                color: floralwhite;
+                > span:nth-child(1) {
+                    font-family: 'Days One';
+                    font-size: 3vh;
+                }
+                > span:nth-child(2) {
+                    cursor: pointer;
+                    font-family: 'Epilogue';
+                    font-size: 2.5vh;
+                    letter-spacing: 2px;
+                }
+                > span:nth-child(2):hover {
+                    color: #45FFE2;
+                }
+            }
+        }
+        > button {
+            user-select: none;
+            cursor: pointer;
+            background-color: transparent;
+            border: 1.5px solid #45FFE2;
+            color: #45FFE2;
+            border-radius: 0.5vw;
+            min-width: 13%;
+            height: 4.5vh;
+            font-family: 'Inter';
+            font-size: 2.5vh;
+            transition: 0.35s ease-in;
+            padding: 0;
+        }
+        > button.unsub {
+            background-color: #161638;
+            border-color: #9800be;
+            color: #9800be;
+        }
+        > button:disabled {
+            cursor: auto;
+            background: #3c3c57;
+            border-color: #9b96ad;
+            color: #9b96ad;
+        }
+        
+        > div:nth-child(3) {
+            > button {
+                cursor: pointer;
+                background: none;
+                border: 0;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                gap: 10%;
+                > img {
+                    width: 100%;
+                    height: 7vh;
+                }
+                > span {
+                    font-family: 'Days One';
+                    font-size: 2.85vh;
+                    letter-spacing: 1px;
+                }
+            }
+        }
+    }
+    > div:nth-child(2) {
+        display: none;
+        width: 95%;
+        background-color: rgba(102, 51, 153, 0.443);
+    }
+    > div:nth-child(3) {
+        display: flex;
+        display: none;
+        width: 95%;
+        background-color: rgba(255, 255, 0, 0.427);
+    }
+}
 
 
 
@@ -113,6 +223,7 @@
 
 
 /* -------------------------------------- */
+
 .lds-ellipsis,
 .lds-ellipsis div {
     box-sizing: border-box;
