@@ -29,6 +29,6 @@ body {
   background: rgba(72, 234, 245, 0.45);
 
 }
-img, input, div, a {
+img, input, div, a, button, span, p, ul, li, ol, input {
   -webkit-user-drag: none;
 }

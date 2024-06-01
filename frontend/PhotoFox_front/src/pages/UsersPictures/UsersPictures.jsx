@@ -24,7 +24,7 @@ export default function UsersPictures() {
     return (
         <>
             <NavBar sets={[setFilters, setTags]}/>
-            <div id='top'>
+            <div id='top-of-users-pictures'>
                 <Link to='/'>
                     <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                 </Link>
