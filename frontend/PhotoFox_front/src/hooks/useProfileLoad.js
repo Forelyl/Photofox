@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {getToken} from "../utils/auth.js";
 
 export default function useProfileLoad(profileLogin = '', setLoading) {
     const [error, setError] = useState(false);
@@ -16,11 +17,12 @@ export default function useProfileLoad(profileLogin = '', setLoading) {
         setLoading(true);
         setError(false);
 
-        fetch(`${import.meta.env.VITE_API_URL}/profile?login=${profileLogin}`, {
+        let query_headers = {'Content-Type': 'application/json'};
+        if (getToken()) query_headers = {'Content-Type': 'application/json', 'Authorization': getToken()};
+
+        fetch(`${import.meta.env.VITE_API_URL}/profile${getToken() ? '/user' : ''}?login=${profileLogin}`, {
             method: 'GET',
-            headers: {
-                'content-type': 'application/json'
-            }
+            headers: query_headers
         })
         .then(response => response.json())
         .then((values) => {
@@ -31,7 +33,8 @@ export default function useProfileLoad(profileLogin = '', setLoading) {
                 isBlocked: values.is_blocked,
                 description: values.description,
                 subscribedOn: values.subscribed_on,
-                subscribers: values.subscribers
+                subscribers: values.subscribers,
+                subscribedNow: values.subscribed_now
             });
             setTimeout(() => setLoading(false), 1000);
         })
