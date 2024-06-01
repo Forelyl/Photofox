@@ -2,7 +2,7 @@ import {getToken} from "../../utils/auth.js";
 import {clearIntendedDestination, setIntendedDestination} from "../../utils/independentDestination.js";
 import {json, redirect, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-
+import './CustomLikeButton.css'
 
 export default function CustomLikeButton({ pictureId, initialState, initialNumber, isAuthor = false }){
     const [liked, setLiked] = useState();
@@ -76,7 +76,7 @@ export default function CustomLikeButton({ pictureId, initialState, initialNumbe
         })
     }
 
-    return <button onClick={() => handleLikeClick(navigate)}>
+    return <button onClick={() => handleLikeClick(navigate)} className='customLikeButton'>
         <img src={(!liked) ? '/DropdownElements/like.svg' : '/ImageModuleIcons/like.svg'}
              alt='like button'/>
         <span>{likeCounter} likes</span>

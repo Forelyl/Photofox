@@ -1,5 +1,5 @@
 import {useState} from "react";
-
+import './CustomShareButton.css'
 
 export default function CustomShareButton({ pictureId }) {
     const [showPopup, setShowPopup] = useState(false);
@@ -14,13 +14,11 @@ export default function CustomShareButton({ pictureId }) {
             console.error('Failed to copy', error);
         });
     }
-
     return (
         <div>
-            {showPopup && (<div><span>Link copied</span></div>)}
-            <button onClick={handleShareClick}>
+            <button onClick={handleShareClick} className='customShareButton'>
                 <img src='/ImageModuleIcons/share.svg' alt='share button'/>
-                <span>Share</span>
+                <span>{showPopup ?  "Link copied" : "Share"}</span>
             </button>
         </div>
     );

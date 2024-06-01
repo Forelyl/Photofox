@@ -2,7 +2,7 @@ import {useState} from "react";
 import {getToken} from "../../utils/auth.js";
 import {clearIntendedDestination, setIntendedDestination} from "../../utils/independentDestination.js";
 import {useNavigate} from "react-router-dom";
-
+import './CustomReportButton.css'
 
 export default function CustomReportButton({ id_for_report, type, children, ownerLogin=null }) {
     const [showPopup, setShowPopup] = useState(false);
@@ -55,7 +55,7 @@ export default function CustomReportButton({ id_for_report, type, children, owne
     return (
         <div>
             {showPopup && (<div><span>{toShow}</span></div>)}
-            <button onClick={handleReportClick}>
+            <button onClick={handleReportClick} className="customReportButton">
                 <img src='/ImageModuleIcons/report_button.svg' alt='report button'/>
                 <span>{children}</span>
             </button>

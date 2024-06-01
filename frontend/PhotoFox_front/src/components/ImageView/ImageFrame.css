@@ -113,6 +113,7 @@
         width: 85%;
         display: grid;
         justify-items: center;
+        align-items: center;
         grid-template-columns: 1fr 1fr 1fr;
         > div:nth-child(1) {
             display: grid;
@@ -150,60 +151,45 @@
                 }
             }
         }
-        > button {
+    }
+    > div:nth-child(2) {
+        display: grid;
+        align-items: center;
+        justify-content: space-between;
+        justify-items: center;
+        width: 95%;
+        gap: 6%;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        > button:nth-child(2) {
+            
             user-select: none;
             cursor: pointer;
             background-color: transparent;
-            border: 1.5px solid #45FFE2;
-            color: #45FFE2;
-            border-radius: 0.5vw;
-            min-width: 40%;
-            height: 4.5vh;
-            font-family: 'Inter';
-            font-size: 2.5vh;
-            transition: 0.35s ease-in;
-            padding: 0 10%;
-        }
-        > button.unsub {
-            background-color: #161638;
-            border-color: #9800be;
-            color: #9800be;
-        }
-        > button:disabled {
-            cursor: auto;
-            background: #3c3c57;
-            border-color: #9b96ad;
-            color: #9b96ad;
-        }
-        
-        > div:nth-child(3) {
-            > button {
-                cursor: pointer;
-                background: none;
-                border: 0;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                gap: 10%;
-                > img {
-                    width: 100%;
-                    height: 7vh;
-                }
-                > span {
-                    font-family: 'Days One';
-                    font-size: 2.85vh;
-                    letter-spacing: 1px;
-                }
+            display: grid;
+            grid-template-columns: auto auto;
+            align-items: center;
+            padding: 0;
+            border: 0;
+            > img {
+                width: 3vw;
+                transition: 0.3s ease-in-out;
+            }
+            > span {
+                margin-left: 10%;
+                display: block;
+                white-space:nowrap;
+                font-family: 'Days One';
+                font-size: 3vh;
             }
         }
-    }
-    > div:nth-child(2) {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 95%;
-        
-        
+        > button:nth-child(2):hover {
+            > span {
+                color: #45FFE2;
+            }
+            > img {
+                transform: scale(0.95);
+            }
+        }
     }
     > div:nth-child(3) {
         display: flex;

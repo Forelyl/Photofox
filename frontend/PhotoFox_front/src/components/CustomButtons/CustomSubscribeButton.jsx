@@ -2,6 +2,7 @@ import {getToken} from "../../utils/auth.js";
 import {clearIntendedDestination, setIntendedDestination} from "../../utils/independentDestination.js";
 import {json, redirect, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
+import './CustomSubscribeButton.css'
 
 export default function CustomSubscribeButton({ intendedDestination, authorId, initialState, isAuthor = false }){
     const [subscribed, setSubscribed] = useState();
@@ -54,8 +55,8 @@ export default function CustomSubscribeButton({ intendedDestination, authorId, i
             }
         }
     }
-    
-    return <button onClick={handleSubscribeClick} disabled={isAuthor} className={!subscribed ? "sub" : "unsub"}>
+    const buttonClassList = `${!subscribed ? "sub" : "unsub"} customSubscribeButton`
+    return <button onClick={handleSubscribeClick} disabled={isAuthor} className={buttonClassList}>
         {!subscribed ? 'Subscribe' : 'Unsubscribe'}
     </button>
 }

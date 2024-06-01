@@ -2,6 +2,7 @@ import {getToken} from "../../utils/auth.js";
 import {clearIntendedDestination, setIntendedDestination} from "../../utils/independentDestination.js";
 import {json, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
+import './CustomSaveButton.css'
 
 export default function CustomSaveButton({ pictureId, initialState }){
     const [saved, setSaved] = useState();
@@ -51,7 +52,7 @@ export default function CustomSaveButton({ pictureId, initialState }){
         }
     }
 
-    return <button onClick={handleSaveClick}>
+    return <button onClick={handleSaveClick} className='customSaveButton'>
         <img src='/DropdownElements/saved.svg' alt='save button'/>
         <span>{saved ? "Saved": "Save"}</span>
     </button>
