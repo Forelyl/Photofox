@@ -12,7 +12,10 @@ export default function UsersPictures() {
         throw json({message: 'Unknown address'}, {status: 404});
     }
     const filter = {
-        primaryFilter : pageType,
+        primaryFilter : {
+            type: pageType,
+            author: null
+        },
         secondaryFilter : [],
     }
 

@@ -2,11 +2,17 @@ import NavBar from "../components/Menu/NavBar.jsx";
 import {useState} from "react";
 import ProfileView from "../components/ProfileView/ProfileView.jsx";
 import ImageScroller from "../components/ImageScroller/ImageScroller.jsx";
+import {useParams} from "react-router-dom";
 
 export default function ProfilePage() {
+    const {profileName} = useParams();
+
     const [filters] = useState({
-        primary_filter : "published",
-        secondary_filter : [],
+        primaryFilter : {
+            type: "published",
+            author: profileName
+        },
+        secondaryFilter : [],
     });
     const [tags] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,7 +20,7 @@ export default function ProfilePage() {
     return (
         <>
             <NavBar hideSearch={true}/>
-            <ProfileView loading={loading} setLoading={setLoading}/>
+            <ProfileView loading={loading} setLoading={setLoading} profileName={profileName}/>
             {!loading && <ImageScroller filters={filters} tags={tags}/>}
         </>
     );

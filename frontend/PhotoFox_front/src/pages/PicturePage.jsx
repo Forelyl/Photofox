@@ -5,8 +5,11 @@ import {useState} from "react";
 
 export default function PicturePage() {
     const [filters] = useState({
-        primary_filter : null,
-        secondary_filter : [],
+        primaryFilter : {
+            type: null,
+            author: null,
+        },
+        secondaryFilter : [],
     });
     const [tags] = useState([]);
     const [loading, setLoading] = useState(true);

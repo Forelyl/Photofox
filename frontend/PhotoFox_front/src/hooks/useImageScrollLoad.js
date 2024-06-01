@@ -18,8 +18,11 @@ export default function useImageScrollLoad(lastImage, filters, tags, userSpecifi
 
         let filtersString = '';
         if (filters) {
-            if (filters.primaryFilter) {
-                filtersString += '&filters=' + filters.primaryFilter;
+            if (filters.primaryFilter.type) {
+                filtersString += '&filters=' + filters.primaryFilter.type;
+                if (filters.primaryFilter.author) {
+                    filtersString += '&author=' + filters.primaryFilter.author;
+                }
             }
             for (let one_filter in filters.secondaryFilter) {
                 if (filters.secondaryFilter[one_filter]) {

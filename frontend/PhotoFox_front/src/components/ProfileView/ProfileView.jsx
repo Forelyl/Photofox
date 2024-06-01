@@ -1,12 +1,12 @@
-import {Link, useParams} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {testAuthor} from "../../utils/auth.js";
 import CustomReportButton from "../CustomButtons/CustomReportButton.jsx";
 import useProfileLoad from "../../hooks/useProfileLoad.js";
 import './ProfileView.css'
 import CustomSubscribeButton from "../CustomButtons/CustomSubscribeButton.jsx";
 
-export default function ProfileView({loading, setLoading}) {
-    const {profileName} = useParams();
+export default function ProfileView({loading, setLoading, profileName}) {
+
     const {error, profileData} = useProfileLoad(profileName, setLoading);
     const {profileId, profileImage, description, login, subscribedOn, subscribers, isBlocked, subscribedNow} = profileData;
     const isOwner = testAuthor(profileId, login);

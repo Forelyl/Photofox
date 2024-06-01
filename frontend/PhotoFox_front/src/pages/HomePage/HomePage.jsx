@@ -7,8 +7,11 @@ import { useRef, useState } from "react";
 export default function HomePage() {
     const elementRef = useRef(null);
     const [filters, setFilters] = useState({
-        primary_filter : null,
-        secondary_filter : [],
+        primaryFilter : {
+            type: null,
+            author: null
+        },
+        secondaryFilter : [],
     });
     const [tags, setTags] = useState([]);
     console.log(filters, "it`s filters");
