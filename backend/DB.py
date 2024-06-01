@@ -619,7 +619,7 @@ class PhotoFox:
         query: str = """
         SELECT id, login, profile_image_url AS profile_image, is_blocked,
                description, subscribed AS subscribed_on, subscribers,
-               EXISTS(SELECT FROM subscribe WHERE id_subscribed_on = $2 AND id_subscriber = "user".id) as subscribed_now
+               EXISTS(SELECT FROM subscribe WHERE id_subscribed_on = "user".id AND id_subscriber = $2) as subscribed_now
         FROM "user" WHERE login=$1;
         """
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login, user_id))
