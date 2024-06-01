@@ -21,7 +21,7 @@ export default function useImageScrollLoad(lastImage, filters, tags, userSpecifi
             if (filters.primaryFilter.type) {
                 filtersString += '&filters=' + filters.primaryFilter.type;
                 if (filters.primaryFilter.author) {
-                    filtersString += '&author=' + filters.primaryFilter.author;
+                    filtersString += '&author_login=' + filters.primaryFilter.author;
                 }
             }
             for (let one_filter in filters.secondaryFilter) {
