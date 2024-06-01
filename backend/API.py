@@ -458,13 +458,7 @@ async def change_picture_profile(user: Annotated[User, Depends(access_user)], im
 
 
 @app.patch('/profile/login', tags=['profile', 'admin'])
-async def change_login_profile(user: Annotated[User, Depends(access_user)], password: Annotated[str, Header(min_length=1, max_length=50)], new_login: Annotated[str, Header(min_length=1, max_length=50, pattern=login_regex)]):
-    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
-    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail={"message" : "Incorrect username or password"},
-                               headers={"WWW-Authenticate": "Bearer"})
-    check_login(hash_and_admin.hash, password)
-    
+async def change_login_profile(user: Annotated[User, Depends(access_user)],  new_login: Annotated[str, Header(min_length=1, max_length=50, pattern=login_regex)]):
     await db.update_profile_login(new_login, user.id)    
 
 @app.patch('/profile/description', tags=['profile', 'admin'])
@@ -472,28 +466,11 @@ async def change_description_profile(user: Annotated[User, Depends(access_user)]
     await db.update_profile_description(new_description, user.id)
 
 @app.patch('/profile/email', tags=['profile', 'admin'])
-async def change_email_profile(user: Annotated[User, Depends(access_user)], password: Annotated[str, Header(min_length=1, max_length=50)], new_email: Annotated[str, Header(min_length=1, max_length=100, pattern=email_regex)]):
-    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
-    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail={"message" : "Incorrect username or password"},
-                               headers={"WWW-Authenticate": "Bearer"})
-    check_login(hash_and_admin.hash, password)
-
+async def change_email_profile(user: Annotated[User, Depends(access_user)], new_email: Annotated[str, Header(min_length=1, max_length=100, pattern=email_regex)]):
     await db.update_profile_email(new_email, user.id)
 
 @app.patch('/profile/password', tags=['profile', 'admin'])
-async def change_password_profile(user: Annotated[User, Depends(access_user)], old_password: Annotated[str, Header(min_length=1, max_length=50)], new_password: Annotated[str, Header(min_length=1, max_length=50)]):
-    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
-    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail={"message" : "Incorrect username or password"},
-                               headers={"WWW-Authenticate": "Bearer"})
-    check_login(hash_and_admin.hash, old_password)
-    
-    if old_password == new_password:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail={"message":"New password can't be the same as the previous one"},
-                            headers={"WWW-Authenticate": "Bearer"})
-
+async def change_password_profile(user: Annotated[User, Depends(access_user)], new_password: Annotated[str, Header(min_length=1, max_length=50)]):
     hash = hash_password(new_password)
     await db.update_profile_password(hash, user.id)
 
