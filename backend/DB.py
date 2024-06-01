@@ -211,7 +211,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, au
     if DB_Models.Image_filters.subscribed in filters:
         where_query.append(f"author_id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber={user_id})")
     elif DB_Models.Image_filters.published in filters:
-        where_query.append(f'author_id=(SELECT id FROM "user" WHERE login={author_login})')
+        where_query.append(f"""author_id=(SELECT id FROM "user" WHERE login='{author_login}')""")
     elif DB_Models.Image_filters.saved in filters:
         where_query.append(f"id in (SELECT id_image FROM saved WHERE id_user={user_id} {last_id_image_query})")
     elif DB_Models.Image_filters.liked in filters:
@@ -364,6 +364,12 @@ class PhotoFox:
             SELECT id, image_url as path, width, height FROM image 
             WHERE {tags_str} {filters_line};
         """
+        print('---------------------------')
+        print('---------------------------')
+        print(query)
+        print('---------------------------')
+        print('---------------------------')
+        
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
 
         return list(DB_Returns.Image_PC(**x) for x in result)

@@ -279,7 +279,6 @@ async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: A
                         tags: Annotated[list[int] | None, Body()] = None,
                         download_permission: Annotated[bool, Form()] = False): 
     # TODO: add tags check to not just raise an error and forget about all of the tags
-    print("a")
     result: DropBox_client.Add_file_return = await DropBox.add_file(image, str(user.id))
     image_id = await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
     if (tags is not None):
