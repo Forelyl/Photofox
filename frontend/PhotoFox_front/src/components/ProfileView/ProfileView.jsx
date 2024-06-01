@@ -3,6 +3,7 @@ import {testAuthor} from "../../utils/auth.js";
 import CustomReportButton from "../CustomButtons/CustomReportButton.jsx";
 import useProfileLoad from "../../hooks/useProfileLoad.js";
 import './ProfileView.css'
+import CustomSubscribeButton from "../CustomButtons/CustomSubscribeButton.jsx";
 
 export default function ProfileView({loading, setLoading}) {
     const {profileName} = useParams();
@@ -13,9 +14,6 @@ export default function ProfileView({loading, setLoading}) {
 
     if (isBlocked) throw new Error('User is blocked');
 
-    function handleSubscribe(){
-
-    }
 
     return (
         <>
@@ -38,7 +36,7 @@ export default function ProfileView({loading, setLoading}) {
                         </div>
                         {(!isOwner) ?
                             <>
-                                <button onClick={handleSubscribe}>Subscribe</button>
+                                <CustomSubscribeButton intendedDestination={`/${login}`} authorId={profileId}/>
                                 <CustomReportButton type={"profile"} id_for_report={1} ownerLogin={profileName} />
                             </> :
                             <Link to={'edit'}>Edit profile</Link>

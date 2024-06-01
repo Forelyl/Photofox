@@ -3,7 +3,7 @@ import {clearIntendedDestination, setIntendedDestination} from "../../utils/inde
 import {json, redirect, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
-export default function CustomSubscribeButton({ pictureId, authorId, initialState, isAuthor = false }){
+export default function CustomSubscribeButton({ intendedDestination, authorId, initialState, isAuthor = false }){
     const [subscribed, setSubscribed] = useState();
 
     useEffect(() => {
@@ -14,7 +14,7 @@ export default function CustomSubscribeButton({ pictureId, authorId, initialStat
 
     async function handleSubscribeClick() {
         if (!getToken()) {
-            setIntendedDestination(`/picture/${pictureId}`);
+            setIntendedDestination(intendedDestination);
             return navigate('/sign?mode=in');
         }
         else {

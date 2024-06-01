@@ -55,7 +55,7 @@ export default function ImageFrame({ setLoading, loading }) {
                             <span>{title}</span>
                             <span onClick={handleIconClick}>by {authorLogin}</span>
                         </div>
-                        <CustomSubscribeButton pictureId={pictureId} initialState={subscribed} authorId={authorId} isAuthor={isAuthor}/>
+                        <CustomSubscribeButton intendedDestination={`/picture/${pictureId}`} initialState={subscribed} authorId={authorId} isAuthor={isAuthor}/>
                         <CustomReportButton id_for_report={pictureId} type={'image'}>Report</CustomReportButton>
                     </div>
                     <div>

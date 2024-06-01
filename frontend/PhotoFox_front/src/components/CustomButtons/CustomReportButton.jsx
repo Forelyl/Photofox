@@ -41,17 +41,15 @@ export default function CustomReportButton({ id_for_report, type, children, owne
             headers: {
                 'Authorization': getToken(),
             }
-        });
-
-        if (response.ok) {
+        });if (response.ok) {
             setShowPopup(true);
-
         }
         if (response.status === 400) {
             setToShow('You already have sent a report');
             setShowPopup(true);
         }
-        setTimeout(() => { setShowPopup(false); }, 2500);
+        setTimeout(() => {
+            setShowPopup(false);}, 2500);
     }
 
     return (

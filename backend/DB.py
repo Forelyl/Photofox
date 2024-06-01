@@ -114,7 +114,7 @@ class DB_Returns:
 
     class Profile_full(Profile):
         description: str | None
-        
+        subscribed_now: bool = False
         subscribed_on: int
         subscribers: int
 
@@ -615,13 +615,14 @@ class PhotoFox:
     #     subscribers: int
 
 
-    async def get_user_profile(self, login: str) -> DB_Returns.Profile_full: 
+    async def get_user_profile(self, login: str, user_id: int = -1) -> DB_Returns.Profile_full:
         query: str = """
         SELECT id, login, profile_image_url AS profile_image, is_blocked,
-               description, subscribed AS subscribed_on, subscribers 
+               description, subscribed AS subscribed_on, subscribers,
+               EXISTS(SELECT FROM subscribe WHERE id_subscribed_on = $2 AND id_subscriber = "user".id) as subscribed_now
         FROM "user" WHERE login=$1;
         """
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login, user_id))
         if (len(result) == 0): raise HTTPException(status_code=HTTP_400_BAD_REQUEST, 
                                                   detail={'message': f"User with login {login} wasn't found"})
         print(result)
