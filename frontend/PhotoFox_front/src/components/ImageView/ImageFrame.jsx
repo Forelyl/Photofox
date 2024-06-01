@@ -26,6 +26,24 @@ export default function ImageFrame({ setLoading, loading }) {
         return navigate(`/${authorLogin}`);
     }
 
+    function handleImageLoaded(e) {
+        console.log('21p2ro12n[rpocj2c]')
+        console.log('21p2ro12n[rpocj2c]')
+        console.log('21p2ro12n[rpocj2c]')
+        
+        let image = e.target;
+        let button = e.target.parentNode.children[1]
+        console.log(button);
+        
+        
+        
+        
+        
+        console.log('21p2ro12n[rpocj2c]')
+        console.log('21p2ro12n[rpocj2c]')
+        console.log('21p2ro12n[rpocj2c]')
+    }
+
     return (
         <>
             {!error && <div id='image-frame'>
@@ -40,7 +58,7 @@ export default function ImageFrame({ setLoading, loading }) {
                             (<div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>) 
                             :
                             (<>
-                                <img src={path} alt='picture'/>
+                                <img src={path} alt='picture' onLoad={handleImageLoaded}/>
                                 <button id='exit' onClick={()=>{navigate('/')}}>exit</button>
                             </>)
                         }
