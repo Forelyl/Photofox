@@ -8,7 +8,7 @@ import CustomSubscribeButton from "../CustomButtons/CustomSubscribeButton.jsx";
 export default function ProfileView({loading, setLoading}) {
     const {profileName} = useParams();
     const {error, profileData} = useProfileLoad(profileName, setLoading);
-    const {profileId, profileImage, description, login, subscribedOn, subscribers, isBlocked} = profileData;
+    const {profileId, profileImage, description, login, subscribedOn, subscribers, isBlocked, subscribedNow} = profileData;
     const isOwner = testAuthor(profileId, login);
     console.log(isOwner, "is owner");
 
@@ -36,7 +36,7 @@ export default function ProfileView({loading, setLoading}) {
                         </div>
                         {(!isOwner) ?
                             <>
-                                <CustomSubscribeButton intendedDestination={`/${login}`} authorId={profileId}/>
+                                <CustomSubscribeButton intendedDestination={`/${login}`} authorId={profileId} initialState={subscribedNow}/>
                                 <CustomReportButton type={"profile"} id_for_report={1} ownerLogin={profileName} />
                             </> :
                             <Link to={'edit'}>Edit profile</Link>
