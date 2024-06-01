@@ -1,13 +1,15 @@
 export function setBackground () {
+    let banner = document.getElementById('background')
+    if (!banner) return;
     let width = screen.width;
     let height = screen.height;
     if (width / height >= 1.6) {
-        document.getElementById('background').style.backgroundImage = "url('/logo_background.svg')";
-        document.getElementById('background').style.backgroundSize = "160%"
-        document.getElementById('background').style.backgroundPositionX = "-45vw";
+        banner.style.backgroundImage = "url('/logo_background.svg')";
+        banner.style.backgroundSize = "160%"
+        banner.style.backgroundPositionX = "-45vw";
     } else {                   
-        document.getElementById('background').style.backgroundImage = "url('/logo_background1.svg')";
-        document.getElementById('background').style.backgroundSize = "200%"
-        document.getElementById('background').style.backgroundPositionX = "center";
+        banner.style.backgroundImage = "url('/logo_background1.svg')";
+        banner.style.backgroundSize = "200%"
+        banner.style.backgroundPositionX = "center";
     }
 }
