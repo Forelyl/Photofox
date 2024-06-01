@@ -109,6 +109,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 3vh;
     > div:nth-child(1) {
         width: 85%;
         display: grid;
@@ -124,6 +125,8 @@
                 user-select: none;
                 height: 6.5vh;
                 max-width: 10vw;
+                aspect-ratio: 1;
+                border-radius: 100%;
                 object-fit: cover;
             }
             > img:hover {
@@ -151,8 +154,15 @@
                 }
             }
         }
+        > button {
+            margin-bottom: 0.75%;
+        }
+        > div:nth-child(3) {
+            margin-bottom: 0.75%;
+        }
     }
     > div:nth-child(2) {
+        padding-top: 1.75%;
         display: grid;
         align-items: center;
         justify-content: space-between;
@@ -161,7 +171,6 @@
         gap: 6%;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         > button:nth-child(2) {
-            
             user-select: none;
             cursor: pointer;
             background-color: transparent;
@@ -190,12 +199,47 @@
                 transform: scale(0.95);
             }
         }
+        > div > a {
+            user-select: none;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: floralwhite;
+            font-family: 'Days One';
+            font-size: 3vh;
+            > img {
+                width: 2.5vw;
+                transition: 0.3s ease-in-out;
+            }
+            > span {
+                margin-left: 13%;
+            }
+        }
+        > div > a:hover {
+            color: #45FFE2;
+            > img {
+                transform: scale(0.95);
+            }
+        }
     }
     > div:nth-child(3) {
         display: flex;
-        display: none;
-        width: 95%;
-        background-color: rgba(255, 255, 0, 0.427);
+        width: 87%;
+        line-height: 140%;
+        font-size: 3vh;
+        font-family: 'Epilogue';
+        font-weight: 300;
+        color: floralwhite;
+        letter-spacing: 1px;
+        
+    }
+    > div:nth-child(4) {
+        width: 87%;
+        display: flex;
+        > button {
+            max-width: 18%;
+            height: 5vh;
+        }
     }
 }
 

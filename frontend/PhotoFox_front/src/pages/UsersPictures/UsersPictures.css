@@ -24,7 +24,7 @@
     }
     > a:hover {
         > img {
-            transform: translateX(-10px);
+            transform: translateX(-2px);
         }
     }
 }
