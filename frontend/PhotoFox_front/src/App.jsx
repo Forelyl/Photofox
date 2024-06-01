@@ -6,11 +6,12 @@ import ProfilePage from "./pages/Profile/ProfilePage.jsx";
 import ProfileEditPage from "./pages/Profile/ProfileEditPage.jsx";
 import UsersPictures from "./pages/UsersPictures/UsersPictures.jsx";
 import ProfileSubs from "./pages/ProfileSubs.jsx";
-import PicturePage from "./pages/PicturePage.jsx";
+import PicturePage from "./pages/Picture/PicturePage.jsx";
 import AddPicturePage from "./pages/AddPicture/AddPicturePage.jsx";
 import { loader as loadEdit } from "./pages/Profile/ProfileEditPage.jsx";
 import {loaderCheckToken} from "./utils/auth.js";
 import InfoPage from "./pages/InfoPage.jsx";
+import PictureEditPage from "./pages/Picture/PictureEditPage.jsx";
 
 const router = createBrowserRouter([
     { path: '/', element: <RootLayout/>,
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
         { path: 'add-picture', element: <AddPicturePage />, loader: loaderCheckToken },
         { path: 'picture/:pictureId', children: [
             { index: true, element: <PicturePage /> },
-            { path: 'edit',  element: <PicturePage />}
+            { path: 'edit',  element: <PictureEditPage /> }
         ]},
         { path: 'info', element: <InfoPage /> }
     ], }

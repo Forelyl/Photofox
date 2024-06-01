@@ -1,13 +1,17 @@
-import {Form, useNavigate} from "react-router-dom";
+import {Form, useNavigate, useParams} from "react-router-dom";
 import './ProfileView.css'
 import useProfileEditLoad from "../../hooks/useProfileEditLoad.js";
 import {useState} from "react";
 import {getToken} from "../../utils/auth.js";
 import './ProfileEdit.css'
 
-export default function ProfileEdit({loading, setLoading, profileName}) {
+export default function ProfileEdit() {
+    const {profileName} = useParams();
+    const [loading, setLoading] = useState(true);
+
     const { error, profileData} = useProfileEditLoad(setLoading, profileName);
     const { profileId, profileImage, description, login, isBlocked, email } = profileData;
+
     const [ submitting, setSubmitting ] = useState(false);
     const [ loginUsed, setLoginUsed ] = useState(false);
     const [ emailUsed, setEmailUsed ] = useState(false);

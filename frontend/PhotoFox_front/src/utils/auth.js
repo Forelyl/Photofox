@@ -27,9 +27,8 @@ export function getLogin() {
     else return login;
 }
 
-export function testAuthor(author_id, author_login){
+export function testAuthor(author_login){
     const login = localStorage.getItem("login");
-    //const id = localStorage.getItem("id");
     const token = localStorage.getItem("token");
     return login === author_login && token;
 

@@ -1,6 +1,6 @@
-import NavBar from "../components/Menu/NavBar.jsx";
-import ImageFrame from "../components/ImageView/ImageFrame.jsx";
-import ImageScroller from "../components/ImageScroller/ImageScroller.jsx";
+import NavBar from "../../components/Menu/NavBar.jsx";
+import ImageFrame from "../../components/ImageView/ImageFrame.jsx";
+import ImageScroller from "../../components/ImageScroller/ImageScroller.jsx";
 import {useState} from "react";
 
 export default function PicturePage() {

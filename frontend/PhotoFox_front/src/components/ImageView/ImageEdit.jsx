@@ -1,4 +1,4 @@
-import {testAuthor} from "../../utils/auth.js";
+import {getToken, testAuthor} from "../../utils/auth.js";
 import {useParams, useNavigate, Form} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
@@ -9,14 +9,17 @@ import {useState} from "react";
 
 
 
-export default function ImageFrame({ setLoading, loading }) {
+export default function ImageEdit() {
     const { pictureId} = useParams();
+
+    const [loading, setLoading] = useState(true);
     const [editTitle, setEditTitle] = useState(false);
     const [editDescription, setEditDescription] = useState(false);
     const { error, imageParams} = useImageLoad(pictureId, setLoading);
-    const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked, subscribed, saved} = imageParams;
+    const { authorLogin, path, title, commentCounter, likeCounter, description, tags, liked} = imageParams;
 
     const navigate = useNavigate();
+    const isAuthor = testAuthor(authorLogin);
 
     function handleCommentClick() {
 
@@ -31,18 +34,22 @@ export default function ImageFrame({ setLoading, loading }) {
     }
 
     async function submitTitleChange(e) {
-        e.preventDefault();
-
-        const data = new FormData(e.target);
-
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/image`, {
-            method: 'POST',
-            headers: headers,
+        const data = e.target.parentElement.parentElement.children[0].value;
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/image/title`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': getToken(),
+            },
             body: data
         });
+        const values = await response.json();
+        console.log(values)
+        setEditTitle(false);
     }
-    function handleEditDescription(e) {
 
+    function handleEditDescription() {
+        setEditTitle(state => !state);
     }
 
     return (
@@ -55,13 +62,16 @@ export default function ImageFrame({ setLoading, loading }) {
                     </div>
                 </div>
                 <div id='info-section'>
-                    <Form onSubmit={submitTitleChange}>
-                        <input defaultValue={title} disabled={!editDescription}/>
-                        <button onClick={handleEditDescription} type={(!editDescription) ? 'button' : 'submit'}>Edit
-                            <img src={(!editDescription) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
-                                 alt={(!editDescription) ? 'edit title' : 'submit new title'}/>
+                    <input name='new_title' defaultValue={title} disabled={!editTitle}/>
+                    {(!editTitle) ?
+                        <button onClick={() => { setEditTitle(true) }}>
+                            <img src='/edit.svg' alt='edit title'/>
                         </button>
-                    </Form>
+                        :
+                        <button onClick={(event) => submitTitleChange(event)}>
+                            <img src='/NavBarElements/submit_filters.svg' alt='submit new title'/>
+                        </button>
+                    }
                     <div>
                         <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter}
                                           isAuthor={isAuthor}/>
@@ -72,13 +82,13 @@ export default function ImageFrame({ setLoading, loading }) {
                         <CustomShareButton pictureId={pictureId}/>
                     </div>
                     <div>
-                        <textarea disabled={!editDescription}>{description}</textarea>
+                        <textarea disabled={!editDescription} defaultValue={description} />
                         <button onClick={handleEditDescription} >
                             <img src={(!editDescription) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
                                  alt={(!editDescription) ? 'edit description' : 'submit new description'}/>
                         </button>
                     </div>
-                    <Tags />
+                    <Tags tags={tags}/>
                 </div>
             </div>}
             {error && <div>An error occurred when requesting the server!<br/>Please reload page</div>}

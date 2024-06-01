@@ -16,7 +16,7 @@ export default function ImageFrame({ setLoading, loading }) {
     const { authorId, authorLogin, authorPicture, path, title, commentCounter, likeCounter, description, tags, liked, subscribed, saved} = imageParams;
 
     const navigate = useNavigate();
-    const isAuthor = testAuthor(authorId, authorLogin);
+    const isAuthor = testAuthor(authorLogin);
 
     function handleCommentClick() {
 

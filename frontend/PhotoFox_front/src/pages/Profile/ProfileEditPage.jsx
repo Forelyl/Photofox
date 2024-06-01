@@ -5,12 +5,10 @@ import {useState} from "react";
 import {getLogin, getToken} from "../../utils/auth.js";
 
 export default function ProfileEditPage() {
-    const {profileName} = useParams();
-    const [loading, setLoading] = useState(true);
     return (
         <>
             <NavBar hideSearch={true} hideAdd={true}/>
-            <ProfileEdit loading={loading} setLoading={setLoading} profileName={profileName}/>
+            <ProfileEdit/>
         </>
     );
 }

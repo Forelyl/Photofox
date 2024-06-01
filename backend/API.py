@@ -297,14 +297,14 @@ async def delete_image(user: Annotated[User, Depends(access_user)], image_id: An
     await DropBox.delete_file(path_and_can_delete[0])
     await db.delete_image(user.id, image_id)
 
-@app.patch('/picture/description', tags=['profile', 'admin'])
+@app.patch('/image/description', tags=['image', 'admin'])
 async def change_picture_description(
         user: Annotated[User, Depends(access_user)], 
         image_id: Annotated[int, Query(ge=1)],
         new_description: Annotated[str, Body(max_length=500)]): 
     await db.update_picture_description(image_id, new_description, user.id)
 
-@app.patch('/picture/title', tags=['profile', 'admin'])
+@app.patch('/image/title', tags=['image', 'admin'])
 async def change_picture_title(
         user: Annotated[User, Depends(access_user)], 
         image_id: Annotated[int, Query(ge=1)],

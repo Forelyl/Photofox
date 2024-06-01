@@ -9,7 +9,7 @@ export default function ProfileView({loading, setLoading, profileName}) {
 
     const {error, profileData} = useProfileLoad(profileName, setLoading);
     const {profileId, profileImage, description, login, subscribedOn, subscribers, isBlocked, subscribedNow} = profileData;
-    const isOwner = testAuthor(profileId, login);
+    const isOwner = testAuthor(login);
     console.log(isOwner, "is owner");
 
     if (isBlocked) throw new Error('User is blocked');
