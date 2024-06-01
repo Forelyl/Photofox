@@ -25,7 +25,7 @@ const router = createBrowserRouter([
         { path: 'add-picture', element: <AddPicturePage />, loader: loaderCheckToken },
         { path: 'picture/:pictureId', children: [
             { index: true, element: <PicturePage /> },
-            { path: 'edit',  element: <PicturePage /> }
+            { path: 'edit',  element: <PicturePage />, loader: loaderCheckToken }
         ]},
         { path: 'info', element: <InfoPage /> }
     ], }

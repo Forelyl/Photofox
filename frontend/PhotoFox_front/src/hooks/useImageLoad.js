@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react";
 import { getToken } from "../utils/auth";
 
-export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
+export default function useImageLoad(pictureId, setLoading) {
     const [error, setError] = useState(false);
     const [imageParams, setImageParams] = useState({
         path: '',
@@ -50,7 +50,7 @@ export default function useImageLoad(pictureId, setLoading, liked, subscribed) {
         .catch(() => {
             setError(true);
         });
-    }, [pictureId, liked, subscribed]);
+    }, [pictureId]);
 
-    return { imageParams, error};
+    return { imageParams, error };
 }

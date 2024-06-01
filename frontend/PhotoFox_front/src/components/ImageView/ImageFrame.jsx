@@ -22,10 +22,6 @@ export default function ImageFrame({ setLoading, loading }) {
 
     }
 
-    function handleEditClick() {
-
-    }
-
     function handleIconClick() {
         return navigate(`/${authorLogin}`);
     }
@@ -75,7 +71,7 @@ export default function ImageFrame({ setLoading, loading }) {
                                     <CustomSaveButton initialState={saved} pictureId={pictureId}/>
                                 ) :
                                 (
-                                    <Link to={`edit`} onClick={handleEditClick}>
+                                    <Link to={`edit`}>
                                         <img src='/edit.svg' alt='edit button'/>
                                         <span>Edit</span>
                                     </Link>
