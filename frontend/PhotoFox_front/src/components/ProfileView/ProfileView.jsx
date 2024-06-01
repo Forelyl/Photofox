@@ -17,10 +17,13 @@ export default function ProfileView({loading, setLoading, profileName}) {
 
     return (
         <>
-            {!error && <div>
+            {!error && <div id='profile'>
                 <div id='left'>
-                    {loading ? (<div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>) :
-                        (<img src={profileImage ?? '/NavBarElements/profile_icon.svg'} alt='profile image' />)}
+                    {!loading ? 
+                    <div className="lds-ellipsis-profile"><div></div><div></div><div></div><div></div></div>
+                    :
+                    <div><img src={profileImage ?? '/NavBarElements/profile_icon.svg'} alt='profile image' /></div>
+                    }
                     <h3>{login}</h3>
                 </div>
                 <div id='right'>

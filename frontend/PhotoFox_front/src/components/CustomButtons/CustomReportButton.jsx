@@ -45,7 +45,7 @@ export default function CustomReportButton({ id_for_report, type, children, owne
             setShowPopup(true);
         }
         if (response.status === 400) {
-            setToShow('You already have sent a report');
+            setToShow('You have already send a report');
             setShowPopup(true);
         }
         setTimeout(() => {
@@ -54,10 +54,9 @@ export default function CustomReportButton({ id_for_report, type, children, owne
 
     return (
         <div>
-            {showPopup && (<div><span>{toShow}</span></div>)}
             <button onClick={handleReportClick} className="customReportButton">
                 <img src='/ImageModuleIcons/report_button.svg' alt='report button'/>
-                <span>{children}</span>
+                {showPopup ? <span id='long-report-text'>{toShow}</span> : <span>{children}</span>}
             </button>
         </div>
     );

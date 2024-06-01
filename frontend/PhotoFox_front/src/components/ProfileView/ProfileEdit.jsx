@@ -132,8 +132,6 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
         setSubmitting(false);
         return navigate(`/${data.get('newLogin')}`, {replace: true});
     }
-    console.log(newProfileImage)
-    //console.log(profileImage)
     return (
         <>
             <Form onSubmit={handleSubmit} disabled={submitting}>
