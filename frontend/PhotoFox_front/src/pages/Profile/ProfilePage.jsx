@@ -3,6 +3,7 @@ import {useState} from "react";
 import ProfileView from "../../components/ProfileView/ProfileView.jsx";
 import ImageScroller from "../../components/ImageScroller/ImageScroller.jsx";
 import {useParams} from "react-router-dom";
+import './ProfilePage.css'
 
 export default function ProfilePage() {
     const {profileName} = useParams();

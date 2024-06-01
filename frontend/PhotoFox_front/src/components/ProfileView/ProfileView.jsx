@@ -19,22 +19,26 @@ export default function ProfileView({loading, setLoading, profileName}) {
         <>
             {!error && <div id='profile'>
                 <div id='left'>
-                    {!loading ? 
-                    <div className="lds-ellipsis-profile"><div></div><div></div><div></div><div></div></div>
+                    {loading ? 
+                    <div><img src="/loading.io_Ellipsis.svg" alt="" /></div>
                     :
                     <div><img src={profileImage ?? '/NavBarElements/profile_icon.svg'} alt='profile image' /></div>
                     }
                     <h3>{login}</h3>
                 </div>
                 <div id='right'>
-                    <p>{description}</p>
+                    <div id='profile-description'>{description}</div>
                     <div id='info-row'>
-                        <div>
-                            <Link to={'subs?type=on_me'}>Subscribers</Link>
+                        <div className='button-and-number'>
+                            <div className='profile-button'>
+                                <Link to={'subs?type=on_me'}>Subscribers</Link>
+                            </div>
                             <span>{subscribers}</span>
                         </div>
-                        <div>
-                            <Link to={'subs?type=me_on'}>Subscribed on</Link>
+                        <div className='button-and-number'>
+                            <div className='profile-button'>
+                                <Link to={'subs?type=me_on'}>Subscribed on</Link>
+                            </div>
                             <span>{subscribedOn}</span>
                         </div>
                         {(!isOwner) ?
@@ -42,13 +46,13 @@ export default function ProfileView({loading, setLoading, profileName}) {
                                 <CustomSubscribeButton intendedDestination={`/${login}`} authorId={profileId} initialState={subscribedNow}/>
                                 <CustomReportButton type={"profile"} id_for_report={1} ownerLogin={profileName} />
                             </> :
-                            <Link to={'edit'}>Edit profile</Link>
+                            <Link to={'edit'} className='profile-button' id='edit-profile'>Edit profile</Link>
                         }
                     </div>
                 </div>
             </div>}
-            {loading && !error && <div><div>Loading...</div></div>}
-            {error && <div>An error occurred when requesting the server!<br/>Please reload page</div>}
+            {loading && !error && <div className='text-images-info-profile'><div>Loading...</div></div>}
+            {error && <div className='text-images-info-profile'><div>An error occurred when requesting the server!<br/>Please reload page</div></div>}
         </>
     )
 }
