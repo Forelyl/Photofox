@@ -35,7 +35,7 @@ export default function ImageFrame({ setLoading, loading }) {
     }
 
     return (
-        <>
+        <div id='image-frame-screen'>
             {!error && <div id='image-frame'>
                 <div id='picture-section'>
                     <div id='left'>
@@ -97,7 +97,7 @@ export default function ImageFrame({ setLoading, loading }) {
             </div>}
             {loading && !error && <div><div>Loading...</div></div>}
             {error && <div>An error occurred when requesting the server!<br/>Please reload page</div>}
-        </>
+        </div>
     )
 }
 

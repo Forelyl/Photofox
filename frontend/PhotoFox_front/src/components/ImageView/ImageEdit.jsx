@@ -67,8 +67,8 @@ export default function ImageEdit() {
     }
 
     return (
-        <>
-            {!error && <div id='image-frame'>
+        <div id='image-edit'>
+            {!error &&<>
                 <div id='picture-section'>
                     <div id='center'>
                         <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
@@ -110,8 +110,8 @@ export default function ImageEdit() {
                     </div>
                     <Tags tags={tags}/>
                 </div>
-            </div>}
+            </>}
             {error && <div>An error occurred when requesting the server!<br/>Please reload page</div>}
-        </>
+        </div>
     )
 }

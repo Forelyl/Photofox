@@ -1,0 +1,107 @@
+#image-edit {
+        #picture-section {
+            display: flex;
+            > #center {
+                position: relative;
+                height: 75vh;
+                width: 90%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                > div {
+                    position: absolute;
+                    z-index: -2;
+                    opacity: 1;
+                    transition: opacity 0.2s ease-in-out;
+                }
+                > div.added {
+                    opacity: 0;
+                }
+                > img {
+                    display: block;
+                    transition: opacity 0.5s ease-in-out;
+                    opacity: 0;
+                    max-height: 100%;
+                    max-width: 100%;
+                    padding: 1vw 1vw 0 1vw;
+                    box-sizing: border-box;
+                }
+                > img.added {
+                    opacity: 1;
+                }
+            }
+            > #left, > #right {
+                width: 18%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                > a {
+                    padding: 0;
+                    width: 5vw;
+                    height: 25%;
+                    aspect-ratio: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    > svg {
+                        transition: 1s ease-in-out;
+                        border: 5px solid white;
+                        padding: 10%;
+                        border-radius: 100%;
+                        width: 100%;
+                        aspect-ratio: 1;
+                        box-sizing: border-box;
+                    }
+                }
+                > a:hover > svg {
+                    border-color: #181cfd;
+                    transform: scale(1.1);
+                    > path {
+                        fill: #181cfd;
+                        background-size: 90%;
+                    }
+                }
+            }
+            > #left > a > svg {
+                padding-right: 15%;
+            }
+            > #right > a > svg {
+                padding-left: 15%;
+            }
+    
+            > #right {
+                > button {
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: absolute;
+                    top: 15%;
+                    width: 5vw;
+                    aspect-ratio: 1;
+                    border-radius: 100%;
+                    border: 0;
+                    background-color: #45FFE2;
+                    font-size: 1px;
+                    transition: 0.4s ease-in-out;
+                }
+                > button:hover {
+                    transform: scale(0.95);
+                }
+                > button::after, > button::before {
+                    content: '';
+                    position: absolute;
+                    border: 3px solid #0a0a1b;
+                    box-sizing: border-box;
+                    width: 70%;
+                    --rotation: 45deg;
+                }
+                > button::after {
+                    transform: rotate(var(--rotation));
+                }
+                > button::before {
+                    transform: rotate(calc(-1 * var(--rotation)));
+                }
+            }
+        }
+}
