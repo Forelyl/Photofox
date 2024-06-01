@@ -3,6 +3,7 @@ import './ProfileView.css'
 import useProfileEditLoad from "../../hooks/useProfileEditLoad.js";
 import {useState} from "react";
 import {getToken} from "../../utils/auth.js";
+import './ProfileEdit.css'
 
 export default function ProfileEdit({loading, setLoading, profileName}) {
     const { error, profileData} = useProfileEditLoad(setLoading, profileName);
@@ -134,10 +135,10 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
     }
     return (
         <>
-            <Form onSubmit={handleSubmit} disabled={submitting}>
+            <Form onSubmit={handleSubmit} disabled={submitting} id='profile-edit'>
                 {!error &&
                 (<>
-                    <div>
+                    <div id='info'>
                         <div id='left'>
                             {loading ? (<div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>) :
                                 (<>
@@ -154,7 +155,9 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
                             </div>
                         </div>
                         <div id='right'>
-                            <textarea name='description' defaultValue={description ?? ''} />
+                            <div id='description-wrapper'>
+                                <textarea name='description' defaultValue={description ?? ''} />
+                            </div>
                             <div id='info-row'>
                                 <div>
                                     {emailUsed && <span>Email is already</span>}

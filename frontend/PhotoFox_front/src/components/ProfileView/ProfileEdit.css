@@ -1,0 +1,33 @@
+#profile-edit {
+    > #info {
+        > #right {        
+            > #description-wrapper {
+                height: 90%;
+                position: relative;
+                box-sizing: content-box;
+                > textarea {
+                    font-size: 3vh;
+                    border-radius: 20px;
+                    background-color: #17245C;
+                    font-family: 'Epilogue';
+                    color: floralwhite;
+                    height: 100%;
+                    width: 100%;
+                    border: 0;
+                    outline: none;
+                    padding: 0;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    resize: none;
+                    overflow: scroll;
+                }
+                > textarea::-webkit-scrollbar {
+                    display: none;
+                }
+                > textarea::placeholder {
+                    color: floralwhite;
+                }
+            }
+        }
+    }
+}
