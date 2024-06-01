@@ -302,14 +302,14 @@ async def change_picture_description(
         user: Annotated[User, Depends(access_user)], 
         image_id: Annotated[int, Query(ge=1)],
         new_description: Annotated[str, Body(max_length=500)]): 
-    await db.update_picture_description(image_id, new_description, user_id)
+    await db.update_picture_description(image_id, new_description, user.id)
 
 @app.patch('/picture/title', tags=['profile', 'admin'])
 async def change_picture_title(
         user: Annotated[User, Depends(access_user)], 
         image_id: Annotated[int, Query(ge=1)],
         new_title: Annotated[str, Body(min_length=1, max_length=100)]): 
-    await db.update_picture_title(image_id, new_title, user_id)
+    await db.update_picture_title(image_id, new_title, user.id)
 
 
 #============================================
