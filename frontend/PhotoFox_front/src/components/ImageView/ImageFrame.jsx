@@ -29,19 +29,23 @@ export default function ImageFrame({ setLoading, loading }) {
     return (
         <>
             {!error && <div id='image-frame'>
-                <div id='top'>
+                <div id='picture-section'>
                     <div id='left'>
                         <Link to={`/picture/${parseInt(pictureId)-1}`} id='back'>
                             <img src='/ImageModuleIcons/move_back.svg' alt='move to next picture' />
                         </Link>
                     </div>
                     <div id='center'>
-                        {loading ? (<div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>) :
-                            (<img src={path} alt='picture'/>)
+                        {loading ? 
+                            (<div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>) 
+                            :
+                            (<>
+                                <img src={path} alt='picture'/>
+                                <button id='exit' onClick={()=>{navigate('/')}}>exit</button>
+                            </>)
                         }
                     </div>
                     <div id='right'>
-                        <button id='exit' onClick={()=>{navigate('/')}}>exit</button>
                         <Link to={`/picture/${parseInt(pictureId) + 1}`} id='forvard'>
                             <img src='/ImageModuleIcons/move_forvard.svg' alt='move to previous picture'/>
                         </Link>

@@ -187,7 +187,7 @@ def filters_is_ok (filters: set[DB_Models.Image_filters], user_id: int = -1) -> 
     return True
 
 
-def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, last_image_id: int = -1, limit: int = 0) -> str:
+def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, author_login: str = '#', last_image_id: int = -1, limit: int = 0) -> str:
     where_query: list[str] = list()
 
     up_down_filter: str = ""
@@ -209,12 +209,12 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
 
     # Add filters =====================================================
     if DB_Models.Image_filters.subscribed in filters:
-        where_query.append(f"author_id in (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber={user_id})")
+        where_query.append(f"author_id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber={user_id})")
     elif DB_Models.Image_filters.published in filters:
-        where_query.append(f"author_id={user_id}")
-    if DB_Models.Image_filters.saved in filters:
+        where_query.append(f'author_id=(SELECT id FROM "user" WHERE login={author_login})')
+    elif DB_Models.Image_filters.saved in filters:
         where_query.append(f"id in (SELECT id_image FROM saved WHERE id_user={user_id} {last_id_image_query})")
-    if DB_Models.Image_filters.liked in filters:
+    elif DB_Models.Image_filters.liked in filters:
         where_query.append(f'id in (SELECT id_image FROM "like" WHERE id_user={user_id} {last_id_image_query})')
 
     if DB_Models.Image_filters.proportionV in filters:
@@ -355,9 +355,10 @@ class PhotoFox:
 
     async def get_images_pc(self,
                             filters: list[DB_Models.Image_filters],
-                            tags: tuple, last_image_id: int, user_id: int = -1) -> list[DB_Returns.Image_PC]:
+                            tags: tuple, last_image_id: int, user_id: int = -1,
+                            author_login: str = '#') -> list[DB_Returns.Image_PC]:
         tags_str: str = tags_to_sql(tags)
-        filters_line: str = filters_to_sql(set(filters), user_id, last_image_id, 30)
+        filters_line: str = filters_to_sql(set(filters), user_id, author_login, last_image_id, 30)
 
         query: str =  f"""
             SELECT id, image_url as path, width, height FROM image 
@@ -369,11 +370,12 @@ class PhotoFox:
     
     async def get_images_mobile(self,
                                 filters: list[DB_Models.Image_filters],
-                                tags: tuple, last_image_id: int, user_id: int = -1) -> list[DB_Returns.Image_mobile]:
+                                tags: tuple, last_image_id: int, user_id: int = -1, 
+                                author_login: str = '#') -> list[DB_Returns.Image_mobile]:
         #         is_liked: bool = False
         # is_subscribed: bool = False
         tags_str: str = tags_to_sql(tags)
-        filters_line: str = filters_to_sql(set(filters), user_id, last_image_id, 10)
+        filters_line: str = filters_to_sql(set(filters), user_id,  author_login, last_image_id, 10)
         
         query: str = f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
@@ -625,7 +627,6 @@ class PhotoFox:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login, user_id))
         if (len(result) == 0): raise HTTPException(status_code=HTTP_400_BAD_REQUEST, 
                                                   detail={'message': f"User with login {login} wasn't found"})
-        print(result)
         return DB_Returns.Profile_full(**result[0])
 
     #INSERT
@@ -658,11 +659,6 @@ class PhotoFox:
     
 
     async def add_like(self, id_user: int, id_image: int) -> None:
-        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
-        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
-        print("id_user", id_user, "id_image", id_image)
-        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
-        print("'1'1'1'1'1'1'1'1'1'1'1'1'")
         await self.__DB.execute('INSERT INTO "like"(id_user, id_image) VALUES($1, $2);', id_user, id_image)
     
 

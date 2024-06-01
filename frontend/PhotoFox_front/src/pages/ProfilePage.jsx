@@ -5,8 +5,8 @@ import ImageScroller from "../components/ImageScroller/ImageScroller.jsx";
 
 export default function ProfilePage() {
     const [filters] = useState({
-        primary_filter : "published",
-        secondary_filter : [],
+        primaryFilter : "published",
+        secondaryFilter : [],
     });
     const [tags] = useState([]);
     const [loading, setLoading] = useState(true);
