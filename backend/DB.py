@@ -773,13 +773,13 @@ class PhotoFox:
 
 
     async def update_profile_password(self, new_pass: str, user_id: int):
-        await self.__DB.execute('UPDATE "user" SET hash_and_salt = $1 WHERE id = $2', new_pass, user_id)
+        await self.__DB.execute('UPDATE "user" SET hash_and_salt = $1 WHERE id = $2;', new_pass, user_id)
     
     async def update_block_profile (self, user_id: int):
-        await self.__DB.execute('UPDATE "user" SET is_blocked = true WHERE id = $1 AND NOT is_admin', user_id)
+        await self.__DB.execute('UPDATE "user" SET is_blocked = true WHERE id = $1 AND NOT is_admin;', user_id)
     
     async def update_unblock_profile (self, user_id: int):
-        await self.__DB.execute('UPDATE "user" SET is_blocked = false WHERE id = $1', user_id)
+        await self.__DB.execute('UPDATE "user" SET is_blocked = false WHERE id = $1;', user_id)
 
 
 
