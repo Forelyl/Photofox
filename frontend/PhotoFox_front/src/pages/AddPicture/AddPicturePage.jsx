@@ -37,7 +37,7 @@ export default function AddPicturePage() {
         reader.readAsDataURL(file);
     }
 
-    function handleDescrionInput(e) {
+    function handleDescriptionInput(e) {
         document.getElementById('description-length').innerHTML = e.target.value.length;
     }
 
@@ -68,7 +68,7 @@ export default function AddPicturePage() {
         return redirect('/');
     }
 
-    function hangleCheckBoxChanged(e) {
+    function handleCheckBoxChanged(e) {
         setImageDownloadable((imageDownloadable === "downloadable") ? undefined : "downloadable");
     }
     // TODO: update input sizing when image is been inserted (on horizontal change label sizing to horizontal and so on)
@@ -84,7 +84,7 @@ export default function AddPicturePage() {
                     <input type='hidden' value={dimensions.width} name='width'/>
                     <input type='hidden' value={dimensions.height} name='height'/>
                     <label htmlFor='download-permission' className='checkbox-container'> 
-                        <input type="checkbox" name='download_permission' id='download-permission' className='checkbox' onChange={hangleCheckBoxChanged}/>
+                        <input type="checkbox" name='download_permission' id='download-permission' className='checkbox' onChange={handleCheckBoxChanged}/>
                         <div className={`checkbox-mark ${imageDownloadable}`}></div>
                         Allow downloading
                     </label>
@@ -95,7 +95,7 @@ export default function AddPicturePage() {
                     </div>
                     <Tags setTags={setTags}/>
                     <div id='description-wrapper'>
-                        <textarea placeholder='Add description' name='description' maxLength="500" onInput={handleDescrionInput}></textarea>
+                        <textarea placeholder='Add description' name='description' maxLength="500" onInput={handleDescriptionInput}></textarea>
                         <div><span id='description-length'>0</span>/500</div>
                     </div>
                     <div id='navigate'>

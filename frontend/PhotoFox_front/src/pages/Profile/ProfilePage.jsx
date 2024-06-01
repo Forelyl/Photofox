@@ -20,7 +20,7 @@ export default function ProfilePage() {
     return (
         <>
             <NavBar hideSearch={true}/>
-            <ProfileView loading={loading} setLoading={setLoading}/>
+            <ProfileView loading={loading} setLoading={setLoading} profileName={profileName}/>
             {!loading && <ImageScroller filters={filters} tags={tags}/>}
         </>
     );

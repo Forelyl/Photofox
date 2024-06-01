@@ -88,6 +88,7 @@ export async function action({request}) {
             email: data.get('email'),
             password: data.get('password')
         }
+        console.log(authData)
         response = await fetch(`${import.meta.env.VITE_API_URL}/profile/add/user`, {
             method: 'POST',
             headers: {

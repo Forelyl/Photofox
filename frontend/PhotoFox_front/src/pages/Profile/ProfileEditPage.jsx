@@ -1,14 +1,28 @@
 import NavBar from "../../components/Menu/NavBar.jsx";
-import {useParams} from "react-router-dom";
+import {redirect, useParams} from "react-router-dom";
 import ProfileEdit from "../../components/ProfileView/ProfileEdit.jsx";
+import {useState} from "react";
+import {getLogin, getToken} from "../../utils/auth.js";
 
 export default function ProfileEditPage() {
     const {profileName} = useParams();
-
+    const [loading, setLoading] = useState(true);
     return (
         <>
             <NavBar hideSearch={true} hideAdd={true}/>
-            <ProfileEdit loading={loading} setLoading={setLoading}/>
+            <ProfileEdit loading={loading} setLoading={setLoading} profileName={profileName}/>
         </>
     );
+}
+
+export function loader({params, request}) {
+    const urlParts = request.url.split("/");
+    const profileName = urlParts[urlParts.length - 2];
+    const login = getLogin();
+    if (login && profileName === login && getToken()) {
+        return null
+    }
+    else {
+        return redirect('/sign?mode=in');
+    }
 }

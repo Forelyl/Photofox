@@ -33,7 +33,7 @@ app = FastAPI(lifespan=lifespan)
 password_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
-origins = ["http://192.168.0.102:5173", "http://192.168.1.101:5173", "http://localhost:5173"]
+origins = ["http://192.168.0.102:5173", "http://192.168.1.101:5173", "http://localhost:5174", "http://localhost:5173", "http://localhost:5175"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -388,7 +388,7 @@ async def get_profile_with_user(
     
     return await db.get_user_profile(login, user.id)
 
-@app.get('profile/edit', response_model=DB_Returns.Profile_edit, tags=['profile'])
+@app.get('/profile/edit', response_model=DB_Returns.Profile_edit, tags=['profile'])
 async def get_profile_info_for_editing(user: Annotated[User, Depends(access_user)]):
     return await db.get_user_profile_edit(user.id)
 
