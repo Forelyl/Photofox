@@ -7,11 +7,11 @@ import {getToken} from "../../utils/auth.js";
 export default function ProfileEdit({loading, setLoading, profileName}) {
     const { error, profileData} = useProfileEditLoad(setLoading, profileName);
     const { profileId, profileImage, description, login, isBlocked, email } = profileData;
-    const [submitting, setSubmitting] = useState(false);
-    const [loginUsed, setLoginUsed] = useState(false);
-    const [emailUsed, setEmailUsed] = useState(false);
+    const [ submitting, setSubmitting ] = useState(false);
+    const [ loginUsed, setLoginUsed ] = useState(false);
+    const [ emailUsed, setEmailUsed ] = useState(false);
+    const [ newProfileImage, setNewProfileImage ] = useState(['/NavBarElements/profile_icon.svg', false])
     const navigate = useNavigate();
-    const [newProfileImage, setNewProfileImage] = useState(profileImage)
     if (isBlocked) throw new Error('User is blocked');
     function handleImageUpload(e) {
         const file = e.target.files[0];
@@ -25,9 +25,8 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
 
         reader.onload = function(e) {
             const img = new Image();
-
             img.src = e.target.result;
-            setNewProfileImage(img.src);
+            setNewProfileImage([img.src, true]);
         };
 
         reader.readAsDataURL(file);
@@ -54,28 +53,14 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
                 'Authorization': getToken()
             }
         });
-        setNewProfileImage(null);
+        setNewProfileImage([null, false]);
+
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
         setSubmitting(true);
         const data = new FormData(e.target);
-        if (newProfileImage !== profileImage && newProfileImage !== '') {
-            console.log(1);
-            console.log(newProfileImage, "new")
-            console.log(profileImage, "old")
-            await fetch(`${import.meta.env.VITE_API_URL}/profile/picture`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': getToken()
-                },
-                body: {
-                    'image': newProfileImage
-                }
-            });
-        }
         if (data.get('newLogin')) {
             console.log(2)
             const response = await fetch(`${import.meta.env.VITE_API_URL}/profile/login`, {
@@ -133,12 +118,25 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
                 }
             });
         }
+        if (newProfileImage !== profileImage && newProfileImage !== '') {
+            let image = new FormData()
+            image.append('image', data.get('image'));
+            await fetch(`${import.meta.env.VITE_API_URL}/profile/picture`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': getToken()
+                },
+                body: image
+            });
+        }
+        setSubmitting(false);
         return navigate(`/${data.get('newLogin')}`, {replace: true});
     }
-
+    console.log(newProfileImage)
+    //console.log(profileImage)
     return (
         <>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} disabled={submitting}>
                 {!error &&
                 (<>
                     <div>
@@ -147,9 +145,9 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
                                 (<>
                                     <label htmlFor='image' id='image-wrapper'>
                                         <input type="file" accept="image/*" name='image' id='image' onChange={handleImageUpload} />
-                                        <img src={(newProfileImage) ? newProfileImage : '/NavBarElements/profile_icon.svg'} alt='add image' id='image-preview'/>
+                                        <img src={(newProfileImage[1] || !profileImage) ? newProfileImage[0] : profileImage} alt='add image' id='image-preview'/>
                                     </label>
-                                    <button type='button' onClick={handleDeleteProfilePicture} disabled={!newProfileImage}>Delete avatar</button>
+                                    <button type='button' onClick={handleDeleteProfilePicture} disabled={profileImage === ''}>Delete avatar</button>
                                 </>)
                             }
                             <div>
@@ -167,13 +165,13 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
                                 </div>
                                 <div>
                                     <label htmlFor='pass'>New password</label>
-                                    <input id='pass' name='newPassword'/>
+                                    <input id='pass' type='password' name='newPassword'/>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <button type='submit'>Save</button>
+                        <button type='submit'>{!submitting ? 'Save' : 'Saving'}</button>
                         <div></div>
                         <button type='button' onClick={() => {return navigate(`/${login}`, {replace: true});}}>Cancel</button>
                     </div>

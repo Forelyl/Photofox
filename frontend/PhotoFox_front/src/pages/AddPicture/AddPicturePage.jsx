@@ -75,7 +75,7 @@ export default function AddPicturePage() {
     return (
         <div id='add'>
             <NavBar hideAdd={true} hideSearch={true}/>
-            <Form method={"POST"} id='add-form' onSubmit={handleOnSubmit}>
+            <Form method={"POST"} id='add-form' onSubmit={handleOnSubmit} disabled={submitting}>
                 <div id='left'>
                     <label htmlFor='image' id='image-wrapper' className={imageDownloadable}>
                         <input type="file" accept="image/*" name='image' id='image' onChange={handleImageUpload} required/>
