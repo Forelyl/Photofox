@@ -1,7 +1,7 @@
-import NavBar from "../components/Menu/NavBar.jsx";
+import NavBar from "../../components/Menu/NavBar.jsx";
 import {useState} from "react";
-import ProfileView from "../components/ProfileView/ProfileView.jsx";
-import ImageScroller from "../components/ImageScroller/ImageScroller.jsx";
+import ProfileView from "../../components/ProfileView/ProfileView.jsx";
+import ImageScroller from "../../components/ImageScroller/ImageScroller.jsx";
 import {useParams} from "react-router-dom";
 
 export default function ProfilePage() {
@@ -20,7 +20,7 @@ export default function ProfilePage() {
     return (
         <>
             <NavBar hideSearch={true}/>
-            <ProfileView loading={loading} setLoading={setLoading} profileName={profileName}/>
+            <ProfileView loading={loading} setLoading={setLoading}/>
             {!loading && <ImageScroller filters={filters} tags={tags}/>}
         </>
     );

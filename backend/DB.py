@@ -118,6 +118,10 @@ class DB_Returns:
         subscribed_on: int
         subscribers: int
 
+    class Profile_edit(Profile):
+        description: str | None
+        email: str | None
+
     class Profile_reported(Profile_full):
         report_comment_counter: int
         report_image_counter: int
@@ -635,6 +639,15 @@ class PhotoFox:
                                                   detail={'message': f"User with login {login} wasn't found"})
         return DB_Returns.Profile_full(**result[0])
 
+    async def get_user_profile_edit(self, user_id: int = -1) -> DB_Returns.Profile_edit:
+        query: str = """
+        SELECT id, login, profile_image_url AS profile_image, is_blocked, description, email
+        FROM "user" WHERE id=$1;
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+        if (len(result) == 0): raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
+                                                  detail={'message': f"Account was not found"})
+        return DB_Returns.Profile_edit(**result[0])
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
         await self.__DB.execute(

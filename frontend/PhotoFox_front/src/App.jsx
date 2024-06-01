@@ -2,7 +2,7 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import RootLayout from "./pages/RootLayout.jsx";
 import HomePage from "./pages/HomePage/HomePage.jsx";
 import SignPage, { action as authAction } from "./pages/SignPage/SignPage.jsx";
-import ProfilePage from "./pages/ProfilePage.jsx";
+import ProfilePage from "./pages/Profile/ProfilePage.jsx";
 import ProfileEdit from "./components/ProfileView/ProfileEdit.jsx";
 import UsersPictures from "./pages/UsersPictures/UsersPictures.jsx";
 import ProfileSubs from "./pages/ProfileSubs.jsx";
