@@ -59,7 +59,7 @@ export default function AddPicturePage() {
             method: 'POST',
             headers: headers,
             body: data
-        })
+        });
 
         setSubmitting(false);
         if (!response.ok) {

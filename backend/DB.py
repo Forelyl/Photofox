@@ -781,7 +781,13 @@ class PhotoFox:
     async def update_unblock_profile (self, user_id: int):
         await self.__DB.execute('UPDATE "user" SET is_blocked = false WHERE id = $1;', user_id)
 
+    async def update_picture_description (self, image_id: int, new_description: str, author_id: int) -> None:
+        await self.__DB.execute('UPDATE image SET description = $1 WHERE id = $2 AND author_id = $3;',
+                                new_description, image_id, author_id)
 
+    async def update_picture_title(self, image_id: int, new_title: str, author_id: int) -> None:
+        await self.__DB.execute('UPDATE image SET title = $1 WHERE id = $2 AND author_id = $3;',
+                                new_title, image_id, author_id)
 
 async def print_XD(db: PhotoFox):
     value = await db.select_all_tags()
