@@ -35,4 +35,7 @@
         border-radius: 0.75vw;
         text-align: center;
     }
+    > button {
+        user-select: none;
+    }
 }

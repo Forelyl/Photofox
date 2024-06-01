@@ -20,6 +20,7 @@
         background-color: #49B1E9;
         border-radius: 30px;
         > #top {
+            user-select: none;
             position: relative;
             padding-top: 3vh;
             width: 90%;
