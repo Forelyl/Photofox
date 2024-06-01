@@ -28,7 +28,7 @@ export default function useProfileEditLoad(setLoading, profileLogin) {
             setProfileData({
                 profileId: values.id,
                 login: values.login,
-                profileImage: values.profile_image ?? null,
+                profileImage: values.profile_image ?? '',
                 isBlocked: values.is_blocked,
                 description: values.description,
                 email: values.email

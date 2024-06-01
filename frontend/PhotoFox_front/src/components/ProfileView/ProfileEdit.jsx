@@ -1,4 +1,4 @@
-import {Link, Form, redirect, useNavigate} from "react-router-dom";
+import {Form, useNavigate} from "react-router-dom";
 import './ProfileView.css'
 import useProfileEditLoad from "../../hooks/useProfileEditLoad.js";
 import {useState} from "react";
@@ -7,9 +7,11 @@ import {getToken} from "../../utils/auth.js";
 export default function ProfileEdit({loading, setLoading, profileName}) {
     const { error, profileData} = useProfileEditLoad(setLoading, profileName);
     const { profileId, profileImage, description, login, isBlocked, email } = profileData;
-    const [submitting, setSubmitting] = useState(false);
+    const [ submitting, setSubmitting ] = useState(false);
+    const [ loginUsed, setLoginUsed ] = useState(false);
+    const [ emailUsed, setEmailUsed ] = useState(false);
+    const [ newProfileImage, setNewProfileImage ] = useState(['/NavBarElements/profile_icon.svg', false])
     const navigate = useNavigate();
-    const [newProfileImage, setNewProfileImage] = useState(profileImage)
     if (isBlocked) throw new Error('User is blocked');
     function handleImageUpload(e) {
         const file = e.target.files[0];
@@ -23,9 +25,8 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
 
         reader.onload = function(e) {
             const img = new Image();
-
             img.src = e.target.result;
-            setNewProfileImage(img.src);
+            setNewProfileImage([img.src, true]);
         };
 
         reader.readAsDataURL(file);
@@ -52,66 +53,90 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
                 'Authorization': getToken()
             }
         });
-        setNewProfileImage(null);
+        setNewProfileImage([null, false]);
+
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
         setSubmitting(true);
         const data = new FormData(e.target);
-        if (newProfileImage !== profileImage) {
-            await fetch(`${import.meta.env.VITE_API_URL}/profile/picture`, {
+        if (data.get('newLogin')) {
+            console.log(2)
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/profile/login`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': getToken()
-                },
-                body: {
-                    'image': newProfileImage
+                    'Authorization': getToken(),
+                    'new-login': data.get('newLogin')
                 }
             });
+            if (response.status === 400) {
+                setLoginUsed(true);
+            }
+            if (!response.ok) {
+                return null;
+            }
+            localStorage.setItem('login', data.get('newLogin'));
         }
-        if (data.get('lo')) {
-            await fetch(`${import.meta.env.VITE_API_URL}/profile/picture`, {
+        if (data.get('description')) {
+            console.log(3);
+            await fetch(`${import.meta.env.VITE_API_URL}/profile/description`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': getToken()
-                },
-                body: {
-                    'image': newProfileImage
+                    'Authorization': getToken(),
+                    'new-description': data.get('description')
                 }
             });
         }
         if (data.get('email')) {
-            await fetch(`${import.meta.env.VITE_API_URL}/profile/email`, {
+            console.log(4);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/profile/email`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': getToken()
-                },
-                body: {
-                    'email': data.get('email')
+                    'Authorization': getToken(),
+                    'new-email': data.get('email')
+                }
+            });
+            if (response.status === 400) {
+                setEmailUsed(true);
+            }
+            if (!response.ok) {
+                return null;
+            }
+        }
+        if (data.get('newPassword')) {
+            console.log(5);
+            await fetch(`${import.meta.env.VITE_API_URL}/profile/password`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': getToken(),
+                    'new-password': data.get('newPassword')
                 }
             });
         }
-        if (data.get('pass')) {
+        if (newProfileImage !== profileImage && newProfileImage !== '') {
+            let image = new FormData()
+            image.append('image', data.get('image'));
             await fetch(`${import.meta.env.VITE_API_URL}/profile/picture`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': getToken()
                 },
-                body: {
-                    'image': newProfileImage
-                }
+                body: image
             });
         }
+        setSubmitting(false);
+        return navigate(`/${data.get('newLogin')}`, {replace: true});
     }
-
+    console.log(newProfileImage)
+    //console.log(profileImage)
     return (
         <>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} disabled={submitting}>
                 {!error &&
                 (<>
                     <div>
@@ -120,29 +145,33 @@ export default function ProfileEdit({loading, setLoading, profileName}) {
                                 (<>
                                     <label htmlFor='image' id='image-wrapper'>
                                         <input type="file" accept="image/*" name='image' id='image' onChange={handleImageUpload} />
-                                        <img src={(newProfileImage) ? newProfileImage : '/NavBarElements/profile_icon.svg'} alt='add image' id='image-preview'/>
+                                        <img src={(newProfileImage[1] || !profileImage) ? newProfileImage[0] : profileImage} alt='add image' id='image-preview'/>
                                     </label>
-                                    <button type='button' onClick={handleDeleteProfilePicture} disabled={!newProfileImage}>Delete avatar</button>
+                                    <button type='button' onClick={handleDeleteProfilePicture} disabled={profileImage === ''}>Delete avatar</button>
                                 </>)
                             }
-                            <input defaultValue={login} required/>
+                            <div>
+                                {loginUsed && <span>Login is already</span>}
+                                <input defaultValue={login} name='newLogin' required/>
+                            </div>
                         </div>
                         <div id='right'>
                             <textarea name='description' defaultValue={description ?? ''} />
                             <div id='info-row'>
                                 <div>
+                                    {emailUsed && <span>Email is already</span>}
                                     <label htmlFor='email'>Email:</label>
                                     <input id='email' name='email' defaultValue={email} required/>
                                 </div>
                                 <div>
                                     <label htmlFor='pass'>New password</label>
-                                    <input id='pass' name='new_password'/>
+                                    <input id='pass' type='password' name='newPassword'/>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <button type='submit'>Save</button>
+                        <button type='submit'>{!submitting ? 'Save' : 'Saving'}</button>
                         <div></div>
                         <button type='button' onClick={() => {return navigate(`/${login}`, {replace: true});}}>Cancel</button>
                     </div>

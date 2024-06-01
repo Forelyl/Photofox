@@ -50,7 +50,7 @@ export default function ImageFrame({ setLoading, loading }) {
                         <img src={path} alt='picture' onLoad={handleImageLoaded}/>
                     </div>
                     <div id='right'>
-                        <button id='exit' onClick={()=>{navigate('/')}}>exit</button>
+                        <button id='exit' onClick={()=>{navigate(-1)}}>exit</button>
                         <Link to={`/picture/${parseInt(pictureId) + 1}`} id='forvard'>
                             <svg viewBox="0 0 46 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fillRule="evenodd" clipRule="evenodd" d="M10.8075 8.85055C10.8077 2.59205 2.36419 -3.6665 10.8077 2.59271L44.5806 31.7978C45.9878 32.8409 45.9878 32.8415 44.5806 33.884L10.8077 61.0046C2.36419 67.2631 10.8077 61.0046 10.8077 54.7457C10.8077 50.5728 -6.07919 61.0036 2.36421 54.7456L33.3229 32.8409L2.36421 8.85007C-6.0793 2.59102 10.8075 13.0233 10.8075 8.85055Z" fill="white"/>

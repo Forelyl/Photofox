@@ -61,11 +61,11 @@ tag_regex:   str = r"(^[0-9a-z_]+$)"
 
 @app.exception_handler(exceptions.ForeignKeyViolationError)
 async def foreign_key_exception_handler(request: Request, exc: exceptions.ForeignKeyViolationError):
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency"})
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency foreign"})
 
 @app.exception_handler(exceptions.UniqueViolationError)
 async def unique_exception_handler(request: Request, exc: exceptions.UniqueViolationError):
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency"})
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency unique"})
 
 #============================================
 # Tokens - pass for time
@@ -471,6 +471,7 @@ async def change_email_profile(user: Annotated[User, Depends(access_user)], new_
 
 @app.patch('/profile/password', tags=['profile', 'admin'])
 async def change_password_profile(user: Annotated[User, Depends(access_user)], new_password: Annotated[str, Header(min_length=1, max_length=50)]):
+
     hash = hash_password(new_password)
     await db.update_profile_password(hash, user.id)
 
