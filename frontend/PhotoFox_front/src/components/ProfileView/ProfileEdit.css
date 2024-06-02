@@ -58,6 +58,9 @@
                     }
                     
                 }
+                #loading {
+                    height: 76.5vh;
+                }
             }
             > #right {
                 width: 100%;

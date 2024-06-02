@@ -165,8 +165,8 @@ export default function ProfileEdit() {
                         <div id='info'>
                             <div id='left'>
                                 {loading ? 
-                                    <div >
-                                        
+                                    <div id='loading'>
+                                      <img src="/loading.io_Ellipsis.svg" alt="" />
                                     </div> 
                                     :
                                     <>
