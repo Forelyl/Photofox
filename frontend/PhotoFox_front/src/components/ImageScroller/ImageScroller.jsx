@@ -1,3 +1,4 @@
+/*_*/
 import {useState, useRef, useCallback} from "react";
 import useImageScrollLoad from "../../hooks/useImageScrollLoad.js";
 import ImageRow from "./ImageRow.jsx";
