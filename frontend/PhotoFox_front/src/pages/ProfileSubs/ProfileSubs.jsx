@@ -38,9 +38,9 @@ export default function ProfileSubs() {
     }
 
     return (
-        <>
+        <div id='profile-subs'>
             <NavBar hideSearch={true}/>
-            <div id='top-of-users-pictures'>
+            <div id='top-of-users-list'>
                 <Link to={-1}>
                     <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                 </Link>
@@ -77,16 +77,16 @@ export default function ProfileSubs() {
                 })}
             </div>
             }
-            {(rows.length === 0 || !subsLeft) && !error && !loading && <div className='text-subs-info'>
+            {/* {(rows.length === 0 || !subsLeft) && !error && !loading && <div className='text-subs-info'>
                 <div>No subs were found</div>
-            </div>}
+            </div>} */}
             {loading && !error && <div className='text-subs-info'>
                 <div>Loading...</div>
             </div>}
             {error && <div className='text-subs-info'>
                 <div>An error occurred when requesting the server!<br/>Please reload page</div>
             </div>}
-        </>
+        </div>
     );
 }
 

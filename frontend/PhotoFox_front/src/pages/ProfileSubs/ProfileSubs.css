@@ -1,30 +1,69 @@
-#top-of-users-pictures {
-    display: flex;
-    align-items: center;
-    > h1 {
-        user-select: none;
-        font-family: 'Epilogue';
-        font-weight: 300;
-        letter-spacing: 1px;
-        font-size: 7.5vh;
-        transition: 0.25s ease-in-out;
-    }
-    > h1:hover {
-        color: aqua;
-    }
-    > a {
-        user-select: none;
-        margin: 0 4vw;
-        height: 6vh;
-        > img {
-            width: 100%;
-            height: 100%;
-            transition: 0.5s ease-in-out;
+#profile-subs {
+    > #top-of-users-list {
+        display: flex;
+        align-items: center;
+        > h1 {
+            user-select: none;
+            font-family: 'Epilogue';
+            font-weight: 300;
+            letter-spacing: 1px;
+            font-size: 7.5vh;
+            transition: 0.25s ease-in-out;
+        }
+        > h1:hover {
+            color: aqua;
+        }
+        > a {
+            user-select: none;
+            margin: 0 4vw;
+            height: 6vh;
+            > img {
+                width: 100%;
+                height: 100%;
+                transition: 0.5s ease-in-out;
+            }
+        }
+        > a:hover {
+            > img {
+                transform: translateX(-2px);
+            }
         }
     }
-    > a:hover {
-        > img {
-            transform: translateX(-2px);
+
+    > .subs-container {
+        display: flex;
+        flex-direction: column;
+        gap: 4vh;
+        margin-bottom: 5vh;
+        > .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            justify-items: center;
+            width: 100%;
+            
+            > a {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 50%;
+                text-decoration: none;
+                color: floralwhite;
+                font-family: 'Inter';
+                font-size: 2.75vh;
+                > img {
+                    width: 35%;
+                    max-height: 100%;
+                    object-fit: cover;
+                    margin-bottom: 2%;
+                    transition: 0.25s ease-in-out;
+                }
+            }
+            > a:hover {
+                color: #01ffff;
+                > img {
+                    transform: scale(0.95);
+                }
+            }
         }
     }
 }
