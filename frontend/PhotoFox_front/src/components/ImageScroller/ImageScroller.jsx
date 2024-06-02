@@ -3,7 +3,6 @@ import {useState, useRef, useCallback} from "react";
 import useImageScrollLoad from "../../hooks/useImageScrollLoad.js";
 import ImageRow from "./ImageRow.jsx";
 import './ImageScroller.css';
-import { getToken } from "../../utils/auth.js";
 
 export default function ImageScroller({ filters, tags, userSpecific = false }) {
     const [lastImage, setLastImage] = useState(-1);

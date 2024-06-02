@@ -30,13 +30,13 @@ export default function ProfileView({loading, setLoading, profileName}) {
                     <div id='info-row'>
                         <div className='button-and-number'>
                             <div className='profile-button'>
-                                <Link to={'subs?type=on_me'}>Subscribers</Link>
+                                <Link to={'subs?mode=on_me'}>Subscribers</Link>
                             </div>
                             <span>{subscribers}</span>
                         </div>
                         <div className='button-and-number'>
                             <div className='profile-button'>
-                                <Link to={'subs?type=me_on'}>Subscribed on</Link>
+                                <Link to={'subs?mode=me_on'}>Subscribed on</Link>
                             </div>
                             <span>{subscribedOn}</span>
                         </div>
@@ -50,8 +50,8 @@ export default function ProfileView({loading, setLoading, profileName}) {
                     </div>
                 </div>
             </div>}
-            {loading && !error && <div className='text-images-info-profile'><div>Loading...</div></div>}
-            {error && <div className='text-images-info-profile'><div>An error occurred when requesting the server!<br/>Please reload page</div></div>}
+            {loading && !error && <div className='text-subs-info-profile'><div>Loading...</div></div>}
+            {error && <div className='text-subs-info-profile'><div>An error occurred when requesting the server!<br/>Please reload page</div></div>}
         </>
     )
 }

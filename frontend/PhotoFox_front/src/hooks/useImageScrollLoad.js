@@ -41,11 +41,11 @@ export default function useImageScrollLoad(lastImage, filters, tags, userSpecifi
         const controller = new AbortController();
         const signal = controller.signal;
         let fetch_string = `${import.meta.env.VITE_API_URL}/image/pc${userSpecific ? '/user' : ''}?last_image_id=${newStart}` + filtersString + tags_string;
-        console.log(fetch_string);
+        // console.log(fetch_string);
         
-        let headersQuerry = {'Content-Type': 'application/json'}
+        let headersQuery = {'Content-Type': 'application/json'}
         if (userSpecific) {
-            headersQuerry = {
+            headersQuery = {
                 'Content-Type': 'application/json',
                 'Authorization': getToken()
             }
@@ -53,12 +53,12 @@ export default function useImageScrollLoad(lastImage, filters, tags, userSpecifi
         
         fetch(fetch_string, {
             method: 'GET',
-            headers: headersQuerry,
+            headers: headersQuery,
             signal: signal,
         })
         .then(response => response.json())
         .then(values => {
-            console.log(values);
+            // console.log(values);
             setImages((prevImages) => {
                 const allImages = [...prevImages, ...values];
                 const idMap = new Map();
@@ -72,7 +72,6 @@ export default function useImageScrollLoad(lastImage, filters, tags, userSpecifi
                 });
             });
             setImagesLeft(values.length === 30);
-            console.log('see ya')
             setTimeout(() => setLoading(false), 1000);
         })
         .catch(error => {

@@ -15,6 +15,7 @@ export default function ImageEdit() {
     const [loading, setLoading] = useState(true);
     const [editTitle, setEditTitle] = useState(false);
     const [editDescription, setEditDescription] = useState(false);
+    const [titleIsEmpty, setTitleIsEmpty] = useState(false);
     const { error, imageParams} = useImageLoad(pictureId, setLoading);
     const { authorLogin, path, title, commentCounter, likeCounter, description, tags, liked} = imageParams;
 
@@ -50,9 +51,15 @@ export default function ImageEdit() {
         }, 1010)
     }
 
-
     async function submitChange(e, type) {
         const data = e.target.parentElement.parentElement.children[2].children[0].value;
+        
+        if (type === 'title' && data.length === 0) {
+            setTitleIsEmpty(true);
+            setTimeout(() => setTitleIsEmpty(false), 2500);
+            return;
+        }
+        
         console.log(data)
         const response = await fetch(`${import.meta.env.VITE_API_URL}/image/${type}?image_id=${pictureId}`, {
             method: 'PATCH',
@@ -91,11 +98,10 @@ export default function ImageEdit() {
                         </button>
                         <div className='text-area-input'>
                             <textarea name='new_title' id='new-title' rows='2' defaultValue={title} disabled={!editTitle} maxLength={100}/>
-                            <span >Can't be empty</span>
+                            <span hidden={!titleIsEmpty}>Can't be empty</span>
                         </div>
                     </div>
 
-                    
                     <div className='text-area-block'>
                         <span>Description</span>
                         <button onClick={
@@ -120,7 +126,6 @@ export default function ImageEdit() {
                         </button>
                         <CustomShareButton pictureId={pictureId }/>
                     </div>
-
 
                     <Tags tags={tags}/>
                 </div>
