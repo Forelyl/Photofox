@@ -41,7 +41,7 @@ export default function ProfileSubs() {
         <>
             <NavBar hideSearch={true}/>
             <div id='top-of-users-pictures'>
-                <Link to='/'>
+                <Link to={-1}>
                     <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                 </Link>
                 <h1>{titlePage}</h1>
