@@ -107,16 +107,7 @@ export default function ImageEdit() {
                         </div>
                     </div>
 
-                    <div id='use-section'>
-                        <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter}
-                                          isAuthor={isAuthor} />
-                        <button onClick={handleCommentClick} disabled>
-                            <img src='/ImageModuleIcons/comment_icon.svg' alt='comment button'/>
-                            <span>{(commentCounter > 0) ? commentCounter : 'No'} comments</span>
-                        </button>
-                        <CustomShareButton pictureId={pictureId }/>
-                    </div>
-
+                    
                     <div className='text-area-block'>
                         <span>Description</span>
                         <button onClick={
@@ -131,6 +122,17 @@ export default function ImageEdit() {
                             <textarea disabled={!editDescription} defaultValue={description}/>
                         </div>
                     </div>
+
+                    <div id='use-section'>
+                        <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter}
+                                          isAuthor={isAuthor} />
+                        <button onClick={handleCommentClick} disabled>
+                            <img src='/ImageModuleIcons/comment_icon.svg' alt='comment button'/>
+                            <span>{(commentCounter > 0) ? commentCounter : 'No'} comments</span>
+                        </button>
+                        <CustomShareButton pictureId={pictureId }/>
+                    </div>
+
 
                     <Tags tags={tags}/>
                 </div>

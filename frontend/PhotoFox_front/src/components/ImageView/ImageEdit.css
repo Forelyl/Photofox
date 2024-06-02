@@ -70,7 +70,7 @@
         flex-direction: column;
         .text-area-block {
             display: flex;
-            padding: 2% 0;
+            padding: 2% 0 0 0;
             width: 90%;
             align-items: center;
             box-sizing: border-box;
@@ -123,6 +123,7 @@
         }
 
         #use-section {
+            padding-top: 2%;
             width: 85%;
             display: grid;
             justify-items: center;
@@ -150,7 +151,36 @@
             }
         }
 
-        #tags 
+        > #tags {
+            padding: 2% 0 10% 5%;
+            box-sizing: content-box;
+            align-self: flex-start;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: 1fr;
+            width: 90%;
+            height: 6vh;
+            > #add-tag {
+                justify-self: left;
+            }
+        }
+    }
+
+    #delete {
+        font-family: 'Inter';
+        font-size: 3.15vh;
+        cursor: pointer;
+        border: 2px solid #FF4545;
+        color: #FF4545;
+        background-color: transparent;
+        border-radius: 1vw;
+        width: 25%;
+        margin-left: 37.5%;
+        height: 10vh;
+        margin-bottom: 3%;
+    }
+    #delete:hover {
+        background-color: #350c0c;
     }
 
 }

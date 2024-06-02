@@ -123,9 +123,14 @@
             }
         }
         > #tags {
-            /* padding: 20px 0; */
-            display: flex;
-            align-items: center;
+            align-self: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: 1fr;
+            width: 100%;
+            > #add-tag {
+                justify-self: left;
+            }
         }
         > #description-wrapper {
             height: 90%;
