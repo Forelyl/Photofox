@@ -11,9 +11,9 @@ import './ImageEdit.css'
 export default function ImageEdit() {
     const { pictureId} = useParams();
 
-    const [loading, setLoading] = useState(true);
-    const [editTitle, setEditTitle] = useState(false);
-    const [editDescription, setEditDescription] = useState(false);
+    const [ loading, setLoading ] = useState(true);
+    const [ editTitle, setEditTitle ] = useState(false);
+    const [ editDescription, setEditDescription ] = useState(false);
     const { error, imageParams} = useImageLoad(pictureId, setLoading);
     const { authorLogin, path, title, commentCounter, likeCounter, description, tags, liked} = imageParams;
 
@@ -45,21 +45,6 @@ export default function ImageEdit() {
         }, 1010)
     }
 
-    async function submitTitleChange(e) {
-        const data = e.target.parentElement.parentElement.children[0].value;
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/image/title`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': getToken(),
-            },
-            body: JSON.stringify(data)
-        });
-        const values = await response.json();
-        console.log(values)
-        setEditTitle(false);
-    }
-
     async function submitChange(e, type) {
         const data = e.target.parentElement.parentElement.children[0].value;
         const response = await fetch(`${import.meta.env.VITE_API_URL}/image/${type}?image_id=${pictureId}`, {
@@ -80,7 +65,7 @@ export default function ImageEdit() {
 
     return (
         <div id='image-edit'>
-            {!error &&<>
+            {!error &&<div>
                 <div id='picture-section'>
                         <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
                         <img src={path} alt='picture' onLoad={handleImageLoaded}/>
