@@ -50,23 +50,10 @@ export default function ImageEdit() {
         }, 1010)
     }
 
-    async function submitTitleChange(e) {
-        const data = e.target.parentElement.parentElement.children[0].value;
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/image/title`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': getToken(),
-            },
-            body: JSON.stringify(data)
-        });
-        const values = await response.json();
-        console.log(values)
-        setEditTitle(false);
-    }
 
     async function submitChange(e, type) {
-        const data = e.target.parentElement.parentElement.children[0].value;
+        const data = e.target.parentElement.parentElement.children[2].children[0].value;
+        console.log(data)
         const response = await fetch(`${import.meta.env.VITE_API_URL}/image/${type}?image_id=${pictureId}`, {
             method: 'PATCH',
             headers: {
@@ -103,7 +90,8 @@ export default function ImageEdit() {
                                  alt={(!editTitle) ? 'edit title' : 'submit new title'} />
                         </button>
                         <div className='text-area-input'>
-                            <textarea name='new_title' id='new-title' rows='2' defaultValue={title} disabled={!editTitle}/>
+                            <textarea name='new_title' id='new-title' rows='2' defaultValue={title} disabled={!editTitle} maxLength={100}/>
+                            <span >Can't be empty</span>
                         </div>
                     </div>
 
@@ -119,7 +107,7 @@ export default function ImageEdit() {
                                  alt={(!editDescription) ? 'edit description' : 'submit new description'}/>
                         </button>
                         <div className='text-area-input'>
-                            <textarea disabled={!editDescription} defaultValue={description}/>
+                            <textarea disabled={!editDescription} defaultValue={description} maxLength={500}/>
                         </div>
                     </div>
 
