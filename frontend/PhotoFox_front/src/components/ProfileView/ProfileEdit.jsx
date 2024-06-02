@@ -1,7 +1,7 @@
 import {Form, useNavigate, useParams} from "react-router-dom";
 import './ProfileView.css'
 import useProfileEditLoad from "../../hooks/useProfileEditLoad.js";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getToken} from "../../utils/auth.js";
 import './ProfileEdit.css'
 import autosize from "autosize"
@@ -23,15 +23,22 @@ export default function ProfileEdit() {
     const [ editPass, setEditPass ] = useState(false);
 
     const navigate = useNavigate();
+    const ref = useRef();
+
     if (isBlocked) throw new Error('User is blocked');
 
-
+    useEffect(() => {
+        console.log(typeof profileImage)
+        console.log(!!profileImage)
+        if (!!profileImage){
+            setNewProfileImage([profileImage, true]);
+        }
+    }, [profileImage]);
 
     function handleImageUpload(e) {
         const file = e.target.files[0];
-
+        //TODO: передивитися поведінку при скасуванні аплоада картинки
         if (!file) {
-            setNewProfileImage(oldValue => oldValue);
             return;
         }
 
@@ -59,16 +66,8 @@ export default function ProfileEdit() {
         return navigate('/', {replace: true});
     }
 
-    async function handleDeleteProfilePicture() {
-        await fetch(`${import.meta.env.VITE_API_URL}/profile/picture/delete`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': getToken()
-            }
-        });
-        setNewProfileImage([null, false]);
-
+    async function handleDeleteProfilePicture(e) {
+        setNewProfileImage(['/NavBarElements/profile_icon.svg', false]);
     }
 
     async function handleSubmit(e) {
@@ -124,7 +123,8 @@ export default function ProfileEdit() {
             const token = resData.access_token;
             localStorage.setItem('token', "Bearer " + token);
         }
-        if (newProfileImage !== profileImage && newProfileImage !== '') {
+        if (newProfileImage[0] !== profileImage && newProfileImage[0] !== '/NavBarElements/profile_icon.svg') {
+            console.log()
             let image = new FormData()
             image.append('image', data.get('image'));
             await fetch(`${import.meta.env.VITE_API_URL}/profile/picture`, {
@@ -133,6 +133,15 @@ export default function ProfileEdit() {
                     'Authorization': getToken()
                 },
                 body: image
+            });
+        }
+        else {
+            await fetch(`${import.meta.env.VITE_API_URL}/profile/picture/delete`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': getToken()
+                }
             });
         }
 
@@ -157,6 +166,7 @@ export default function ProfileEdit() {
         setSubmitting(false);
         return navigate(`/${localStorage.getItem('login')}`, {replace: true});
     }
+
     return (
         <div id='profile-edit'>
             <Form onSubmit={handleSubmit} disabled={submitting} id='profile-edit-form'>
@@ -172,17 +182,16 @@ export default function ProfileEdit() {
                                     <>
                                         <label htmlFor='image' id='image-wrapper'>
                                             <input type="file" accept="image/*" name='image' id='image'
-                                                   onChange={handleImageUpload}/>
+                                                   onChange={handleImageUpload} ref={ref}/>
                                             <img
-                                                src={(newProfileImage[1] || !profileImage) ? newProfileImage[0] : profileImage}
+                                                src={ newProfileImage[0] }
                                                 alt='add image' id='image-preview'/>
                                         </label>
                                         <button type='button' onClick={handleDeleteProfilePicture}
-                                                disabled={profileImage === ''}>Delete avatar
+                                                disabled={ !newProfileImage[1] }>Delete avatar
                                         </button>
                                     </>
                                 }
-
                             </div>
                             <div id='right'>
                                 <div id='description-wrapper'>
