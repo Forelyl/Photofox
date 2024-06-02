@@ -26,10 +26,11 @@ export default function useProfileLoad(profileLogin = '', setLoading) {
             headers: query_headers
         })
         .then(response => {
-            if (response.status === 400) {
-                throw new Response("User was not found", {status : 404})
+            console.log(response)
+            if (!response.ok) {
+                throw new Error("User was not found")
             }
-            response.json();
+            return response.json();
         })
         .then((values) => {
             setProfileData({
@@ -42,12 +43,12 @@ export default function useProfileLoad(profileLogin = '', setLoading) {
                 subscribers: values.subscribers,
                 subscribedNow: values.subscribed_now
             });
+            setTimeout(() => setLoading(false), 1000)
         })
         .catch((error) => {
-            console.log("tt")
             setError(true);
         })
-        .finally(() => setTimeout(() => setLoading(false), 1000));
+        // .finally(() => setTimeout(() => setLoading(false), 1000));
     }, [profileLogin]);
     return { error, profileData };
 }
