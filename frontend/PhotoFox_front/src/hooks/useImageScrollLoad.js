@@ -1,43 +1,64 @@
 import { useState, useEffect } from "react";
+import { getToken } from "../utils/auth";
 
-export default function useImageLoad(lastImage, filters, tags) {
+export default function useImageScrollLoad(lastImage, filters, tags, userSpecific = false) {
     const [loading, setLoading] = useState(true);
     const [images, setImages] = useState([]);
     const [imagesLeft, setImagesLeft] = useState(false);
     const [error, setError] = useState(false);
-
+    let newStart = lastImage;
     useEffect(() => {
         setImages([]);
+        lastImage = -1;
     }, [filters, tags]);
 
     useEffect(() => {
         setLoading(true);
         setError(false);
 
-        let filters_string = '';
-        if (filters && filters.length > 0) {
-            for (let one_filter in filters_string) {
-                filters_string += '&filters=' + one_filter;
+        let filtersString = '';
+        if (filters) {
+            if (filters.primaryFilter.type) {
+                filtersString += '&filters=' + filters.primaryFilter.type;
+                if (filters.primaryFilter.author) {
+                    filtersString += '&author_login=' + filters.primaryFilter.author;
+                }
+            }
+            for (let one_filter in filters.secondaryFilter) {
+                if (filters.secondaryFilter[one_filter]) {
+                    filtersString += '&filters=' + filters.secondaryFilter[one_filter];
+                }
             }
         }
         let tags_string = '';
         if (tags && tags.length > 0) {
             for (let one_tag in tags) {
-                tags_string += '&tags=' + one_tag;
+                if (tags[one_tag]){
+                    tags_string += '&tags=' + tags[one_tag];
+                }
             }
         }
         const controller = new AbortController();
         const signal = controller.signal;
-        fetch(`${import.meta.env.VITE_API_URL}/image/pc?last_image_id=${lastImage}` + filters_string + tags_string, {
-            method: 'GET',
-            headers: {
+        let fetch_string = `${import.meta.env.VITE_API_URL}/image/pc${userSpecific ? '/user' : ''}?last_image_id=${newStart}` + filtersString + tags_string;
+        // console.log(fetch_string);
+        
+        let headersQuery = {'Content-Type': 'application/json'}
+        if (userSpecific) {
+            headersQuery = {
                 'Content-Type': 'application/json',
-            },
-            signal: signal
+                'Authorization': getToken()
+            }
+        }
+        
+        fetch(fetch_string, {
+            method: 'GET',
+            headers: headersQuery,
+            signal: signal,
         })
         .then(response => response.json())
         .then(values => {
-            console.log(values);
+            // console.log(values);
             setImages((prevImages) => {
                 const allImages = [...prevImages, ...values];
                 const idMap = new Map();
@@ -51,7 +72,6 @@ export default function useImageLoad(lastImage, filters, tags) {
                 });
             });
             setImagesLeft(values.length === 30);
-            console.log('see ya')
             setTimeout(() => setLoading(false), 1000);
         })
         .catch(error => {
@@ -60,7 +80,7 @@ export default function useImageLoad(lastImage, filters, tags) {
         });
         return () => controller.abort();
 
-    }, [lastImage, filters, tags]);
+    }, [newStart, filters, tags]);
 
     return { loading, images, imagesLeft, error };
 }

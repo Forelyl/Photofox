@@ -5,6 +5,8 @@ from typing import Any
 import asyncio
 import selectors # for Linux
 from pydantic import BaseModel
+from fastapi import HTTPException, status
+from starlette.status import HTTP_400_BAD_REQUEST
 
 
 class DB:
@@ -75,6 +77,9 @@ class DB_Returns:
         author_id: int
         author_login: str
         author_picture: str | None
+        is_liked: bool | None = None
+        is_subscribed: bool | None = None
+        is_saved: bool | None = None
     
     class Image_reported(Image):
         title: str | None
@@ -110,20 +115,23 @@ class DB_Returns:
         profile_image: str | None
         is_blocked: bool = False
 
-    class Profile_reported(BaseModel):
-        id: int
-        login: str
-        profile_image: str | None
+    class Profile_full(Profile):
         description: str | None
-
-        report_comment_counter: int
-        report_image_counter: int
-        report_profile_counter: int
+        subscribed_now: bool = False
         subscribed_on: int
         subscribers: int
 
+    class Profile_edit(Profile):
+        description: str | None
+        email: str | None
+
+    class Profile_reported(Profile_full):
+        report_comment_counter: int
+        report_image_counter: int
+        report_profile_counter: int
+        
         report_score: float
-        is_blocked: bool
+
 
 class DB_Models:
     # TODO: add indexes for fast search
@@ -186,7 +194,7 @@ def filters_is_ok (filters: set[DB_Models.Image_filters], user_id: int = -1) -> 
     return True
 
 
-def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, last_image_id: int = -1, limit: int = 0) -> str:
+def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, author_login: str = '#', last_image_id: int = -1, limit: int = 0) -> str:
     where_query: list[str] = list()
 
     up_down_filter: str = ""
@@ -208,13 +216,13 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
 
     # Add filters =====================================================
     if DB_Models.Image_filters.subscribed in filters:
-        where_query.append(f"author_id in (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber={user_id})")
+        where_query.append(f"author_id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber={user_id})")
     elif DB_Models.Image_filters.published in filters:
-        where_query.append(f"author_id={user_id}")
-    if DB_Models.Image_filters.saved in filters:
+        where_query.append(f"""author_id=(SELECT id FROM "user" WHERE login='{author_login}')""")
+    elif DB_Models.Image_filters.saved in filters:
         where_query.append(f"id in (SELECT id_image FROM saved WHERE id_user={user_id} {last_id_image_query})")
-    if DB_Models.Image_filters.liked in filters:
-        where_query.append(f"id in (SELECT id_image FROM liked WHERE id_user={user_id} {last_id_image_query})")
+    elif DB_Models.Image_filters.liked in filters:
+        where_query.append(f'id in (SELECT id_image FROM "like" WHERE id_user={user_id} {last_id_image_query})')
 
     if DB_Models.Image_filters.proportionV in filters:
         where_query.append("width < height")
@@ -226,25 +234,25 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     if DB_Models.Image_filters.like1k in filters:
         where_query.append("like_counter <= 1000")
     elif DB_Models.Image_filters.like1k_10k in filters:
-        where_query.append("like_counter => 1000 AND like_counter <= 10000")
+        where_query.append("like_counter >= 1000 AND like_counter <= 10000")
     elif DB_Models.Image_filters.like10k in filters:
-        where_query.append("like_counter => 10000")
+        where_query.append("like_counter >= 10000")
 
     if DB_Models.Image_filters.sizeS in filters:
-        where_query.append("width <= 500 OR height <= 500")
+        where_query.append("(width <= 500 OR height <= 500)")
     elif DB_Models.Image_filters.sizeM in filters:
-        where_query.append("(width >= 500 and width <= 1200) and (height >= 500 and height <= 1200)")
+        where_query.append("(width >= 500 and width <= 1200) AND (height >= 500 and height <= 1200)")
     elif DB_Models.Image_filters.sizeB in filters:
-        where_query.append("width >= 1200 OR height >= 1200")
+        where_query.append("(width >= 1200 OR height >= 1200)")
 
 
     # Return ==========================================================
     if len(filters) == 0: return ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)' + last_id_query + order_filter
     
     result: str = ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)'
-    if last_id_query != "": result += " AND " + last_id_query
+    if last_id_query != "": result += last_id_query
 
-    for filter_var in filters:
+    for filter_var in where_query:
         result += " AND " + filter_var
 
     return result + order_filter
@@ -257,7 +265,7 @@ class PhotoFox:
     @staticmethod
     def __get_password() -> str:
         result: str = ""
-        with open('database_pass.data', 'r') as file:
+        with open('./database_pass.data', 'r') as file:
             result = file.readline()
             if len(result) == 0: raise RuntimeError("No password in backend/database_pass.data")
         return result
@@ -354,9 +362,10 @@ class PhotoFox:
 
     async def get_images_pc(self,
                             filters: list[DB_Models.Image_filters],
-                            tags: tuple, last_image_id: int, user_id: int = -1) -> list[DB_Returns.Image_PC]:
+                            tags: tuple, last_image_id: int, user_id: int = -1,
+                            author_login: str = '#') -> list[DB_Returns.Image_PC]:
         tags_str: str = tags_to_sql(tags)
-        filters_line: str = filters_to_sql(set(filters), user_id, last_image_id, 30)
+        filters_line: str = filters_to_sql(set(filters), user_id, author_login, last_image_id, 30)
 
         query: str =  f"""
             SELECT id, image_url as path, width, height FROM image 
@@ -374,91 +383,53 @@ class PhotoFox:
     
     async def get_images_mobile(self,
                                 filters: list[DB_Models.Image_filters],
-                                tags: tuple, last_image_id: int, user_id: int = -1) -> list[DB_Returns.Image_mobile]:
-
+                                tags: tuple, last_image_id: int, user_id: int = -1, 
+                                author_login: str = '#') -> list[DB_Returns.Image_mobile]:
+        #         is_liked: bool = False
+        # is_subscribed: bool = False
         tags_str: str = tags_to_sql(tags)
-        filters_line: str = filters_to_sql(set(filters), user_id, last_image_id, 10)
-
+        filters_line: str = filters_to_sql(set(filters), user_id,  author_login, last_image_id, 10)
+        
         query: str = f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
-           "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture
-        FROM image JOIN "user" ON image.author_id = "user".id WHERE {tags_str} {filters_line};
+               "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
+               EXISTS(SELECT 1 FROM subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subscriber={user_id})) AS is_subscribed,
+               EXISTS(SELECT 1 FROM "like" WHERE ("like".id_image=image.id AND "like".id_user={user_id})) AS is_liked,
+               EXISTS(SELECT 1 FROM saved WHERE (saved.id_image=image.id AND saved.id_user={user_id})) AS is_saved
+        FROM image 
+        JOIN "user" ON image.author_id = "user".id 
+        WHERE {tags_str} {filters_line};
         """
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         
         return list(DB_Returns.Image_mobile(**x) for x in result)
 
-    async def get_image(self, image_id: int) -> DB_Returns.Image_full:
+    async def get_image(self, image_id: int, user_id: int = -1) -> DB_Returns.Image_full:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
-        """
+        f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter, image.description,
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
-               ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags
+               ARRAY(SELECT tag.title FROM tag WHERE tag.id in (SELECT image_tag.tag_id FROM image_tag WHERE image_tag.image_id = $1)) AS tags,
+               EXISTS(SELECT 1 FROM subscribe WHERE (subscribe.id_subscribed_on=image.author_id AND subscribe.id_subscriber={user_id})) AS is_subscribed,
+               EXISTS(SELECT 1 FROM "like" WHERE ("like".id_image=image.id AND "like".id_user={user_id})) AS is_liked,
+               EXISTS(SELECT 1 FROM saved WHERE (saved.id_image=image.id AND saved.id_user={user_id})) AS is_saved
         FROM image JOIN "user" ON image.author_id = "user".id
         WHERE image.id = $1 AND NOT "user".is_blocked;
         """, image_id))
         
-        
+
         return DB_Returns.Image_full(**result[0])
 
-    async def get_subscribed_images_pc(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image_PC]:
 
-        if last_image_id == -1:
-            query: str = """
-            SELECT id, image_url as path, width, height FROM image
-                WHERE image.author_id IN
-                (SELECT id_subscribed_on FROM subscribe
-                    WHERE id_subscriber = $1 
-                ) AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id)
-            ORDER BY id DESC LIMIT 30;
-            """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
-        else:
-            query: str = """
-            SELECT id, image_url as path, width, height FROM image
-                WHERE id < $1 AND image.author_id IN
-                (SELECT id_subscribed_on FROM subscribe
-                    WHERE id_subscriber = $2
-                ) AND NOT (SELECT is_blocked FROM "user" WHERE "user".id = author_id)
-            ORDER BY id DESC LIMIT 30;
-            """
-            result = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
+    async def get_like_on_image(self, id_user: int, id_image: int) -> tuple[int, bool]:
+        # SELECT EXISTS(SELECT 1 FROM "like" WHERE "like".id_image=2 AND "like".id_user=2), like_counter FROM image WHERE id = 134;
+        query: str = 'SELECT EXISTS(SELECT 1 FROM "like" WHERE "like".id_image=$1 AND "like".id_user=$2), like_counter FROM image WHERE id = $1;'
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_image, id_user))
 
-        return list(DB_Returns.Image_PC(**x) for x in result)
-
-
-    async def get_subscribed_images_mobile(self, id_user: int, last_image_id: int) -> list[DB_Returns.Image_mobile]:
-
-        if last_image_id == -1:
-            query: str = """
-            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
-            "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture 
-            FROM image JOIN "user" ON image.author_id = "user".id
-                WHERE image.author_id IN 
-                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1) AND NOT "user".is_blocked
-            ORDER BY image.id DESC LIMIT 30;
-            """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user))
-        else:
-            query: str = """
-            SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
-            "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture 
-            FROM image JOIN "user" ON image.author_id = "user".id
-                WHERE image.id < $1 AND image.author_id IN 
-                (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $2) AND NOT "user".is_blocked
-            ORDER BY image.id DESC LIMIT 30;
-            """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id, id_user))
-
-        return list(DB_Returns.Image_mobile(**x) for x in result)
-
-
-    async def get_like_on_image(self, id_user: int, id_image: int) -> bool:
-        query: str = """
-        SELECT * FROM "like" WHERE $2 = id_image AND $1 = id_user;
-        """
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id_user, id_image))
-        return len(result) == 1
+        if len(result) == 0: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                                 detail={"message" : f"Unknown image with id {id_image}"})
+        
+        return (result[0]['like_counter'], result[0]['exists'])
     
 
     async def get_last_comments(self, id_image: int, last_id: int) -> list[DB_Returns.Comment]:
@@ -596,45 +567,103 @@ class PhotoFox:
         
         return result[0]["is_blocked"]
 
-    async def get_subscribed_on_profiles(self, user_id: int, last_profile_id: int) -> list[DB_Returns.Profile]:
+    async def get_subscribed_on_profiles(self, login: str, last_profile_id: int) -> list[DB_Returns.Profile]:
         if last_profile_id == -1:
             query: str = """
             SELECT id, login, profile_image_url as profile_image, is_blocked
             FROM "user"
-            WHERE id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1)
+            
+            WHERE id IN (SELECT id_subscribed_on FROM subscribe 
+                WHERE id_subscriber = (SELECT "user".id FROM "user" WHERE "user".login = $1))
+            AND NOT is_blocked
             ORDER BY id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
         else:
             query: str = """
             SELECT id, login, profile_image_url as profile_image, is_blocked
             FROM "user"
-            WHERE id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1 AND id_subscribed_on < $2)
+            WHERE id IN (SELECT id_subscribed_on FROM subscribe 
+                WHERE id_subscriber = (SELECT "user".id FROM "user" WHERE "user".login = $1) 
+                AND id_subscribed_on < $2)
+            AND NOT is_blocked
             ORDER BY id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, last_profile_id))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login, last_profile_id))
 
         return list(DB_Returns.Profile(**x) for x in result)
 
-    async def get_subscribers_on_profiles(self, user_id: int, last_profile_id: int) -> list[DB_Returns.Profile]:
+    async def get_subscribers_on_profiles(self, login: str, last_profile_id: int) -> list[DB_Returns.Profile]:
         if last_profile_id == -1:
             query: str = """
             SELECT id, login, profile_image_url as profile_image
             FROM "user"
-            WHERE id IN (SELECT id_subscriber FROM subscribe WHERE id_subscribed_on = $1) AND NOT is_blocked
+            WHERE id IN (
+                SELECT id_subscriber FROM subscribe 
+                WHERE id_subscribed_on = (SELECT "user".id FROM "user" WHERE "user".login = $1)) 
+            AND NOT is_blocked
             ORDER BY id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
         else:
             query: str = """
             SELECT id, login, profile_image_url as profile_image
             FROM "user"
-            WHERE id IN (SELECT id_subscriber FROM subscribe WHERE id_subscribed_on = $1 AND id_subscriber < $2) AND NOT is_blocked
+            WHERE id IN (
+                SELECT id_subscriber FROM subscribe 
+                WHERE id_subscribed_on = (SELECT "user".id FROM "user" WHERE "user".login = $1) 
+                AND id_subscriber < $2) 
+            AND NOT is_blocked
             ORDER BY id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, last_profile_id))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login, last_profile_id))
 
         return list(DB_Returns.Profile(**x) for x in result)
+
+    async def get_user_subscribed(self, user_id: int, author_id: int) -> bool:
+        query: str = "SELECT 1 FROM subscribe WHERE id_subscriber=$1 AND id_subscribed_on=$2;"
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, author_id))
+        return len(result) == 1
+    
+    async def get_user_profile_picture(self, login: str) -> str:
+        query: str = 'SELECT profile_image_url FROM "user" WHERE login=$1;'
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
+        return result[0]['profile_image_url']
+    
+    #     class Profile(BaseModel):
+    #     id: int
+    #     login: str
+    #     profile_image: str | None
+    #     is_blocked: bool = False
+
+    # class Profile_full(Profile):
+    #     description: str | None
+        
+    #     subscribed_on: int
+    #     subscribers: int
+
+
+    async def get_user_profile(self, login: str, user_id: int = -1) -> DB_Returns.Profile_full:
+        query: str = """
+        SELECT id, login, profile_image_url AS profile_image, is_blocked,
+               description, subscribed AS subscribed_on, subscribers,
+               EXISTS(SELECT FROM subscribe WHERE id_subscribed_on = "user".id AND id_subscriber = $2) as subscribed_now
+        FROM "user" WHERE login=$1;
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login, user_id))
+        if (len(result) == 0): raise HTTPException(status_code=HTTP_400_BAD_REQUEST, 
+                                                  detail={'message': f"User with login {login} wasn't found"})
+        return DB_Returns.Profile_full(**result[0])
+
+    async def get_user_profile_edit(self, user_id: int = -1) -> DB_Returns.Profile_edit:
+        query: str = """
+        SELECT id, login, profile_image_url AS profile_image, is_blocked, description, email
+        FROM "user" WHERE id=$1;
+        """
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+        if (len(result) == 0): raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
+                                                  detail={'message': f"Account was not found"})
+        return DB_Returns.Profile_edit(**result[0])
     #INSERT
     async def add_admin(self, login: str, email: str, hash_and_salt: str) -> None:
         await self.__DB.execute(
@@ -693,7 +722,10 @@ class PhotoFox:
             if i != len(tag_id) - 1: tags_str += ", "
         
         await self.__DB.execute('INSERT INTO image_tag(image_id, tag_id) VALUES ' + tags_str + ';')
-    
+
+    async def save_image(self, image_id: int, user_id: int) -> None:
+        await self.__DB.execute('INSERT INTO saved(id_user, id_image) VALUES($1, $2)', user_id, image_id)
+
     #DELETE
     async def delete_like(self, id_user: int, id_image: int) -> None:
         await self.__DB.execute('DELETE FROM "like" WHERE id_user = $1 AND id_image = $2;', id_user, id_image)
@@ -731,6 +763,9 @@ class PhotoFox:
         
     async def delete_subscribe(self, user_id: int, subscribed_on: int) -> None:
         await self.__DB.execute('DELETE FROM subscribe WHERE id_subscriber = $1 AND id_subscribed_on = $2', user_id, subscribed_on)
+    
+    async def delete_saved_from_image(self, user_id: int, image_id: int) -> None:
+        await self.__DB.execute('DELETE FROM saved WHERE id_user = $1 AND id_image = $2', user_id, image_id)
 
     #UPDATE
     
@@ -754,14 +789,21 @@ class PhotoFox:
 
 
     async def update_profile_password(self, new_pass: str, user_id: int):
-        await self.__DB.execute('UPDATE "user" SET hash_and_salt = $1 WHERE id = $2', new_pass, user_id)
+        await self.__DB.execute('UPDATE "user" SET hash_and_salt = $1 WHERE id = $2;', new_pass, user_id)
     
     async def update_block_profile (self, user_id: int):
-        await self.__DB.execute('UPDATE "user" SET is_blocked = true WHERE id = $1 AND NOT is_admin', user_id)
+        await self.__DB.execute('UPDATE "user" SET is_blocked = true WHERE id = $1 AND NOT is_admin;', user_id)
     
     async def update_unblock_profile (self, user_id: int):
-        await self.__DB.execute('UPDATE "user" SET is_blocked = false WHERE id = $1', user_id)
-    
+        await self.__DB.execute('UPDATE "user" SET is_blocked = false WHERE id = $1;', user_id)
+
+    async def update_picture_description (self, image_id: int, new_description: str, author_id: int) -> None:
+        await self.__DB.execute('UPDATE image SET description = $1 WHERE id = $2 AND author_id = $3;',
+                                new_description, image_id, author_id)
+
+    async def update_picture_title(self, image_id: int, new_title: str, author_id: int) -> None:
+        await self.__DB.execute('UPDATE image SET title = $1 WHERE id = $2 AND author_id = $3;',
+                                new_title, image_id, author_id)
 
 async def print_XD(db: PhotoFox):
     value = await db.select_all_tags()

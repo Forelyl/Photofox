@@ -1,6 +1,7 @@
 # WARNING: don't use username(login) to provide processes except login, use user.id instead
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
 from enum import Enum
+from re import S
 
 from asyncpg import exceptions
 from fastapi.params import Param
@@ -64,11 +65,11 @@ tag_regex:   str = r"(^[0-9a-z_]+$)"
 
 @app.exception_handler(exceptions.ForeignKeyViolationError)
 async def foreign_key_exception_handler(request: Request, exc: exceptions.ForeignKeyViolationError):
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency"})
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency foreign"})
 
 @app.exception_handler(exceptions.UniqueViolationError)
 async def unique_exception_handler(request: Request, exc: exceptions.UniqueViolationError):
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency"})
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message":"Violation of data consistency unique"})
 
 #============================================
 # Tokens - pass for time
@@ -215,58 +216,66 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 # Image
 #============================================
 @app.get('/image/pc', tags=['image'], response_model=list[DB_Returns.Image_PC])
-async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None, Header()] = None,
-                        tags: Annotated[tuple[int] | None, Header()] = None,
-                        last_image_id: int = -1):
+async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None, Query()] = None,
+                        tags: Annotated[tuple[int] | None, Query()] = None,
+                        last_image_id: int = -1, author_login: str = '#'):
+    """
+    @param author_login - is for filter published
+    """
+    
     tags_r = tuple()
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
-    return await db.get_images_pc(filters, tags_r, last_image_id)
+
+    return await db.get_images_pc(filters, tags_r, last_image_id, author_login=author_login)
 
 @app.get('/image/pc/user', tags=['image'], response_model=list[DB_Returns.Image_PC])
 async def get_images_pc_with_user(user: Annotated[User, Depends(access_user)],
-                        filters: Annotated[list[DB_Models.Image_filters] | None, Header()] = None,
-                        tags: Annotated[tuple[int] | None, Header()] = None,
-                        last_image_id: int = -1):
+                        filters: Annotated[list[DB_Models.Image_filters] | None, Query()] = None,
+                        tags: Annotated[tuple[int] | None, Query()] = None,
+                        last_image_id: int = -1, author_login: str = '#'):
     tags_r = tuple()
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
-    return await db.get_images_pc(filters, tags_r, last_image_id, user.id)
+    return await db.get_images_pc(filters, tags_r, last_image_id, user.id, author_login=author_login)
 
 
 @app.get('/image/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
 async def get_images_mobile(filters: list[DB_Models.Image_filters] | None = None,
                             tags: tuple[str] | None = None,
-                            last_image_id: int = -1):
+                            last_image_id: int = -1, author_login: str = '#'):
 
     tags_r = tuple()
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
-    return await db.get_images_mobile(filters, tags_r, last_image_id)
+    return await db.get_images_mobile(filters, tags_r, last_image_id, author_login=author_login)
 
-@app.get('/image/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
+@app.get('/image/mobile/user', tags=['image'], response_model=list[DB_Returns.Image_mobile])
 async def get_images_mobile_with_user(user: Annotated[User, Depends(access_user)],
                             filters: list[DB_Models.Image_filters] | None = None,
                             tags: tuple[str] | None = None,
-                            last_image_id: int = -1):
+                            last_image_id: int = -1, author_login: str = '#'):
 
     tags_r = tuple()
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
-    return await db.get_images_mobile(filters, tags_r, last_image_id, user.id)
+    return await db.get_images_mobile(filters, tags_r, last_image_id, user.id, author_login=author_login)
 
 
 @app.get('/image', tags=['image'], response_model=DB_Returns.Image_full)
-async def get_images(image_id: int):
+async def get_image(image_id: int):
     return await db.get_image(image_id)
 
+@app.get('/image/user', tags=['image'], response_model=DB_Returns.Image_full)
+async def get_image_with_user(user: Annotated[User, Depends(access_user)], image_id: int):
+    return await db.get_image(image_id, user.id)
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
-@app.post('/image', tags=['image'], response_model=str)
+@app.post('/image', tags=['image'], response_model=int)
 async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: Annotated[UploadFile, File()], 
                         title: Annotated[str, Form(max_length=100, min_length=1)], 
                         description: Annotated[str, Form(max_length=500)] = "",
@@ -274,12 +283,11 @@ async def add_new_image(*, user: Annotated[User, Depends(access_user)], image: A
                         tags: Annotated[list[int] | None, Body()] = None,
                         download_permission: Annotated[bool, Form()] = False): 
     # TODO: add tags check to not just raise an error and forget about all of the tags
-    print("a")
     result: DropBox_client.Add_file_return = await DropBox.add_file(image, str(user.id))
     image_id = await db.add_image(user.id, result.shared_link, result.path, title, description, download_permission, width, height)
     if (tags is not None):
         await db.add_tag_to_image(image_id, tags)
-    return result.shared_link
+    return image_id
 
 
 @app.delete('/image', tags=['image'])
@@ -293,6 +301,20 @@ async def delete_image(user: Annotated[User, Depends(access_user)], image_id: An
     await DropBox.delete_file(path_and_can_delete[0])
     await db.delete_image(user.id, image_id)
 
+@app.patch('/image/description', tags=['image', 'admin'])
+async def change_picture_description(
+        user: Annotated[User, Depends(access_user)], 
+        image_id: Annotated[int, Query(ge=1)],
+        new_description: Annotated[str, Body(max_length=500)]): 
+    await db.update_picture_description(image_id, new_description, user.id)
+
+@app.patch('/image/title', tags=['image', 'admin'])
+async def change_picture_title(
+        user: Annotated[User, Depends(access_user)], 
+        image_id: Annotated[int, Query(ge=1)],
+        new_title: Annotated[str, Body(min_length=1, max_length=100)]): 
+    await db.update_picture_title(image_id, new_title, user.id)
+
 
 #============================================
 # Like
@@ -305,9 +327,10 @@ async def add_like(user: Annotated[User, Depends(access_user)], image_id: Annota
 async def remove_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
     await db.delete_like(user.id, image_id)
 
-@app.get('/like', tags=['like'], dependencies=[Depends(access_user)], response_model=bool)
-async def current_user_set_like(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
-    return await db.get_like_on_image(user.id, image_id)
+@app.get('/like', tags=['like'], dependencies=[Depends(access_user)], response_model=dict[str, bool | int])
+async def current_user_set_like_and_like_counter(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]):
+    result: tuple[int, bool] = await db.get_like_on_image(user.id, image_id)
+    return {"like_counter": result[0], "is_liked": result[1]}
 
 #============================================
 # Comment
@@ -325,6 +348,18 @@ async def get_last_comment(image_id: Annotated[int, Param(ge=1)], last_commnet_i
     return await db.get_last_comments(image_id, last_commnet_id)
 
 #============================================
+# Save
+#============================================
+@app.post('/save/add', tags=['save'])
+async def add_save_image(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]) -> None:
+    await db.save_image(image_id, user.id)
+
+@app.delete('/save/delete', tags=['save'])
+async def delete_save_image(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)]) -> None:
+    await db.delete_saved_from_image(user.id, image_id)
+
+
+#============================================
 # Subscribing
 #============================================
 @app.post('/subscribe', tags=['subscribe'])
@@ -338,12 +373,16 @@ async def unsubscribe(user: Annotated[User, Depends(access_user)], subscribed_on
     await db.delete_subscribe(user.id, subscribed_on_id)
 
 @app.get('/subscribe/get/on', tags=['subscribe'], response_model=list[DB_Returns.Profile])
-async def get_all_profile_on_which_subscribed(user: Annotated[User, Depends(access_user)], last_profile_id: int = -1):
-    return await db.get_subscribed_on_profiles(user.id, last_profile_id)
+async def get_all_profile_on_which_subscribed(login: Annotated[str, Query(pattern=login_regex)], last_profile_id: int = -1):
+    return await db.get_subscribed_on_profiles(login, last_profile_id)
 
 @app.get('/subscribe/get/by', tags=['subscribe'], response_model=list[DB_Returns.Profile])
-async def get_all_profile_which_are_subscribed(user: Annotated[User, Depends(access_user)], last_profile_id: int = -1):
-    return await db.get_subscribers_on_profiles(user.id, last_profile_id)
+async def get_all_profile_which_are_subscribed(login: Annotated[str, Query(pattern=login_regex)], last_profile_id: int = -1):
+    return await db.get_subscribers_on_profiles(login, last_profile_id)
+
+@app.get('/subscribe/check-subscription', tags=['subscribe'], response_model=bool)
+async def get_is_subscribed(user: Annotated[User, Depends(access_user)], author_id: Annotated[int, Header(ge=1)]):
+    return await db.get_user_subscribed(user.id, author_id)
 
 #============================================
 # Profile
@@ -351,10 +390,29 @@ async def get_all_profile_which_are_subscribed(user: Annotated[User, Depends(acc
 @app.get('/profile/email/exists', response_model=bool, tags=['profile'])
 async def get_email_exists(email: Annotated[str, Param(pattern=email_regex)]):
     return await email_exists(email)
-# TODO переглянути чи треба ці функції
+
 @app.get('/profile/login/exists', response_model=bool, tags=['profile'])
 async def get_login_exists(login: Annotated[str, Param(pattern=login_regex)]):
     return await login_exists(login)
+
+@app.get('/profile', response_model=DB_Returns.Profile_full, tags=['profile'])
+async def get_profile(login: Annotated[str, Param(pattern=login_regex)]):
+    return await db.get_user_profile(login)
+
+@app.get('/profile/user', response_model=DB_Returns.Profile_full, tags=['profile'])
+async def get_profile_with_user(
+        user: Annotated[User, Depends(access_user)], 
+        login: Annotated[str, Param(pattern=login_regex)]):
+    
+    return await db.get_user_profile(login, user.id)
+
+@app.get('/profile/edit', response_model=DB_Returns.Profile_edit, tags=['profile'])
+async def get_profile_info_for_editing(user: Annotated[User, Depends(access_user)]):
+    return await db.get_user_profile_edit(user.id)
+
+@app.get('/profile/image', response_model=DB_Returns.Profile_full, tags=['profile'])
+async def get_profile_image(login: Annotated[str, Param(pattern=login_regex)]):
+    return await db.get_user_profile_picture(login)
 
 @app.post('/admin/add/admin', tags=['admin'], dependencies=[Depends(access_admin)])
 async def add_admin(login: Annotated[str, Body(pattern=login_regex, min_length=1, max_length=50)], 
@@ -418,13 +476,7 @@ async def change_picture_profile(user: Annotated[User, Depends(access_user)], im
 
 
 @app.patch('/profile/login', tags=['profile', 'admin'])
-async def change_login_profile(user: Annotated[User, Depends(access_user)], password: Annotated[str, Header(min_length=1, max_length=50)], new_login: Annotated[str, Header(min_length=1, max_length=50, pattern=login_regex)]):
-    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
-    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail={"message" : "Incorrect username or password"},
-                               headers={"WWW-Authenticate": "Bearer"})
-    check_login(hash_and_admin.hash, password)
-    
+async def change_login_profile(user: Annotated[User, Depends(access_user)],  new_login: Annotated[str, Header(min_length=1, max_length=50, pattern=login_regex)]):
     await db.update_profile_login(new_login, user.id)    
 
 @app.patch('/profile/description', tags=['profile', 'admin'])
@@ -432,27 +484,11 @@ async def change_description_profile(user: Annotated[User, Depends(access_user)]
     await db.update_profile_description(new_description, user.id)
 
 @app.patch('/profile/email', tags=['profile', 'admin'])
-async def change_email_profile(user: Annotated[User, Depends(access_user)], password: Annotated[str, Header(min_length=1, max_length=50)], new_email: Annotated[str, Header(min_length=1, max_length=100, pattern=email_regex)]):
-    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
-    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail={"message" : "Incorrect username or password"},
-                               headers={"WWW-Authenticate": "Bearer"})
-    check_login(hash_and_admin.hash, password)
-
+async def change_email_profile(user: Annotated[User, Depends(access_user)], new_email: Annotated[str, Header(min_length=1, max_length=100, pattern=email_regex)]):
     await db.update_profile_email(new_email, user.id)
 
 @app.patch('/profile/password', tags=['profile', 'admin'])
-async def change_password_profile(user: Annotated[User, Depends(access_user)], old_password: Annotated[str, Header(min_length=1, max_length=50)], new_password: Annotated[str, Header(min_length=1, max_length=50)]):
-    hash_and_admin: DB_Returns.Hash_and_admin | None = (await db.get_hash_and_admin_by_id(user.id))
-    if hash_and_admin is None: raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                               detail={"message" : "Incorrect username or password"},
-                               headers={"WWW-Authenticate": "Bearer"})
-    check_login(hash_and_admin.hash, old_password)
-    
-    if old_password == new_password:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail={"message":"New password can't be the same as the previous one"},
-                            headers={"WWW-Authenticate": "Bearer"})
+async def change_password_profile(user: Annotated[User, Depends(access_user)], new_password: Annotated[str, Header(min_length=1, max_length=50)]):
 
     hash = hash_password(new_password)
     await db.update_profile_password(hash, user.id)
@@ -523,8 +559,14 @@ def i_am_user(user: Annotated[User, Depends(access_user)], image: Annotated[Uplo
 #     # Access the request body
 #     body_bytes = await request.body()
 #     body_str = body_bytes.decode("utf-8")
+#     print('----------------------')
+#     print('----------------------')
 #     print(f"Request body: {body_str}")
-
+#     print(f"Request header: {request.headers}")
+#     print(f"URL: f{request.url}") 
+#     print('----------------------')
+#     print('----------------------')
+    
 #     response = await call_next(request)
 #     return response
 

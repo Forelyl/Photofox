@@ -6,9 +6,15 @@ import { useRef, useState } from "react";
 
 export default function HomePage() {
     const elementRef = useRef(null);
-    const [filters, setFilters] = useState([]);
+    const [filters, setFilters] = useState({
+        primaryFilter : {
+            type: null,
+            author: null
+        },
+        secondaryFilter : [],
+    });
     const [tags, setTags] = useState([]);
-
+    console.log(filters, "it`s filters");
     function handleScrollClick() {
         elementRef.current.scrollIntoView({
             behavior: "smooth",
@@ -19,7 +25,7 @@ export default function HomePage() {
     return (
         <div id='home'>
             <Banner scrollToElement={handleScrollClick}/>
-            <NavBar ref={elementRef} sets={[setFilters, setTags]} />
+            <NavBar ref={elementRef} setFilters={setFilters} setTags={setTags}/>
             <ImageScroller filters={filters} tags={tags} />
         </div>
     );

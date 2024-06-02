@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from re import A
 import dropbox
 from dropbox import oauth
 from pydantic import BaseModel

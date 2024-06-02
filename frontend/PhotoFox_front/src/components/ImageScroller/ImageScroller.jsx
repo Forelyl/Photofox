@@ -1,11 +1,12 @@
+/*_*/
 import {useState, useRef, useCallback} from "react";
-import useImageLoad from "../../utils/useImageLoad.js";
+import useImageScrollLoad from "../../hooks/useImageScrollLoad.js";
 import ImageRow from "./ImageRow.jsx";
 import './ImageScroller.css';
 
-export default function ImageScroller({ filters = [], tags = [] }) {
+export default function ImageScroller({ filters, tags, userSpecific = false }) {
     const [lastImage, setLastImage] = useState(-1);
-    const {images, imagesLeft, loading, error} = useImageLoad(lastImage, filters, tags);
+    const {images, imagesLeft, loading, error} = useImageScrollLoad(lastImage, filters, tags, userSpecific);
     const {rows, lastId} = spreadImages(images, imagesLeft);
     const lastRow = useRef();
     const lastRowRef = useCallback(node => {
@@ -48,6 +49,7 @@ function spreadImages(images, imagesLeft) {
     let rowImages = [];
     let expectedRatio = 0;
     let lastId = -1;
+    let amountInRow = 0;
 
     //Змінювати якщо треба змінити максимальну ширину суми
     const screenRation = screen.width / screen.height;
@@ -57,8 +59,9 @@ function spreadImages(images, imagesLeft) {
 
         expectedRatio += image.width / image.height;
 
-        if (expectedRatio <= maxRatio) {
+        if (expectedRatio <= maxRatio || amountInRow === 0) {
             rowImages.push(image);
+            amountInRow++;
         }
 
         if ((!imagesLeft && (index + 1) === images.length) || expectedRatio >= minRatio) {

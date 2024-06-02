@@ -1,0 +1,29 @@
+.customSaveButton {
+    user-select: none;
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    > img {
+        width: 3vw;
+        height: 5vh;
+        transition: 0.3s ease-in-out;
+    }
+    > span {
+        white-space: nowrap;
+        font-family: 'Days One';
+        font-size: 3vh;
+    }
+}
+
+.customSaveButton:hover {
+    > span {
+        color: #45ffe2;
+    }
+    > img {
+        transform: scale(0.95);
+    }
+}

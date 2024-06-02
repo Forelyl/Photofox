@@ -43,7 +43,7 @@
                 height: 100%;
                 object-fit: cover;
                 z-index: -1;
-                border-radius: 14px;                
+                border-radius: 14px;
             }
         }
         > #image-wrapper.downloadable {
@@ -79,7 +79,7 @@
                 display: none;
                 left: 30%;
                 top: 10%;
-                width: 30%; 
+                width: 30%;
                 height: 60%;
                 border: solid aqua;
                 border-width: 0 0.5vh 0.5vh 0;
@@ -123,28 +123,13 @@
             }
         }
         > #tags {
-            /* padding: 20px 0; */
-            display: flex;
-            align-items: center;
-            > button {
-                user-select: none;
-                cursor: pointer;
-                padding: 0;
-                border: 0;
-                outline: 0;
-                background: none;
-                width: 2.8vw;
-                border-radius: 100%;
-                height: 2.8vw;
-                font-size: 1.5vw;
-                /* border: 1.5px dashed #49B1E9; */
-                background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='%2349B1E9' stroke-width='4' stroke-dasharray='4%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-                color: #49B1E9;
-                transition: 1s ease-in-out;
-            }
-            > button:hover {
-                color: #00fcf7;
-                transform: rotate(180deg);
+            align-self: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: 1fr;
+            width: 100%;
+            > #add-tag {
+                justify-self: left;
             }
         }
         > #description-wrapper {
@@ -188,12 +173,12 @@
                 color: #0affff;
                 font-weight: 500;
                 letter-spacing: 1px;
-                
+
             }
         }
         > #navigate {
             padding-top: 3%;
-            
+
             user-select: none;
             display: flex;
             align-items: top;

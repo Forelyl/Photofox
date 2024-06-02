@@ -26,3 +26,10 @@ export function getLogin() {
     }
     else return login;
 }
+
+export function testAuthor(author_login){
+    const login = localStorage.getItem("login");
+    const token = localStorage.getItem("token");
+    return login === author_login && !!token;
+
+}

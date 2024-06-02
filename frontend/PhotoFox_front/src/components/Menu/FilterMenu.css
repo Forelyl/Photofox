@@ -16,24 +16,138 @@
     font-family: "Epilogue";
     > #filters {
         display: grid;
-        grid-template-columns: auto auto auto;
-        /* background-color: rebeccapurple; */
+        grid-template-columns: 1fr 1fr 1fr;
+        > #left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: end;
+            >  #button-text {
+                padding: 3% 0;
+                font-size: 2.3vh;
+                letter-spacing: 2px;
+                font-weight: 300;
+                user-select: none;
+            }
+            > #buttons {
+                width: 60%;
+                height: 50%;
+                display: flex;
+                align-items: end;
+                justify-content: space-around;
+                > button {
+                    background: none;
+                    outline: none;
+                    cursor: pointer;
+                    padding: 0;
+                    border: 2px solid floralwhite;
+                }
+                > #H-button {
+                    aspect-ratio: 2;
+                    width: 25%;
+                }
+                > #H-button:hover {
+                    border-color: #fba315;
+                }
+                > #V-button {
+                    aspect-ratio: 0.5;
+                    width: 12.5%;
+                }
+                > #V-button:hover {
+                    border-color: #fba315;
+                }
+                > #S-button {
+                    aspect-ratio: 1;
+                    width: 12.5%;
+                }
+                > #S-button:hover {
+                    border-color: #fba315;
+                }
+                > #No-button {
+                    border: 0;
+                    font-weight: 400;
+                    font-size: 3.25vh;
+                    user-select: none;
+                }
+                > #No-button:hover {
+                    color: #fba315;
+                }
+            }
+            > #buttons.No > #No-button {
+                cursor: default;
+                color: #FFD645;
+            }
+            > #buttons.proportionH > #H-button {
+                cursor: default;
+                border-color: #FFD645;
+            }
+            > #buttons.proportionV > #V-button {
+                cursor: default;
+                border-color: #FFD645;
+            }
+            > #buttons.proportionS > #S-button {
+                cursor: default;
+                border-color: #FFD645;
+            }
+        }
+        > #tags-filter {
+            box-sizing: content-box;
+            border: 3px solid floralwhite;
+            border-top: 0;
+            border-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        > #right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 2%;
+            gap: 9%;
+        }
     }
-    > h3 {
-        padding: 2%;
-        font-family: "Days One";
-        margin: 0;
-        font-weight: 200;
-        font-size: 3vh;
-        letter-spacing: 3px;
-        /* background-color: red; */
+    > #title {
+        display: flex;
+        margin-bottom: 1%;
+        > h3 {
+            padding: 1.5% 2%;
+            font-family: "Days One";
+            margin: 0;
+            font-weight: 200;
+            font-size: 4vh;
+            letter-spacing: 3px;
+            user-select: none;
+            transition: 0.25s ease-in-out;
+        }
+        > h3:hover {
+            color: aqua;
+        }
+        > button {
+            user-select: none;
+            cursor: pointer;
+            background-color: transparent;
+            border: 0;
+            outline: 0;
+            padding: 0;
+            width: 2.6vw;
+            transition: 0.1s ease-in;
+            > img {
+                width: 100%;
+            }
+        }
+        > button:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
     }
     > button {
+        user-select: none;
         cursor: pointer;
-        width: 2.8%;
+        width: 2.5%;
         position: absolute;
-        bottom: 0;
-        right: 1%;
+        bottom: 2%;
+        right: 0.7%;
         outline: 0;
         border: 0;
         padding: 0;
@@ -51,3 +165,120 @@
     transform: translateY(0%);
 }
 
+
+#tags {
+    display: grid;
+    grid-template: 1fr 1fr / 1fr 1fr;
+    width: 80%;
+    height: 80%;
+    gap: 1vw;
+    justify-items: center;
+    align-items: center;
+    > button {
+        width: 100%;
+        height: 100%;
+    }
+    > #add-tag:only-child {
+       justify-self: left;
+    }
+}
+
+.select-block {
+    padding: 5px 0;
+    width: 75%;
+    height: 30%;
+    position: relative;
+    border: 1.5px dashed #49B1E9;
+    border-radius: 0.4vw;
+    font-size: 1vh;
+    display: flex;
+    font-family: "Epilogue";
+    letter-spacing: 1px;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing: border-box;
+    
+    > .select-result {
+        user-select: none;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 2vh;
+    }
+    > .select-dropdown {
+        border-radius: 0 0 10px 10px;
+        background-color: #2b2b4b;
+        position: absolute;
+        overflow: hidden;
+        overflow-y: hidden;
+        width: calc(100% + 3px);
+        top: calc(100%);
+        left: -1.5px;
+        padding: 0;
+        margin: 0;
+        z-index: 20;
+        height: 0;
+        min-height: 0;
+        max-height: 40vh;
+        transition: min-height 0.5s cubic-bezier(0, 0.25, 0.5, 1);
+        box-sizing: border-box;
+        > li {
+            user-select: none;
+            width: 100%;
+            height: 4.9vh;
+            font-size: 1.5vh;
+            border: 0px solid #483d72;
+            border-width: 0 0 2px 0;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        > li:hover {
+            background-color: #483d72;
+        }
+    }
+
+    > .active {
+        height: 100%;
+        min-height: min(calc(var(--amount) * 5vh), 40vh);
+        border: 1.5px solid #49B1E9;
+        border-top: 0;
+    }
+    
+    > .opened {
+        overflow-y: auto;
+
+    }
+    
+}
+
+.select-block:has(> .select-dropdown.active) {
+    border-bottom: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-style: solid;
+}
+
+.select-block:hover, .select-block:has(> .select-dropdown.active) {
+    background-color: #222243;
+}
+
+.select-block::after, .select-block::before {
+    top: 15%;
+    position: absolute;
+    content: '';
+    height: 70%;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    border: 2px solid #FFD645;
+    box-sizing: border-box;
+}
+.select-block::after {
+    left: 1%;
+}
+.select-block::before {
+    right: 1%;
+}
