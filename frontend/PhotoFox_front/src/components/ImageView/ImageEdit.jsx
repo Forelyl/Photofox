@@ -1,12 +1,11 @@
 import {getToken, testAuthor} from "../../utils/auth.js";
 import {useParams, useNavigate} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
-import './ImageFrame.css'
 import CustomLikeButton from "../CustomButtons/CustomLikeButton.jsx";
 import CustomShareButton from "../CustomButtons/CustomShareButton.jsx";
 import Tags from "../Menu/Tags.jsx";
-import {useState} from "react";
-
+import {useEffect, useState} from "react";
+import './ImageEdit.css'
 
 
 export default function ImageEdit() {
@@ -83,24 +82,26 @@ export default function ImageEdit() {
         <div id='image-edit'>
             {!error &&<>
                 <div id='picture-section'>
-                    <div id='center'>
                         <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
                         <img src={path} alt='picture' onLoad={handleImageLoaded}/>
-                    </div>
-                    <div id='right'>
                         <button id='exit' onClick={()=>{navigate('/')}}>exit</button>
-                    </div>
                 </div>
                 <div id='info-section'>
-                    <input name='new_title' defaultValue={title} disabled={!editTitle}/>
-                    <button onClick={
-                        (!editTitle) ? () => setEditTitle(true)
-                    :
-                        (event) => submitChange(event, "title")
-                    }>
-                        <img src={(!editTitle) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
-                             alt={(!editTitle) ? 'edit title' : 'submit new title'} />
-                    </button>
+                    <div id='title-block'>
+                        <span name='new_title' contentEditable={editTitle} onKeyDown={(e) => {
+                            console.log(e);
+                            console.log(e.target.selectionStart)
+                        }}> {title}
+                            <button onClick={(!editTitle) ? 
+                                () => setEditTitle(true)
+                                :
+                                (event) => submitChange(event, "title")
+                            }>
+                                <img src={(!editTitle) ? '/edit_white.svg' : '/NavBarElements/submit_filters.svg'}
+                                     alt={(!editTitle) ? 'edit title' : 'submit new title'} />
+                            </button>
+                        </span>
+                    </div>
                     <div>
                         <CustomLikeButton pictureId={pictureId} initialState={liked} initialNumber={likeCounter}
                                           isAuthor={isAuthor}/>
@@ -117,14 +118,14 @@ export default function ImageEdit() {
                             :
                             (event) => submitChange(event, "description")
                         }>
-                            <img src={(!editDescription) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
+                            <img src={(!editDescription) ? '/edit_white.svg' : '/NavBarElements/submit_filters.svg'}
                                  alt={(!editDescription) ? 'edit description' : 'submit new description'}/>
                         </button>
                     </div>
                     <Tags tags={tags}/>
                 </div>
                 <button id='delete' onClick={handleDelete}>Delete post</button>
-            </div>}
+            </>}
             {error && <div>An error occurred when requesting the server!<br/>Please reload page</div>}
         </div>
     )

@@ -564,43 +564,56 @@ class PhotoFox:
         
         return result[0]["is_blocked"]
 
-    async def get_subscribed_on_profiles(self, user_id: int, last_profile_id: int) -> list[DB_Returns.Profile]:
+    async def get_subscribed_on_profiles(self, login: str, last_profile_id: int) -> list[DB_Returns.Profile]:
         if last_profile_id == -1:
             query: str = """
             SELECT id, login, profile_image_url as profile_image, is_blocked
             FROM "user"
-            WHERE id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1)
+            
+            WHERE id IN (SELECT id_subscribed_on FROM subscribe 
+                WHERE id_subscriber = (SELECT "user".id FROM "user" WHERE "user".login = $1))
+            AND NOT is_blocked
             ORDER BY id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
         else:
             query: str = """
             SELECT id, login, profile_image_url as profile_image, is_blocked
             FROM "user"
-            WHERE id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber = $1 AND id_subscribed_on < $2)
+            WHERE id IN (SELECT id_subscribed_on FROM subscribe 
+                WHERE id_subscriber = (SELECT "user".id FROM "user" WHERE "user".login = $1) 
+                AND id_subscribed_on < $2)
+            AND NOT is_blocked
             ORDER BY id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, last_profile_id))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login, last_profile_id))
 
         return list(DB_Returns.Profile(**x) for x in result)
 
-    async def get_subscribers_on_profiles(self, user_id: int, last_profile_id: int) -> list[DB_Returns.Profile]:
+    async def get_subscribers_on_profiles(self, login: str, last_profile_id: int) -> list[DB_Returns.Profile]:
         if last_profile_id == -1:
             query: str = """
             SELECT id, login, profile_image_url as profile_image
             FROM "user"
-            WHERE id IN (SELECT id_subscriber FROM subscribe WHERE id_subscribed_on = $1) AND NOT is_blocked
+            WHERE id IN (
+                SELECT id_subscriber FROM subscribe 
+                WHERE id_subscribed_on = (SELECT "user".id FROM "user" WHERE "user".login = $1)) 
+            AND NOT is_blocked
             ORDER BY id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
         else:
             query: str = """
             SELECT id, login, profile_image_url as profile_image
             FROM "user"
-            WHERE id IN (SELECT id_subscriber FROM subscribe WHERE id_subscribed_on = $1 AND id_subscriber < $2) AND NOT is_blocked
+            WHERE id IN (
+                SELECT id_subscriber FROM subscribe 
+                WHERE id_subscribed_on = (SELECT "user".id FROM "user" WHERE "user".login = $1) 
+                AND id_subscriber < $2) 
+            AND NOT is_blocked
             ORDER BY id DESC LIMIT 30;
             """
-            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, user_id, last_profile_id))
+            result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login, last_profile_id))
 
         return list(DB_Returns.Profile(**x) for x in result)
 

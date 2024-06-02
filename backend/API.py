@@ -1,6 +1,7 @@
 # WARNING: don't use username(login) to provide processes except login, use user.id instead
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
 from enum import Enum
+from re import S
 
 from asyncpg import exceptions
 from fastapi.params import Param
@@ -369,12 +370,12 @@ async def unsubscribe(user: Annotated[User, Depends(access_user)], subscribed_on
     await db.delete_subscribe(user.id, subscribed_on_id)
 
 @app.get('/subscribe/get/on', tags=['subscribe'], response_model=list[DB_Returns.Profile])
-async def get_all_profile_on_which_subscribed(user: Annotated[User, Depends(access_user)], last_profile_id: int = -1):
-    return await db.get_subscribed_on_profiles(user.id, last_profile_id)
+async def get_all_profile_on_which_subscribed(login: Annotated[str, Query(pattern=login_regex)], last_profile_id: int = -1):
+    return await db.get_subscribed_on_profiles(login, last_profile_id)
 
 @app.get('/subscribe/get/by', tags=['subscribe'], response_model=list[DB_Returns.Profile])
-async def get_all_profile_which_are_subscribed(user: Annotated[User, Depends(access_user)], last_profile_id: int = -1):
-    return await db.get_subscribers_on_profiles(user.id, last_profile_id)
+async def get_all_profile_which_are_subscribed(login: Annotated[str, Query(pattern=login_regex)], last_profile_id: int = -1):
+    return await db.get_subscribers_on_profiles(login, last_profile_id)
 
 @app.get('/subscribe/check-subscription', tags=['subscribe'], response_model=bool)
 async def get_is_subscribed(user: Annotated[User, Depends(access_user)], author_id: Annotated[int, Header(ge=1)]):
@@ -550,21 +551,21 @@ def i_am_user(user: Annotated[User, Depends(access_user)], image: Annotated[Uplo
     return "You are " + user.username
 
 
-@app.middleware("http")
-async def log_request_body(request: Request, call_next):
-    # Access the request body
-    body_bytes = await request.body()
-    body_str = body_bytes.decode("utf-8")
-    print('----------------------')
-    print('----------------------')
-    print(f"Request body: {body_str}")
-    print(f"Request header: {request.headers}")
-    print(f"URL: f{request.url}") 
-    print('----------------------')
-    print('----------------------')
+# @app.middleware("http")
+# async def log_request_body(request: Request, call_next):
+#     # Access the request body
+#     body_bytes = await request.body()
+#     body_str = body_bytes.decode("utf-8")
+#     print('----------------------')
+#     print('----------------------')
+#     print(f"Request body: {body_str}")
+#     print(f"Request header: {request.headers}")
+#     print(f"URL: f{request.url}") 
+#     print('----------------------')
+#     print('----------------------')
     
-    response = await call_next(request)
-    return response
+#     response = await call_next(request)
+#     return response
 
 @app.get("/items/")
 async def read_items(q: Annotated[list[str] | None, Query()] = None):
