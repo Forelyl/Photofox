@@ -1,9 +1,10 @@
 import {Form, useNavigate, useParams} from "react-router-dom";
 import './ProfileView.css'
 import useProfileEditLoad from "../../hooks/useProfileEditLoad.js";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {getToken} from "../../utils/auth.js";
 import './ProfileEdit.css'
+import autosize from "autosize"
 
 export default function ProfileEdit() {
     const {profileName} = useParams();
@@ -23,6 +24,9 @@ export default function ProfileEdit() {
 
     const navigate = useNavigate();
     if (isBlocked) throw new Error('User is blocked');
+
+
+
     function handleImageUpload(e) {
         const file = e.target.files[0];
 
@@ -154,18 +158,15 @@ export default function ProfileEdit() {
         return navigate(`/${localStorage.getItem('login')}`, {replace: true});
     }
     return (
-        <>
-            <Form onSubmit={handleSubmit} disabled={submitting} id='profile-edit'>
+        <div id='profile-edit'>
+            <Form onSubmit={handleSubmit} disabled={submitting} id='profile-edit-form'>
                 {!error &&
                     (<>
                         <div id='info'>
                             <div id='left'>
                                 {loading ? 
-                                    <div className="lds-ellipsis">
-                                        <div></div>
-                                        <div></div>
-                                        <div></div>
-                                        <div></div>
+                                    <div >
+                                        
                                     </div> 
                                     :
                                     <>
@@ -181,44 +182,45 @@ export default function ProfileEdit() {
                                         </button>
                                     </>
                                 }
-                                <div>
-                                    {loginUsed && <span>Login is already</span>}
-                                    <input defaultValue={login} name='newLogin' disabled={!editLogin} required/>
-                                    <button onClick={() => setEditLogin(value => !value)} type='button'>
-                                        <img src={(!editLogin) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
-                                             alt={(!editLogin) ? 'edit title' : 'submit new title'}/>
-                                    </button>
-                                </div>
+
                             </div>
                             <div id='right'>
                                 <div id='description-wrapper'>
-                                    <textarea name='description' defaultValue={description ?? ''}/>
+                                        <textarea maxLength={500} defaultValue={description ?? ''} name='description'/>
                                 </div>
                                 <div id='info-row'>
                                     <div>
-                                        {emailUsed && <span>Email is already</span>}
+                                        {emailUsed && <span>Email is already used</span>}
                                         <label htmlFor='email'>Email:</label>
-                                        <input id='email' name='email' defaultValue={email} disabled={!editEmail}
-                                               required/>
+                                        <input id='email' name='email' defaultValue={email} disabled={!editEmail} required/>
                                         <button onClick={() => setEditEmail(value => !value)} type='button'>
                                             <img src={(!editEmail) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
                                                  alt={(!editEmail) ? 'edit title' : 'submit new title'}/>
                                         </button>
                                     </div>
                                     <div>
-                                        <label htmlFor='pass'>New password</label>
-                                        <input id='pass' type='password' name='newPassword' disabled={!editPass}/>
+                                        <label htmlFor='pass'>New password:</label>
+                                        <input id='pass' type='password' name='newPassword' disabled={!editPass} placeholder='*^*^*^*^*^*'/>
                                         <button onClick={() => setEditPass(value => !value)} type='button'>
                                             <img src={(!editPass) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
                                                  alt={(!editPass) ? 'edit title' : 'submit new title'}/>
                                         </button>
                                     </div>
+                                    <div>
+                                        <span hidden={!loginUsed} id='text-area-error'>Login is already used</span>
+                                        <label htmlFor='login'>Login:</label>
+                                        <input id='login' maxLength={100} defaultValue={login} name='newLogin' disabled={!editLogin} required/>
+                                        <button onClick={() => setEditLogin(value => !value)} type='button'>
+                                            <img src={(!editLogin) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
+                                                alt={(!editLogin) ? 'edit title' : 'submit new title'}/>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        <div id='control-buttons'>
                             <button type='submit'>{!submitting ? 'Save' : 'Saving'}</button>
-                            <div></div>
+                            <hr />
                             <button type='button' onClick={() => {
                                 return navigate(`/${login}`, {replace: true});
                             }}>Cancel
@@ -227,13 +229,13 @@ export default function ProfileEdit() {
                     </>)
                 }
             </Form>
-            <button type='button' onClick={handleDelete}>Delete account</button>
+            <button type='button' id='delete-button' onClick={handleDelete}>Delete account</button>
             {loading && !error &&
                 <div>
                     <div>Loading...</div>
                 </div>
             }
             {error && <div>An error occurred when requesting the server!<br/>Please reload page</div>}
-        </>
+        </div>
     )
 }

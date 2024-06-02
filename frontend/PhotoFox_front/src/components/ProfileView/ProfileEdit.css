@@ -1,36 +1,285 @@
-#profile-edit {
-    > #info {
-        > #left {
+#profile-edit{
+    > #profile-edit-form {
+        padding-top: 3vh;
+        > #info {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            > #left {
+                width: 100%;
+                flex-direction: column;
+                display: flex;
+                align-items: center;
+                > label {
+                    user-select: none;
+                    padding: 0.5%;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    border: 2px dashed #49B1E9;
+                    width: 30vw;
 
-        }
-        > #right {        
-            > #description-wrapper {
-                height: 90%;
-                position: relative;
-                box-sizing: content-box;
-                > textarea {
-                    font-size: 3vh;
-                    border-radius: 20px;
-                    background-color: #17245C;
-                    font-family: 'Epilogue';
-                    color: floralwhite;
-                    height: 100%;
-                    width: 100%;
-                    border: 0;
-                    outline: none;
-                    padding: 0;
-                    padding: 20px;
-                    box-sizing: border-box;
-                    resize: none;
-                    overflow: scroll;
+                    border-radius: 100%;
+                    aspect-ratio: 1;
+                    > img {
+                        border-radius: 100%;
+                        aspect-ratio: 1;
+                        width: 100%;
+                        object-fit: cover;
+                    }
+                    > input {
+                        display: none;
+                    }
                 }
-                > textarea::-webkit-scrollbar {
-                    display: none;
+                > button {
+                    user-select: none;
+                    cursor: pointer;
+                    width: 50%;
+                    height: 5vh;
+                    border-radius: 0.35vw;
+                    background-color: transparent;
+                    border: 2px solid rgb(127, 21, 233);
+                    color: rgb(127, 21, 233);
+                    font-family: 'Inter';
+                    font-size: 2.5vh;
+                    margin: 5vh 0;
                 }
-                > textarea::placeholder {
-                    color: floralwhite;
+                > button:hover {
+                    background-color: rgb(34, 22, 46);
+                }
+                > div {
+                    width: 90%;
+                    > button {
+                        background: none;
+                        border: 0;
+                        height: 4vh;
+                        > img {
+                            height: 100%;
+                        }
+                    }
+                    
                 }
             }
+            > #right {
+                width: 100%;
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                gap: 2vh;
+                > #description-wrapper {
+                    height: 40%;
+                    width: 70%;
+                    position: relative;
+                    box-sizing: content-box;
+                    > textarea {
+                        background: none;
+                        font-size: 3vh;
+                        border-radius: 1.8vw;
+                        border: 5px solid #17245C;
+                        font-family: 'Epilogue';
+                        color: floralwhite;
+                        height: 100%;
+                        width: 100%;
+                        outline: none;
+                        padding: 0;
+                        padding: 20px;
+                        box-sizing: border-box;
+                        resize: none;
+                        overflow: scroll;
+                    }
+                    > textarea:hover, > textarea:focus {
+                        color: #0affff;
+                    }
+                    > textarea::-webkit-scrollbar {
+                        display: none;
+                    }
+                    > textarea::placeholder {
+                        color: floralwhite;
+                    }
+                    > div {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        pointer-events: none;
+                        user-select: none;
+                        position: absolute;
+                        bottom: -3.75vh;
+                        right: 3%;
+                        font-size: 2vh;
+                        height: 3vh;
+                        text-align: center;
+                        color: #0affff;
+                        font-weight: 500;
+                        letter-spacing: 1px;
+        
+                    }
+                }
+                > #info-row {
+                    font-family: 'Epilogue';
+                    color: floralwhite;
+                    font-size: 2.3vh;
+                    display: flex;
+                    flex-direction: column;
+                    width: 70%;
+                    gap: 2vh;
+                    > div {
+                        position: relative;
+                        height: 10vh;
+                        display: flex;
+                        align-items: center;
+                        box-sizing: border-box;
+                        border: 5px solid #17245C;
+                        border-radius: 2vw;
+                        width: 100%;
+                        > label {
+                            cursor: text;
+                            margin-left: 1.5%;
+                            margin-right: 1%;
+                            white-space: nowrap;
+                            font-weight: 700;
+                        }
+                        > input {
+                            font-family: 'Epilogue';
+                            color: rgb(0, 217, 255);
+                            font-size: 2.3vh;
+                            background: 0;
+                            border-radius: 2vw;
+                            border: 0;
+                            outline: 0;
+                            height: 100%;
+                            width: 100%;
+                        }
+                        > input::placeholder {
+                            color: rgb(0, 217, 255);
+                            
+                        }
+                        > button {
+                            cursor: pointer;
+                            margin-right: 2%;
+                            background: none;
+                            border: 0;
+                            padding: 0;
+                            height: 4vh;
+                            transition: 0.5s ease-in-out;
+                            > img {
+                                height: 100%;
+                            }
+                        }
+                        > button:hover {
+                            transform: scale(0.92);
+                        }
+                    }
+                }
+
+            }
+        }
+        > #control-buttons {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            justify-items: center;
+            > hr {
+                height: 6.5vh;
+                border: 0;
+                border-left: 2px solid floralwhite;
+                margin: 0 5%;
+                padding: 0;
+            }
+            > button {
+                cursor: pointer;
+                text-align: center;
+                background: none;
+                border: none;
+                padding: 0;
+                font-family: 'Epilogue';
+                color: #F9F8D7;
+                font-size: 3.5vh;
+                letter-spacing: 2.5px;
+            }
+            > button:hover {
+                color: #0affff;
+            }
+        }
+
+        .text-area-block {
+            display: flex;
+            padding: 2% 0 0 0;
+            width: 60%;
+            align-items: center;
+            box-sizing: border-box;
+            gap: 1%;
+            > button {
+                user-select: none;
+                background-color: transparent;
+                border: 0;
+                padding: 0;
+                padding-right: 1%;
+                height: 4vh;
+                > img {
+                    height: 100%;
+                }
+            }
+            > span {
+                padding: 0;
+                padding-right: 1vw;
+                display: block;
+                font-size: 4vh;
+                font-family: 'Days One';
+                color: floralwhite;
+                
+            }
+            .text-area-input {
+                border-left: 2px solid seashell;
+                padding-left: 2%;
+                width: 100%;
+                textarea {
+                    border: 0;  
+                    display: flex;
+                    height: auto;
+                    font-size: 3vh;
+                    font-family: 'Days One';
+                    color: floralwhite;    
+                    resize: none;
+                    overflow: hidden;
+                    display: inline-block;
+                    background-color: #1c1c3a;
+                    box-decoration-break: clone;
+                    outline: none;
+                    padding: 0;
+                }
+                > textarea:disabled {
+                    background-color: transparent;
+                }
+                > #text-area-error {
+                    font-size: 3vh;
+                    font-family: 'Inter';
+                    color: #ff4545;
+                }
+            }
+            
+    
         }
     }
+    #delete-button {
+        font-family: 'Inter';
+        font-size: 3.15vh;
+        cursor: pointer;
+        border: 2px solid #FF4545;
+        color: #FF4545;
+        background-color: transparent;
+        border-radius: 1vw;
+        width: 25%;
+        margin-left: 37.5%;
+        height: 8vh;
+        margin-bottom: 3%;
+        margin-top: 20vh;
+    }
+    #delete-button:hover {
+        background-color: #350c0c;
+    }
+
+
+
+    
 }

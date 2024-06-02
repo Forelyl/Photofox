@@ -22,9 +22,9 @@ export default function ImageEdit() {
     const navigate = useNavigate();
     const isAuthor = testAuthor(authorLogin);
 
-    useEffect( ()=> {
-        autosize(document.querySelectorAll('textarea'));
-    }, [])
+    // useEffect( ()=> {
+    //     autosize(document.querySelectorAll('textarea'));
+    // }, [])
 
     function handleCommentClick() {
 
