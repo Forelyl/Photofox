@@ -117,6 +117,11 @@
                 > textarea:disabled {
                     background-color: transparent;
                 }
+                > #text-area-error {
+                    font-size: 3vh;
+                    font-family: 'Inter';
+                    color: #ff4545;
+                }
             }
             
 

@@ -1,5 +1,8 @@
 #profile-edit {
     > #info {
+        > #left {
+
+        }
         > #right {        
             > #description-wrapper {
                 height: 90%;

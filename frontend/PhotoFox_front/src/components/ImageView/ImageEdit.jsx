@@ -98,7 +98,7 @@ export default function ImageEdit() {
                         </button>
                         <div className='text-area-input'>
                             <textarea name='new_title' id='new-title' rows='2' defaultValue={title} disabled={!editTitle} maxLength={100}/>
-                            <span hidden={!titleIsEmpty}>Can't be empty</span>
+                            <span hidden={!titleIsEmpty} id='text-area-error'>Can't be empty</span>
                         </div>
                     </div>
 
