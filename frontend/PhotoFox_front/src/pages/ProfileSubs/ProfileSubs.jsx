@@ -1,8 +1,8 @@
 import {Link, useParams, useSearchParams} from "react-router-dom";
-import NavBar from "../components/Menu/NavBar.jsx";
+import NavBar from "../../components/Menu/NavBar.jsx";
 import {useCallback, useRef, useState} from "react";
-import useSubsScrollLoad from "../hooks/useSubsScrollLoad.js";
-import MiniProfile from "../components/MiniProfile.jsx";
+import useSubsScrollLoad from "../../hooks/useSubsScrollLoad.js";
+import './ProfileSubs.css'
 
 export default function ProfileSubs() {
     const [searchParams] = useSearchParams();
@@ -28,27 +28,34 @@ export default function ProfileSubs() {
 
     return (
         <>
-            <NavBar hideSearch={true} />
+            <NavBar hideSearch={true}/>
+            <div id='top-of-users-pictures'>
+                <Link to='/'>
+                    <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
+                </Link>
+                <h1>{titlePage}</h1>
+            </div>
             {(rows.length !== 0) && <div className="subs-container">
                 {rows.map((row, index) => {
                     if (index + 1 === rows.length) {
-                        return <div key={index} ref={lastRowRef} className={(subsLeft) ? 'row' : 'row last-row' }>
+                        return <div key={index} ref={lastRowRef} className={(subsLeft) ? 'row' : 'row last-row'}>
                             {row.map((profile) => {
                                 return (
                                     <Link to={`/${profile.login}`} key={profile.id}>
-                                        <img src={profile.profile_image ?? ''}/>
+                                        <img src={profile.profile_image ?? '/NavBarElements/profile_icon.svg'}
+                                             alt='profile picture'/>
                                         <span>{profile.login}</span>
                                     </Link>
                                 )
                             })}
                         </div>
-                    }
-                    else {
+                    } else {
                         return <div key={index} className='row'>
                             {row.map((profile) => {
                                 return (
                                     <Link to={`/${profile.login}`}>
-                                        <img src={profile.profile_image}/>
+                                        <img src={profile.profile_image ?? '/NavBarElements/profile_icon.svg'}
+                                             alt='profile picture'/>
                                         <span>{profile.login}</span>
                                     </Link>
                                 )
@@ -58,9 +65,15 @@ export default function ProfileSubs() {
                 })}
             </div>
             }
-            {(rows.length === 0 || !subsLeft) && !error && ! loading && <div className='text-subs-info'><div>No subs were found</div></div>}
-            {loading && !error && <div className='text-subs-info'><div>Loading...</div></div>}
-            {error && <div className='text-subs-info'><div>An error occurred when requesting the server!<br/>Please reload page</div></div>}
+            {(rows.length === 0 || !subsLeft) && !error && !loading && <div className='text-subs-info'>
+                <div>No subs were found</div>
+            </div>}
+            {loading && !error && <div className='text-subs-info'>
+                <div>Loading...</div>
+            </div>}
+            {error && <div className='text-subs-info'>
+                <div>An error occurred when requesting the server!<br/>Please reload page</div>
+            </div>}
         </>
     );
 }

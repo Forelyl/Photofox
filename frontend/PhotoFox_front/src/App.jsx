@@ -5,7 +5,7 @@ import SignPage, { action as authAction } from "./pages/SignPage/SignPage.jsx";
 import ProfilePage from "./pages/Profile/ProfilePage.jsx";
 import ProfileEditPage from "./pages/Profile/ProfileEditPage.jsx";
 import UsersPictures from "./pages/UsersPictures/UsersPictures.jsx";
-import ProfileSubs from "./pages/ProfileSubs.jsx";
+import ProfileSubs from "./pages/ProfileSubs/ProfileSubs.jsx";
 import PicturePage from "./pages/Picture/PicturePage.jsx";
 import AddPicturePage from "./pages/AddPicture/AddPicturePage.jsx";
 import { loader as loadEdit } from "./pages/Profile/ProfileEditPage.jsx";
