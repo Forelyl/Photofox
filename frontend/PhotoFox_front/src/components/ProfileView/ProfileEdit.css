@@ -46,6 +46,12 @@
                 > button:hover {
                     background-color: rgb(34, 22, 46);
                 }
+                > button:disabled {
+                    cursor: auto;
+                    background-color: #7a6e6e;
+                    color: #a3a3a3;
+                    border-color: #a3a3a3;
+                }
                 > div {
                     width: 90%;
                     > button {
