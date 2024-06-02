@@ -26,6 +26,17 @@ export default function ProfileSubs() {
         if (node) lastRow.current.observe(node);
     }, [loading, subsLeft]);
 
+    let titlePage;
+    if (mode === 'on_me'){
+        titlePage = 'Subscribers';
+    }
+    else if (mode === 'me_on'){
+        titlePage = 'Subscribed on';
+    }
+    else {
+        throw new Error("Page not found.");
+    }
+
     return (
         <>
             <NavBar hideSearch={true}/>
@@ -37,6 +48,7 @@ export default function ProfileSubs() {
             </div>
             {(rows.length !== 0) && <div className="subs-container">
                 {rows.map((row, index) => {
+                    console.log("index", index)
                     if (index + 1 === rows.length) {
                         return <div key={index} ref={lastRowRef} className={(subsLeft) ? 'row' : 'row last-row'}>
                             {row.map((profile) => {
@@ -91,7 +103,7 @@ function spreadProfiles(profs, imagesLeft) {
             amountInRow++;
         }
 
-        if (!imagesLeft && (index + 1) === profs.length) {
+        if ((!imagesLeft && (index + 1) === profs.length) || amountInRow === 2) {
             rows.push(rowProfiles);
             rowProfiles = [];
             amountInRow = 0

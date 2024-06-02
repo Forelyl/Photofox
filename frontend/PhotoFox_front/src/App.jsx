@@ -12,10 +12,11 @@ import { loader as loadEdit } from "./pages/Profile/ProfileEditPage.jsx";
 import {loaderCheckToken} from "./utils/auth.js";
 import InfoPage from "./pages/InfoPage.jsx";
 import PictureEditPage from "./pages/Picture/PictureEditPage.jsx";
+import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
 
 const router = createBrowserRouter([
-    { path: '/', element: <RootLayout/>,
-        children: [
+    { path: '/', element: <RootLayout/>, errorElement: <ErrorPage />,
+children: [
         { index: true, element: <HomePage /> },
         { path: 'sign', element: <SignPage />, action: authAction },
         { path: ':profileName', children: [
