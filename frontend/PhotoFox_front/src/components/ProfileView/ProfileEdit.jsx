@@ -160,13 +160,15 @@ export default function ProfileEdit() {
                     (<>
                         <div id='info'>
                             <div id='left'>
-                                {loading ? (<div className="lds-ellipsis">
+                                {loading ? 
+                                    <div className="lds-ellipsis">
                                         <div></div>
                                         <div></div>
                                         <div></div>
                                         <div></div>
-                                    </div>) :
-                                    (<>
+                                    </div> 
+                                    :
+                                    <>
                                         <label htmlFor='image' id='image-wrapper'>
                                             <input type="file" accept="image/*" name='image' id='image'
                                                    onChange={handleImageUpload}/>
@@ -177,7 +179,7 @@ export default function ProfileEdit() {
                                         <button type='button' onClick={handleDeleteProfilePicture}
                                                 disabled={profileImage === ''}>Delete avatar
                                         </button>
-                                    </>)
+                                    </>
                                 }
                                 <div>
                                     {loginUsed && <span>Login is already</span>}
