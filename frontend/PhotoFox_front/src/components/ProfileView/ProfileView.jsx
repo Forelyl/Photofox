@@ -10,13 +10,15 @@ export default function ProfileView({loading, setLoading, profileName}) {
     const {error, profileData} = useProfileLoad(profileName, setLoading);
     const {profileId, profileImage, description, login, subscribedOn, subscribers, isBlocked, subscribedNow} = profileData;
     const isOwner = testAuthor(login);
-
+    if (error) {
+        throw new Error("User was not found.");
+    }
     if (isBlocked) throw new Error('User is blocked');
 
 
     return (
         <>
-            {!error && <div id='profile'>
+            <div id='profile'>
                 <div id='left'>
                     {loading ? 
                     <div><img src="/loading.io_Ellipsis.svg" alt="" /></div>
@@ -49,9 +51,8 @@ export default function ProfileView({loading, setLoading, profileName}) {
                         }
                     </div>
                 </div>
-            </div>}
-            {loading && !error && <div className='text-subs-info-profile'><div>Loading...</div></div>}
-            {error && <div className='text-subs-info-profile'><div>An error occurred when requesting the server!<br/>Please reload page</div></div>}
+            </div>
+            {loading && <div className='text-subs-info-profile'><div>Loading...</div></div>}
         </>
     )
 }

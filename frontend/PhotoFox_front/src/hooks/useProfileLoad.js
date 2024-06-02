@@ -25,7 +25,12 @@ export default function useProfileLoad(profileLogin = '', setLoading) {
             method: 'GET',
             headers: query_headers
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.status === 400) {
+                throw new Response("User was not found", {status : 404})
+            }
+            response.json();
+        })
         .then((values) => {
             setProfileData({
                 profileId: values.id,
@@ -37,12 +42,12 @@ export default function useProfileLoad(profileLogin = '', setLoading) {
                 subscribers: values.subscribers,
                 subscribedNow: values.subscribed_now
             });
-            setTimeout(() => setLoading(false), 1000);
         })
-        .catch(() => {
+        .catch((error) => {
+            console.log("tt")
             setError(true);
-        });
+        })
+        .finally(() => setTimeout(() => setLoading(false), 1000));
     }, [profileLogin]);
-
     return { error, profileData };
 }
