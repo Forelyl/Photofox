@@ -450,7 +450,7 @@ async def add_user(login: Annotated[str, Body(pattern=login_regex)],
 async def delete_user(user: Annotated[User, Depends(access_user)]):
     await db.delete_profile(user.id)
 
-@app.patch('/profile/picture/delete', tags=['profile', 'admin'])
+@app.delete('/profile/picture/delete', tags=['profile', 'admin'])
 async def delete_picture_profile(user: Annotated[User, Depends(access_user)]):
     profile_picture_path: str = await db.get_avatar_path_by_id(user.id)
     if profile_picture_path == "": return 

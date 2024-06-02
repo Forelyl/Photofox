@@ -4,7 +4,6 @@ import useProfileEditLoad from "../../hooks/useProfileEditLoad.js";
 import {useEffect, useRef, useState} from "react";
 import {getToken} from "../../utils/auth.js";
 import './ProfileEdit.css'
-import autosize from "autosize"
 
 export default function ProfileEdit() {
     const {profileName} = useParams();
@@ -137,7 +136,7 @@ export default function ProfileEdit() {
         }
         else {
             await fetch(`${import.meta.env.VITE_API_URL}/profile/picture/delete`, {
-                method: 'PATCH',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': getToken()

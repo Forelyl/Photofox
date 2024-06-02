@@ -1,7 +1,7 @@
 import './AddPicture.css'
 import NavBar from "../../components/Menu/NavBar.jsx";
 import { useState } from "react";
-import {Form, Link, redirect, useNavigation} from "react-router-dom";
+import {Form, Link, useNavigate} from "react-router-dom";
 import {clearIntendedDestination} from "../../utils/independentDestination.js";
 import { getToken } from '../../utils/auth.js';
 import Tags from "../../components/Menu/Tags.jsx";
@@ -11,6 +11,7 @@ export default function AddPicturePage() {
     const [dimensions, setDimensions] = useState({width: 300, height: 300});
     const [imageDownloadable, setImageDownloadable] = useState(undefined);
     const [submitting, setSubmitting] = useState(false);
+    const navigate = useNavigate();
     const [tags, setTags] = useState([]);
     clearIntendedDestination();
 
@@ -65,7 +66,7 @@ export default function AddPicturePage() {
         if (!response.ok) {
             return response;
         }
-        return redirect('/');
+        return navigate('/');
     }
 
     function handleCheckBoxChanged(e) {

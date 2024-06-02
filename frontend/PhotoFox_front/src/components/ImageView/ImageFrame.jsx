@@ -2,6 +2,7 @@ import {testAuthor} from "../../utils/auth.js";
 import {useParams, Link, useNavigate} from "react-router-dom";
 import useImageLoad from "../../hooks/useImageLoad.js";
 import './ImageFrame.css'
+import '../../pages/ErrorPage/ErrorPage.css'
 import CustomLikeButton from "../CustomButtons/CustomLikeButton.jsx";
 import CustomSubscribeButton from "../CustomButtons/CustomSubscribeButton.jsx";
 import CustomSaveButton from "../CustomButtons/CustomSaveButton.jsx";
@@ -95,8 +96,8 @@ export default function ImageFrame({ setLoading, loading }) {
                     <Tags select={false}/>
                 </div>
             </div>}
-            {loading && !error && <div><div>Loading...</div></div>}
-            {error && <div>An error occurred when requesting the server!<br/>Please reload page</div>}
+            {loading && !error && <div className='text-images-info'><div>Loading...</div></div>}
+            {error && <div className='text-images-info'><div>An error occurred when requesting the server!<br/>Please reload page</div></div>}
         </div>
     )
 }
