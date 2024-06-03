@@ -1,3 +1,4 @@
+# TODO: on all str check to prevent injections
 # WARNING: don't use username(login) to provide processes except login, use user.id instead
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
 import time
