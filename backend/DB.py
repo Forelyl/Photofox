@@ -1,3 +1,4 @@
+#TODO redo filters cause they are unsafe to SQL injection also check other queries (especially with {str} or + str)
 from enum import Enum
 
 import asyncpg as postgres
