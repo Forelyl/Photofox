@@ -470,8 +470,8 @@ async def delete_picture_profile(user: Annotated[User, Depends(access_user)]):
     profile_picture_path: str = await db.get_avatar_path_by_id(user.id)
     if profile_picture_path == "": return 
     
-    await DropBox.delete_file(profile_picture_path)
     await db.delete_profile_picture(user.id)
+    await DropBox.delete_file(profile_picture_path) # throws error if no directory, should be in the end or error should be handeled
 
 
 @app.patch('/profile/picture', tags=['profile', 'admin'])
