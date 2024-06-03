@@ -273,16 +273,14 @@ async def get_images_mobile_with_user(user: Annotated[User, Depends(access_user)
 async def get_image(image_id: int):
     result : DB_Returns.Image_full | None = await db.get_image(image_id)
     if result is None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                             detail={"message": "Image wasn't found"},
-                                             headers={"WWW-Authenticate": "Bearer"})
+                                             detail={"message": "Image wasn't found"})
     return result
 
 @app.get('/image/user', tags=['image'], response_model=DB_Returns.Image_full)
 async def get_image_with_user(user: Annotated[User, Depends(access_user)], image_id: int):
     result: DB_Returns.Image_full | None = await db.get_image(image_id, user.id)
     if result is None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                           detail={"message": "Image wasn't found"},
-                                           headers={"WWW-Authenticate": "Bearer"})
+                                           detail={"message": "Image wasn't found"})
     return result
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
