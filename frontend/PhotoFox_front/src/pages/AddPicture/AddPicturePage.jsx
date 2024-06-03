@@ -54,7 +54,7 @@ export default function AddPicturePage() {
         }
 
         data.delete('width');
-        setTimeout(() => {data.delete('height');}, 3000);
+        data.delete('height');
 
         const response = await fetch(`${import.meta.env.VITE_API_URL}/image`, {
             method: 'POST',
@@ -66,7 +66,8 @@ export default function AddPicturePage() {
         if (!response.ok) {
             return response;
         }
-        return navigate('/');
+        const id = await response.json()
+        return navigate(`/picture/${id}`);
     }
 
     function handleCheckBoxChanged(e) {
