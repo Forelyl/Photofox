@@ -477,6 +477,14 @@ class PhotoFox:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
         
         return result[0]["id"]
+
+    async def id_to_login(self, id: int) -> str:
+        query: str = 'SELECT login FROM "user" WHERE id = $1;'
+
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, id))
+        
+        return result[0]["login"]
+
         
     async def get_reported_comments_sorted_by_reports(self, last_comment_id: int) -> list[DB_Returns.Comment_reported]:
         if last_comment_id == -1:

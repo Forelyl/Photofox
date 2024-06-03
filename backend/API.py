@@ -158,11 +158,6 @@ async def create_access_token(data: dict[str, str | bool | int], expires_delta: 
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": int(expire.timestamp())})
-    print('aaaaaaaaa')
-    print('aaaaaaaaa')
-    print(to_encode)
-    print('aaaaaaaaa')
-    print('aaaaaaaaa')
     return jwt.encode(to_encode, SECRET_KEY, ALGORITHM)
 
 
@@ -467,6 +462,7 @@ async def add_user(login: Annotated[str, Body(pattern=login_regex)],
 
 @app.delete('/profile/delete', tags=['profile', 'admin'])
 async def delete_user(user: Annotated[User, Depends(access_user)]):
+    await DropBox.delete_file(f'/{user.id}')
     await db.delete_profile(user.id)
 
 @app.delete('/profile/picture/delete', tags=['profile', 'admin'])
