@@ -1,8 +1,9 @@
 # WARNING: don't use username(login) to provide processes except login, use user.id instead
 # to start: granian --interface asgi --reload --host 127.0.0.1 --port 1121 app:app
-
+import time
 from asyncpg import exceptions
 from fastapi.params import Param
+from pydantic_core.core_schema import datetime_schema
 from DB import DB, DB_Models, DB_Returns, db
 
 from File_client import DropBox_client, DropBox
@@ -19,6 +20,7 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 
 from contextlib import asynccontextmanager
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -105,8 +107,15 @@ async def process_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
         username:     str  | None = payload.get("sub")
         is_admin_str: str  | None = payload.get("is_admin") # actualy returns bool | None
         id_str:       str  | None = payload.get("id") # actualy returns int | None
-
-        if (is_admin_str is None or username is None or id_str is None): raise credentials_exception
+        time_str:     str  | None = payload.get("exp") # expire data time
+        
+     
+        
+        if (is_admin_str is None or username is None or id_str is None or time_str is None): raise credentials_exception
+        
+        if(int(time_str) < datetime.now(timezone.utc).timestamp()): raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                                                    detail={"message":"Access token is expired", "expired": True})
+        
         
         user = User(username=username, is_admin=bool(is_admin_str), id=int(id_str))
         if user.is_admin: 
@@ -147,10 +156,14 @@ async def create_access_token(data: dict[str, str | bool | int], expires_delta: 
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": str(expire)})
-
-    return jwt.encode(data, SECRET_KEY, ALGORITHM)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": int(expire.timestamp())})
+    print('aaaaaaaaa')
+    print('aaaaaaaaa')
+    print(to_encode)
+    print('aaaaaaaaa')
+    print('aaaaaaaaa')
+    return jwt.encode(to_encode, SECRET_KEY, ALGORITHM)
 
 
 
