@@ -46,7 +46,7 @@ app.add_middleware(
 
 SECRET_KEY = "476b0f8f5dbe0460361022cfe01b94fe50c74998e15d2206098ca6ff1de1ba8c"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 3 # minutes * hours
 
 #============================================
 # Regex
