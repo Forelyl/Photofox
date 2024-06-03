@@ -198,9 +198,20 @@ export default function ProfileEdit() {
                                 </div>
                                 <div id='info-row'>
                                     <div>
+                                        <span hidden={!loginUsed} id='text-area-error'>Login is already used</span>
+                                        <label htmlFor='login'>Login:</label>
+                                        <input id='login' maxLength={100} defaultValue={login} name='newLogin'
+                                               disabled={!editLogin} required/>
+                                        <button onClick={() => setEditLogin(value => !value)} type='button'>
+                                            <img src={(!editLogin) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
+                                                 alt={(!editLogin) ? 'edit title' : 'submit new title'}/>
+                                        </button>
+                                    </div>
+                                    <div>
                                         {emailUsed && <span>Email is already used</span>}
                                         <label htmlFor='email'>Email:</label>
-                                        <input id='email' name='email' defaultValue={email} disabled={!editEmail} required/>
+                                        <input id='email' name='email' defaultValue={email} disabled={!editEmail}
+                                               required/>
                                         <button onClick={() => setEditEmail(value => !value)} type='button'>
                                             <img src={(!editEmail) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
                                                  alt={(!editEmail) ? 'edit title' : 'submit new title'}/>
@@ -208,19 +219,11 @@ export default function ProfileEdit() {
                                     </div>
                                     <div>
                                         <label htmlFor='pass'>New password:</label>
-                                        <input id='pass' type='password' name='newPassword' disabled={!editPass} placeholder='*^*^*^*^*^*'/>
+                                        <input id='pass' type='password' name='newPassword' disabled={!editPass}
+                                               placeholder='*^*^*^*^*^*'/>
                                         <button onClick={() => setEditPass(value => !value)} type='button'>
                                             <img src={(!editPass) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
                                                  alt={(!editPass) ? 'edit title' : 'submit new title'}/>
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <span hidden={!loginUsed} id='text-area-error'>Login is already used</span>
-                                        <label htmlFor='login'>Login:</label>
-                                        <input id='login' maxLength={100} defaultValue={login} name='newLogin' disabled={!editLogin} required/>
-                                        <button onClick={() => setEditLogin(value => !value)} type='button'>
-                                            <img src={(!editLogin) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
-                                                alt={(!editLogin) ? 'edit title' : 'submit new title'}/>
                                         </button>
                                     </div>
                                 </div>
@@ -228,7 +231,7 @@ export default function ProfileEdit() {
                         </div>
                         <div id='control-buttons'>
                             <button type='submit'>{!submitting ? 'Save' : 'Saving'}</button>
-                            <hr />
+                            <hr/>
                             <button type='button' onClick={() => {
                                 return navigate(`/${login}`, {replace: true});
                             }}>Cancel

@@ -276,11 +276,19 @@ async def get_images_mobile_with_user(user: Annotated[User, Depends(access_user)
 
 @app.get('/image', tags=['image'], response_model=DB_Returns.Image_full)
 async def get_image(image_id: int):
-    return await db.get_image(image_id)
+    result : DB_Returns.Image_full | None = await db.get_image(image_id)
+    if result is None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                             detail={"message": "Image wasn't found"},
+                                             headers={"WWW-Authenticate": "Bearer"})
+    return result
 
 @app.get('/image/user', tags=['image'], response_model=DB_Returns.Image_full)
 async def get_image_with_user(user: Annotated[User, Depends(access_user)], image_id: int):
-    return await db.get_image(image_id, user.id)
+    result: DB_Returns.Image_full | None = await db.get_image(image_id, user.id)
+    if result is None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                           detail={"message": "Image wasn't found"},
+                                           headers={"WWW-Authenticate": "Bearer"})
+    return result
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
 @app.post('/image', tags=['image'], response_model=int)
@@ -571,10 +579,10 @@ def i_am_user(user: Annotated[User, Depends(access_user)], image: Annotated[Uplo
 #     print('----------------------')
 #     print(f"Request body: {body_str}")
 #     print(f"Request header: {request.headers}")
-#     print(f"URL: f{request.url}") 
+#     print(f"URL: f{request.url}")
 #     print('----------------------')
 #     print('----------------------')
-    
+#
 #     response = await call_next(request)
 #     return response
 
