@@ -262,7 +262,7 @@ class PhotoFox:
     @staticmethod
     def __get_password() -> str:
         result: str = ""
-        with open('./database_pass.data', 'r') as file:
+        with open('backend/database_pass.data', 'r') as file:
             result = file.readline()
             if len(result) == 0: raise RuntimeError("No password in backend/database_pass.data")
         return result
@@ -401,7 +401,7 @@ class PhotoFox:
         
         return list(DB_Returns.Image_mobile(**x) for x in result)
 
-    async def get_image(self, image_id: int, user_id: int = -1) -> DB_Returns.Image_full:
+    async def get_image(self, image_id: int, user_id: int = -1) -> DB_Returns.Image_full | None:
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(
         f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter, image.description,
@@ -414,7 +414,7 @@ class PhotoFox:
         WHERE image.id = $1 AND NOT "user".is_blocked;
         """, image_id))
         
-
+        if (len(result) == 0): return None
         return DB_Returns.Image_full(**result[0])
 
 
