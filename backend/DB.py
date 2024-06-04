@@ -497,7 +497,7 @@ class PhotoFox:
             JOIN image ON comment.image_id = image.id
             JOIN "user" ON comment.user_id = "user".id
             WHERE comment.report_counter > 0
-            ORDER BY amount_of_reports DESC LIMIT 10;
+            ORDER BY amount_of_reports DESC, id DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         else:
@@ -509,7 +509,7 @@ class PhotoFox:
             JOIN image ON comment.image_id = image.id
             JOIN "user" ON comment.user_id = "user".id
             WHERE comment.report_counter > 0 AND comment.id < $1
-            ORDER BY amount_of_reports DESC LIMIT 10;
+            ORDER BY amount_of_reports DESC, id DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_comment_id))
 
@@ -525,7 +525,7 @@ class PhotoFox:
             FROM image
             JOIN "user" ON image.author_id = "user".id
             WHERE report_counter > 0
-            ORDER BY report_counter DESC LIMIT 10;
+            ORDER BY report_counter DESC, id DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         else:
@@ -537,7 +537,7 @@ class PhotoFox:
             FROM image
             JOIN "user" ON image.author_id = "user".id
             WHERE report_counter > 0 AND image.id < $1
-            ORDER BY report_counter DESC LIMIT 10;
+            ORDER BY report_counter DESC, id DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_image_id))
 
@@ -551,7 +551,7 @@ class PhotoFox:
                    subscribed as subscribed_on, subscribers, complaint_score as report_score, is_blocked
             FROM "user"
             WHERE complaint_score > 0 AND NOT is_admin
-            ORDER BY complaint_score DESC LIMIT 10;
+            ORDER BY complaint_score DESC, id DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         else:
@@ -561,7 +561,7 @@ class PhotoFox:
                    subscribed as subscribed_on, subscribers, complaint_score as report_score, is_blocked
             FROM "user"
             WHERE id < $1 AND complaint_score > 0 AND NOT is_admin
-            ORDER BY complaint_score DESC LIMIT 10;
+            ORDER BY complaint_score DESC, id DESC LIMIT 10;
             """
             result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, last_profile_id))
 
