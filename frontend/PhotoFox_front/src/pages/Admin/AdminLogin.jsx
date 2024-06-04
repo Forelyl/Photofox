@@ -38,7 +38,7 @@ export default function AdminLogin() {
                 </div>
 
                 <div id='action'>
-                    <button>
+                    <button style={{'grid-column': '1 / 3'}}>
                         {(submitting) ? 'In proses...' : 'Log in'}
                     </button>
                 </div>
