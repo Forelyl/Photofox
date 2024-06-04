@@ -56,6 +56,7 @@ export default function CustomLikeButton({ pictureId, initialState, initialNumbe
             }
         }
     }
+
     useEffect(() => {
         if (getToken()) {
             getNewCounter(liked);

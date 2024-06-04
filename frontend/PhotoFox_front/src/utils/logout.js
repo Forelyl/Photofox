@@ -1,7 +1,9 @@
 
-export function action(onLogOut, navigate) {
+export function action(onLogOut = null, navigate) {
     localStorage.removeItem('token');
     localStorage.removeItem('login');
-    onLogOut();
+    if (onLogOut) {
+        onLogOut();
+    }
     navigate("/", { replace: true });
 }

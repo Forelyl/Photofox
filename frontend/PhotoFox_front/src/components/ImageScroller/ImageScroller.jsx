@@ -1,4 +1,3 @@
-/*_*/
 import {useState, useRef, useCallback} from "react";
 import useImageScrollLoad from "../../hooks/useImageScrollLoad.js";
 import ImageRow from "./ImageRow.jsx";
@@ -51,7 +50,6 @@ function spreadImages(images, imagesLeft) {
     let lastId = -1;
     let amountInRow = 0;
 
-    //Змінювати якщо треба змінити максимальну ширину суми
     const screenRation = screen.width / screen.height;
     const maxRatio     = 80 / 35 * screenRation; // 80 / 45
     const minRatio     = 80 / 45 * screenRation; // 80 / 55

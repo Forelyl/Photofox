@@ -57,7 +57,7 @@ const NavBar = forwardRef( function NavBar( {hideSearch = false,
                     </button>
                 </div>
             </menu>
-            {!hideSearch &&<FilterMenu onClose={handleOpenFilters} className={(openFilters)? 'opened' : undefined} passFilters={setFilters}
+            {!hideSearch && <FilterMenu onClose={handleOpenFilters} className={(openFilters)? 'opened' : undefined} passFilters={setFilters}
                                        passTags={setTags} isOpened={openFilters}/>}
             <DropdownMenu onClose={handleDropdown}  className={(openDropdown)? 'opened' : undefined} />
         </div>

@@ -4,14 +4,6 @@ import './FilterMenu.css'
 
 
 export default function FilterMenu({onClose, passFilters, passTags, isOpened, className}) {
-
-    function handleImageFormChange (value) {
-        setImageForm(value);
-        if (!changes){
-            setChanges(true);
-        }
-    }
-
     const [changes, setChanges ] = useState(false);
     const [currentDate, setCurrentDate] = useState('new');
     const [currentSize, setCurrentSize] = useState(null);
@@ -19,6 +11,13 @@ export default function FilterMenu({onClose, passFilters, passTags, isOpened, cl
     const [imageForm, setImageForm ] = useState(null);
     const [tags, setTags ] = useState([]);
     const [openedFilter, setOpenedFilter] = useState(null);
+
+    function handleImageFormChange (value) {
+        setImageForm(value);
+        if (!changes){
+            setChanges(true);
+        }
+    }
 
     function toggleDropdown(e, keyId) {
         // console.log(1);

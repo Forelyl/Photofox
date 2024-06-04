@@ -1,7 +1,6 @@
 import NavBar from "../../components/Menu/NavBar.jsx";
 import {redirect, useParams} from "react-router-dom";
 import ProfileEdit from "../../components/ProfileView/ProfileEdit.jsx";
-import {useState} from "react";
 import {getLogin, getToken} from "../../utils/auth.js";
 
 export default function ProfileEditPage() {

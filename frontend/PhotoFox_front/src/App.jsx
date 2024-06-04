@@ -13,10 +13,12 @@ import {loaderCheckToken} from "./utils/auth.js";
 import InfoPage from "./pages/InfoPage.jsx";
 import PictureEditPage from "./pages/Picture/PictureEditPage.jsx";
 import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
+import AdminLogin, { action as adminAuthAction } from "./pages/Admin/AdminLogin.jsx";
+import AdminPage, { loader as adminCheck} from "./pages/Admin/AdminPage.jsx";
 
 const router = createBrowserRouter([
     { path: '/', element: <RootLayout/>, errorElement: <ErrorPage />,
-children: [
+        children: [
         { index: true, element: <HomePage /> },
         { path: 'sign', element: <SignPage />, action: authAction },
         { path: ':profileName', children: [
@@ -30,8 +32,12 @@ children: [
             { index: true, element: <PicturePage /> },
             { path: 'edit',  element: <PictureEditPage /> }
         ]},
-        { path: 'info', element: <InfoPage /> }
-    ], }
+        { path: 'info', element: <InfoPage /> },
+        { path: 'admin', children: [
+            { index: true, element: <AdminLogin />, action: adminAuthAction },
+            { path: 'checks', element: <AdminPage />, loader: adminCheck}
+        ]}
+    ]}
 ]);
 
 function App() {

@@ -48,7 +48,6 @@ export default function useProfileLoad(profileLogin = '', setLoading) {
         .catch((error) => {
             setError(true);
         })
-        // .finally(() => setTimeout(() => setLoading(false), 1000));
     }, [profileLogin]);
     return { error, profileData };
 }
