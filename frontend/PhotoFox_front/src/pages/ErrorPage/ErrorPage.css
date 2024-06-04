@@ -1,0 +1,17 @@
+.text-images-info {
+    box-sizing: border-box;
+    font-family: 'Inter';
+    font-weight: 600;
+    font-size: min(6vh, 5vw);
+    height: 80vh;
+    padding: 35vh 0 30vh 0;
+    text-align: center;
+    > span {
+        color: floralwhite;
+        transform: rotate(0);
+    }
+    > div:hover {
+        color: aqua;
+        animation: text-shake 1.2s infinite ease-in-out alternate;
+    }
+}

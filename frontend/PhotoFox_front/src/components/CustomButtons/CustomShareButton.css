@@ -1,0 +1,37 @@
+.customShareButton {
+    user-select: none;
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    > img {
+        width: 3vw;
+        transition: 0.3s ease-in-out;
+    }
+    > span {
+        white-space: nowrap;
+        font-family: 'Days One';
+        font-size: 3vh;
+    }
+}
+
+.customShareButton:hover {
+    > span {
+        color: #45ffe2;
+    }
+    > img {
+        transform: scale(0.95);
+    }
+}
+
+.saveLinkText {
+    font-family: 'Days One';
+    font-size: 3vh;
+}
+
+.saveLinkText:hover {
+    color: #45ffe2;
+}
