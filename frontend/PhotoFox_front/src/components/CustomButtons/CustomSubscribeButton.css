@@ -1,0 +1,26 @@
+.customSubscribeButton {
+    user-select: none;
+    cursor: pointer;
+    background-color: transparent;
+    border: 1.5px solid #45FFE2;
+    color: #45FFE2;
+    border-radius: 0.5vw;
+    min-width: 40%;
+    height: 4.5vh;
+    font-family: 'Inter';
+    font-size: 2.5vh;
+    transition: 0.35s ease-in;
+    padding: 0 10%;
+}
+.customSubscribeButton.unsub {
+    background-color: #161638;
+    border-color: #9800be;
+    color: #9800be;
+}
+
+.customSubscribeButton:disabled {
+    cursor: auto;
+    background: #3c3c57;
+    border-color: #9b96ad;
+    color: #9b96ad;
+}

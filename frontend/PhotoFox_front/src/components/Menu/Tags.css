@@ -1,0 +1,41 @@
+#tags {
+    > .hide {
+        display: none;
+    }
+    > button#add-tag {
+        user-select: none;
+        cursor: pointer;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        background: none;
+        width: 2.8vw;
+        border-radius: 100%;
+        height: 2.8vw;
+        font-size: 1.5vw;
+        line-height: 1.5vw;
+        border: 1.5px dashed #49B1E9;
+        color: #49B1E9;
+        transition: 1s ease-in-out;
+        transform: rotate(0deg);
+    }
+    > #add-tag:hover {
+        color: #00fcf7;
+        border-color: #00fcf7;
+        transform: rotate(180deg);
+    }
+    > button:not(#add-tag) {
+        font-family: 'Inter';
+        font-size: 2.75vh;
+        font-weight: 300;
+        color: var(--color);      
+        outline: 0;
+        background: none;
+        border: 1.5px dashed var(--color);
+        border-radius: 0.75vw;
+        text-align: center;
+    }
+    > button {
+        user-select: none;
+    }
+}

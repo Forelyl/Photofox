@@ -1,0 +1,233 @@
+#background {
+    background-color: #062551;
+    background-size: 200%;
+    width: 100vw;
+    max-width: 100%;
+    height: 100lvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-clip: content-box;
+    font-family: 'Days One';
+    > form {
+        display: grid;
+        grid-template-columns: 1fr;
+        align-content: center;
+        justify-items: center;
+        width: 35%;
+        background-color: #49B1E9;
+        border-radius: 30px;
+        > #top {
+            user-select: none;
+            position: relative;
+            padding-top: 3vh;
+            width: 90%;
+            > a {
+                transition: 0.5s ease-in-out;
+                transform: scale(1);
+                transform: translateX(0px);
+                position: absolute;
+                left: 0;
+                top: 0;
+                max-width: 10%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                > img {
+                    width: 100%;
+                    height: 45%;
+                }
+            }
+            > a:hover {
+                animation: arrow_shake 1s ease-in-out;
+                transform: scale(1.1);
+                transform: translateX(-4px);
+
+            }
+
+            > h1 {
+                text-align: center;
+                font-weight: 300;
+                font-size: min(5.5vh, 8vw);
+                padding: 0;
+                padding-left: 5px;
+                margin-top: 0;
+                margin-bottom: 3vh;
+                letter-spacing: 5px;
+            }
+        }
+        > .input {
+            position: relative;
+            width: 80%;
+            height: 10vh;
+            margin: 2vh 0;
+            > input {
+                background-color: #BAE7FF;
+                border-radius: 10px;
+                font-family: 'Days One';
+                font-weight: 100;
+                font-size: min(3vh, 6vw);
+                color: black;
+                width: 100%;
+                height: 100%;
+                border: 0;
+                outline: 0;
+                padding: 0 5%;
+                box-sizing: border-box;
+            }
+            input:autofill {
+                box-shadow: 100vh 100vh 100vh 100vh #216b91 inset;  
+            }
+            > span {
+                position: absolute;
+                font-size: min(3vh, 6vw);
+                line-height: min(3vh, 6vw);
+                left: 5%;
+                top: calc((100% - min(3vh, 6vw)) / 2);
+                color: #7A7A7A;
+                pointer-events: none;
+                transition: 0.4s ease-in-out;
+            }
+            > span:has(~input:focus), > span:has(~input:valid) {
+                top: 10%;
+                line-height: min(1.5vh, 3vw);
+                font-size: min(1.5vh, 3vw);
+                top: calc((100% - min(1.5vh, 3vw)) / 2 - 27%);
+            }
+            > span:has(~input:autofill) {
+                color: #c1bfbf;
+            }
+        }
+        > #error-block {
+            box-sizing: border-box;
+            padding: 2%;
+            padding-bottom: 4%;
+            margin-bottom: 3%;
+            display: none;
+            flex-direction: column;
+            align-content: center;
+            justify-content: left;
+            color: #ed6b00;
+            font-size: min(1.8vh, 3vw);
+            text-align: left;
+            font-family: 'Inter';
+            font-weight: 600;
+            width: 80%;
+            padding-left: 10px;
+            background-color: #fef0bf;
+            border-radius: 13px;
+            > ul {
+                box-sizing: border-box;
+                width: 100%;
+                list-style: circle;
+                padding-left: 10%;
+                margin: 2% 0px 0 0;
+                text-align: left;
+                font-weight: 400;
+            }
+            > span {
+                width: 100%;
+                padding-left: 3%;
+                padding-top: 2%;
+                font-size: min(2.3vh, 3.4vw);
+            }
+        }
+        > #error-block:has(> span) {
+            display: flex;
+        }
+        > #recover-pass {
+            color: black;
+            text-align: right;
+            width: 80%;
+            padding-right: 10px;
+            font-size: 1.9vh;
+        }
+        > #action {
+            display: grid;
+            grid-template-columns: auto auto;
+            align-items: center;
+            justify-items: center;
+            width: 80%;
+            height: 8vh;
+            margin-top: 1.5vh;
+            margin-bottom: 4vh;
+            gap: 3%;
+            > div {
+                border-radius: 1.2vh;
+                display: flex;
+                background-color: #17245C;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Days One';
+                font-size: min(2.5vh, 4vw);
+                height: 100%;
+                width: 100%;
+                > a {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    width: 100%;
+                    color: floralwhite;
+                    text-decoration: none;
+                }
+            }
+            > button {
+                cursor: pointer;
+                border-radius: 1.2vh;
+                background-color: #5E68CA;
+                padding: 0;
+                border: none;
+                color: floralwhite;
+                font-family: 'Days One';
+                font-size: min(2.5vh, 4vw);
+                height: 100%;
+                width: 100%;
+            }
+        }
+    }
+}
+
+
+@media (max-width: 1000px) {
+    #background {
+        > form {
+            width: 80%;
+            > .input > input {
+                font-weight: 400;
+            }
+        }
+    }
+}
+
+@media (max-width: 500px) {
+    #background {
+        > form {
+            border-radius: 10px;
+        }
+    }
+}
+
+@media (max-width: 160px) {
+    #background {
+        > form > #top > h1 {
+            letter-spacing: 3px;
+        }
+    }
+}
+
+@keyframes arrow_shake {
+    0% {
+        transform: translateX(0px);
+    }
+    50% {
+        transform: translateX(4px);
+    }
+    75%, 100% {
+        transform: scale(1.1);
+        transform: translateX(-4px);
+    }
+    
+}
