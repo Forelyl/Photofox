@@ -41,7 +41,9 @@ export default function CustomReportButton({ id_for_report, type, children, owne
             headers: {
                 'Authorization': getToken(),
             }
-        });if (response.ok) {
+        });
+        console.log(response.json());
+        if (response.ok) {
             setShowPopup(true);
         }
         if (response.status === 400) {
