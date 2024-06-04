@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { getToken } from "../utils/auth";
 
-export default function useAdminImageLoad(lastImage) {
+export default function useAdminImageLoad(lastImage, setImages) {
     const [loading, setLoading] = useState(true);
-    const [images, setImages] = useState([]);
     const [imagesLeft, setImagesLeft] = useState(false);
     const [error, setError] = useState(false);
     const [lastId, setLastId] = useState(-1)
@@ -56,6 +55,6 @@ export default function useAdminImageLoad(lastImage) {
 
     }, [newStart]);
 
-    return { loading, images, imagesLeft, error, lastId };
+    return { loading, imagesLeft, error, lastId };
 }
 
