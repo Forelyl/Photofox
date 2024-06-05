@@ -160,7 +160,11 @@ export default function ProfileEdit() {
             if (!response.ok) {
                 return null;
             }
+            const value = await response.json();
+            const newToken = value.access_token;
             localStorage.setItem('login', data.get('newLogin'));
+            localStorage.setItem('token', "Bearer " + newToken);
+
         }
         setSubmitting(false);
         return navigate(`/${localStorage.getItem('login')}`, {replace: true});
