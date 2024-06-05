@@ -491,9 +491,22 @@ async def change_picture_profile(user: Annotated[User, Depends(access_user)], im
     await db.update_profile_picture(result.path, result.shared_link, user.id)
 
 
-@app.patch('/profile/login', tags=['profile', 'admin'])
+@app.patch('/profile/login', tags=['profile', 'admin'], response_model=Token)
 async def change_login_profile(user: Annotated[User, Depends(access_user)],  new_login: Annotated[str, Header(min_length=1, max_length=100, pattern=login_regex)]):
     await db.update_profile_login(new_login, user.id)    
+
+    id = await db.login_to_id(new_login)
+    if (await db.check_bloked(id) and not user.is_admin): 
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail={"message":"Account was banned, due to service laws violation"})
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={
+                                           "sub": new_login, "is_admin": user.is_admin, 
+                                           "id": id
+                                       }, 
+                                       expires_delta=access_token_expires)
+    return Token(access_token=await access_token, token_type="bearer", is_admin=user.is_admin)
 
 @app.patch('/profile/description', tags=['profile', 'admin'])
 async def change_description_profile(user: Annotated[User, Depends(access_user)], new_description: Annotated[str, Header(min_length=0, max_length=500)] = ""):
