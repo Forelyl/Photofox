@@ -1,0 +1,61 @@
+services:
+  db:
+    container_name: fox-db
+    image: postgres:latest
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: fox
+      POSTGRES_PASSWORD: qweasd123
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  front:
+    depends_on:
+      - back
+    container_name: fox-front
+    image: forelyl/photo-fox-front:0.0.1
+    restart: unless-stopped
+    ports:
+      - 5173:5173
+  back:
+    depends_on:
+      - db
+    container_name: fox-backend
+    image: forelyl/photo-fox-backend:0.0.1
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend/database_pass.data:/backend/database_pass.data
+  
+  nginx:
+    depends_on:
+      - back
+      - front
+    container_name: nginx
+    image: nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+  certbot:
+    depends_on:
+      - nginx
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email h2o2hcl55@gmail.com -d photofox.pp.ua --agree-tos
+
+
+volumes:
+  database_data:

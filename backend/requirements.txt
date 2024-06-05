@@ -1,0 +1,6 @@
+asyncpg
+fastapi 
+granian 
+dropbox
+passlib
+python-jose

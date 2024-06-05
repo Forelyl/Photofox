@@ -4,6 +4,7 @@ from enum import Enum
 import asyncpg as postgres
 from typing import Any
 import asyncio
+import selectors # for Linux
 from pydantic import BaseModel
 from fastapi import HTTPException, status
 from pydantic.types import AnyType
@@ -14,15 +15,17 @@ class DB:
 
     def __init__(self, dbname: str, user: str, password: str) -> None:
         self.__PORT: str = "5432"
-        self.__IP: str = "127.0.0.1"
+        self.__IP: str = "db"
         self.dbname: str = dbname
         self.user: str = user
-        self.password: str = password
+        self.password: str = 'qweasd123'
         self.__CONNECTION_MIN_SIZE: int = 10
         self.__CONNECTION_MAX_SIZE: int = 100
     
     async def setup (self):
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+
         self.database_pool = await postgres.create_pool(
             database=self.dbname, 
             user=self.user, 
@@ -275,9 +278,10 @@ class PhotoFox:
     @staticmethod
     def __get_password() -> str:
         result: str = ""
-        with open('backend/database_pass.data', 'r') as file:
+        with open('./database_pass.data', 'r') as file:
             result = file.readline()
             if len(result) == 0: raise RuntimeError("No password in backend/database_pass.data")
+            print(result)
         return result
 
     # INIT
@@ -362,7 +366,8 @@ class PhotoFox:
         query: str =  f"""
             SELECT id, image_url as path, width, height FROM image 
             WHERE {tags_str} {filters[0]};
-        """
+        """  
+        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
 
 
         if (len(filters[1]) != 0): result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, *filters[1]))
