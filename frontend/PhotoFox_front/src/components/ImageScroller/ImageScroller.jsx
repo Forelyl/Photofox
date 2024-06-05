@@ -3,9 +3,9 @@ import useImageScrollLoad from "../../hooks/useImageScrollLoad.js";
 import ImageRow from "./ImageRow.jsx";
 import './ImageScroller.css';
 
-export default function ImageScroller({ filters, tags, userSpecific = false }) {
+export default function ImageScroller({ filters, tags, search, userSpecific = false }) {
     const [lastImage, setLastImage] = useState(-1);
-    const {images, imagesLeft, loading, error} = useImageScrollLoad(lastImage, filters, tags, userSpecific);
+    const {images, imagesLeft, loading, error} = useImageScrollLoad(lastImage, filters, tags, search, userSpecific);
     const {rows, lastId} = spreadImages(images, imagesLeft);
     const lastRow = useRef();
     const lastRowRef = useCallback(node => {

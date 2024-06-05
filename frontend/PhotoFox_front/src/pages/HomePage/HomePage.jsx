@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 
 export default function HomePage() {
     const elementRef = useRef(null);
+    const [search, setSearch] = useState('');
     const [filters, setFilters] = useState({
         primaryFilter : {
             type: null,
@@ -25,8 +26,8 @@ export default function HomePage() {
     return (
         <div id='home'>
             <Banner scrollToElement={handleScrollClick}/>
-            <NavBar ref={elementRef} setFilters={setFilters} setTags={setTags}/>
-            <ImageScroller filters={filters} tags={tags} />
+            <NavBar ref={elementRef} setFilters={setFilters} setTags={setTags} setSearch={setSearch}/>
+            <ImageScroller filters={filters} tags={tags} search={search}/>
         </div>
     );
 }

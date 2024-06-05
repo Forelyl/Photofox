@@ -1,4 +1,4 @@
-import {forwardRef, useState} from "react";
+import {forwardRef, useRef, useState} from "react";
 import { Link } from "react-router-dom";
 import FilterMenu from "./FilterMenu.jsx";
 import DropdownMenu from "./DropdownMenu.jsx";
@@ -7,14 +7,12 @@ import { getToken } from "../../utils/auth.js";
 import {setIntendedDestination} from "../../utils/independentDestination.js";
 
 const NavBar = forwardRef( function NavBar( {hideSearch = false,
-                                                hideAdd = false, setFilters = undefined, setTags=undefined}, ref ) {
+                                                hideAdd = false, setFilters = undefined, setTags=undefined,
+                                                setSearch = undefined}, ref ) {
     const token = getToken();
     const [openFilters, setOpenFilters] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
-
-    //TODO: якщо юзер залогінився виводити аву
-    const [profilePicture, setProfilePicture] = useState('/NavBarElements/profile_icon.svg');
-
+    const inputRef = useRef();
     const protectedDestination = '/add-picture';
 
     function handleOpenFilters() {
@@ -31,6 +29,10 @@ const NavBar = forwardRef( function NavBar( {hideSearch = false,
         setIntendedDestination(protectedDestination);
     }
 
+    function handleSearch() {
+        if (setSearch) setSearch(inputRef.current.value)
+    }
+
     return (
         <div id='menu-wrapper' ref={ref}>
             <menu id='menu'>
@@ -40,8 +42,8 @@ const NavBar = forwardRef( function NavBar( {hideSearch = false,
                 </Link>
                 <div id='right'>
                     {!hideSearch && (<div id='search'>
-                        <img src='/NavBarElements/search_icon.svg' alt='search' />
-                        <input type='text' />
+                        <img src='/NavBarElements/search_icon.svg' alt='search' onClick={handleSearch}/>
+                        <input type='text' ref={inputRef}/>
                         <button onClick={handleOpenFilters}>
                             <img src={(openFilters) ? '/NavBarElements/filter_opened.svg' : '/NavBarElements/filter_closed.svg'}
                                  alt={(openFilters) ? 'filter opened' : 'filter closed'}

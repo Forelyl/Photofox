@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getToken } from "../utils/auth";
 
-export default function useImageScrollLoad(lastImage, filters, tags, userSpecific = false) {
+export default function useImageScrollLoad(lastImage, filters, tags, search, userSpecific = false) {
     const [loading, setLoading] = useState(true);
     const [images, setImages] = useState([]);
     const [imagesLeft, setImagesLeft] = useState(false);
@@ -10,7 +10,7 @@ export default function useImageScrollLoad(lastImage, filters, tags, userSpecifi
     useEffect(() => {
         setImages([]);
         lastImage = -1;
-    }, [filters, tags]);
+    }, [filters, tags, search]);
 
     useEffect(() => {
         setLoading(true);
@@ -38,9 +38,13 @@ export default function useImageScrollLoad(lastImage, filters, tags, userSpecifi
                 }
             }
         }
+        let search_string = ''
+        if (!!search) {
+            search_string = '&find=' + search;
+        }
         const controller = new AbortController();
         const signal = controller.signal;
-        let fetch_string = `${import.meta.env.VITE_API_URL}/image/pc${userSpecific ? '/user' : ''}?last_image_id=${newStart}` + filtersString + tags_string;
+        let fetch_string = `${import.meta.env.VITE_API_URL}/image/pc${userSpecific ? '/user' : ''}?last_image_id=${newStart}` + filtersString + tags_string + search_string;
         let headersQuery = {'Content-Type': 'application/json'}
         if (userSpecific) {
             headersQuery = {
@@ -78,7 +82,7 @@ export default function useImageScrollLoad(lastImage, filters, tags, userSpecifi
         });
         return () => controller.abort();
 
-    }, [newStart, filters, tags]);
+    }, [newStart, filters, tags, search]);
 
     return { loading, images, imagesLeft, error };
 }

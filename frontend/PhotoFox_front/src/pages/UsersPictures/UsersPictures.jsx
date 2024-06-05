@@ -21,19 +21,19 @@ export default function UsersPictures() {
 
     const [filters, setFilters] = useState(filter);
     const [tags, setTags] = useState([]);
-
+    const [search, setSearch] = useState('')
     const titlePage = pageType.charAt(0).toUpperCase() + pageType.slice(1);
 
     return (
         <>
-            <NavBar sets={[setFilters, setTags]}/>
+            <NavBar setFilters={setFilters} setTags={setTags} setSearch={setSearch}/>
             <div id='top-of-users-pictures'>
                 <Link to='/'>
                     <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                 </Link>
                 <h1>{titlePage}</h1>
             </div>
-            <ImageScroller filters={filters} tags={tags} userSpecific={true}/>
+            <ImageScroller filters={filters} tags={tags} search={search} userSpecific={true}/>
         </>
     );
 }

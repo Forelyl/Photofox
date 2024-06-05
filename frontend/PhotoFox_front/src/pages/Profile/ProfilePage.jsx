@@ -16,13 +16,14 @@ export default function ProfilePage() {
         secondaryFilter : [],
     });
     const [tags] = useState([]);
+    const [search] = useState('')
     const [loading, setLoading] = useState(true);
 
     return (
         <>
             <NavBar hideSearch={true}/>
             <ProfileView loading={loading} setLoading={setLoading} profileName={profileName}/>
-            {!loading && <ImageScroller filters={filters} tags={tags}/>}
+            {!loading && <ImageScroller filters={filters} tags={tags} search={search}/>}
         </>
     );
 }

@@ -12,13 +12,14 @@ export default function PicturePage() {
         secondaryFilter : [],
     });
     const [tags] = useState([]);
+    const [search] = useState([])
     const [loading, setLoading] = useState(true);
     
     return (
         <>
             <NavBar hideSearch={true}/>
             <ImageFrame setLoading={setLoading} loading={loading}/>
-            {!loading && <ImageScroller filters={filters} tags={tags}/>}
+            {!loading && <ImageScroller filters={filters} tags={tags} search={search}/>}
         </>
     );
 }
