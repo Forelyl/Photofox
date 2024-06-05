@@ -425,7 +425,7 @@ async def get_profile_with_user(
 async def get_profile_info_for_editing(user: Annotated[User, Depends(access_user)]):
     return await db.get_user_profile_edit(user.id)
 
-@app.get('/profile/image', response_model=DB_Returns.Profile_full, tags=['profile'])
+@app.get('/profile/image', response_model=str, tags=['profile'])
 async def get_profile_image(login: Annotated[str, Param(pattern=login_regex)]):
     return await db.get_user_profile_picture(login)
 

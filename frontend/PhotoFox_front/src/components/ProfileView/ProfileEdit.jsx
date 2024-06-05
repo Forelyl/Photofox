@@ -16,6 +16,8 @@ export default function ProfileEdit() {
     const [ loginUsed, setLoginUsed ] = useState(false);
     const [ emailUsed, setEmailUsed ] = useState(false);
     const [ newProfileImage, setNewProfileImage ] = useState(['/NavBarElements/profile_icon.svg', false]);
+    const [ deleteProfileImage, setDeleteProfileImage ] = useState(false);
+    
 
     const [ editLogin, setEditLogin ] = useState(false);
     const [ editEmail, setEditEmail ] = useState(false);
@@ -47,6 +49,7 @@ export default function ProfileEdit() {
             const img = new Image();
             img.src = e.target.result;
             setNewProfileImage([img.src, true]);
+            setDeleteProfileImage(false)
         };
 
         reader.readAsDataURL(file);
@@ -67,6 +70,7 @@ export default function ProfileEdit() {
 
     async function handleDeleteProfilePicture(e) {
         setNewProfileImage(['/NavBarElements/profile_icon.svg', false]);
+        setDeleteProfileImage(true)
     }
 
     async function handleSubmit(e) {
@@ -122,8 +126,7 @@ export default function ProfileEdit() {
             const token = resData.access_token;
             localStorage.setItem('token', "Bearer " + token);
         }
-        if (newProfileImage[0] !== profileImage && newProfileImage[0] !== '/NavBarElements/profile_icon.svg') {
-            console.log()
+        if (newProfileImage[1] && newProfileImage[0] !== profileImage) {
             let image = new FormData()
             image.append('image', data.get('image'));
             await fetch(`${import.meta.env.VITE_API_URL}/profile/picture`, {
@@ -133,8 +136,7 @@ export default function ProfileEdit() {
                 },
                 body: image
             });
-        }
-        else {
+        } else if (deleteProfileImage) {
             await fetch(`${import.meta.env.VITE_API_URL}/profile/picture/delete`, {
                 method: 'DELETE',
                 headers: {
@@ -205,7 +207,7 @@ export default function ProfileEdit() {
                                         <span hidden={!loginUsed} id='text-area-error'>Login is already used</span>
                                         <label htmlFor='login'>Login:</label>
                                         <input id='login' maxLength={100} defaultValue={login} name='newLogin'
-                                               disabled={!editLogin} required/>
+                                               readonly={!editLogin} required/>
                                         <button onClick={() => setEditLogin(value => !value)} type='button'>
                                             <img src={(!editLogin) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
                                                  alt={(!editLogin) ? 'edit title' : 'submit new title'}/>
@@ -214,7 +216,7 @@ export default function ProfileEdit() {
                                     <div>
                                         {emailUsed && <span>Email is already used</span>}
                                         <label htmlFor='email'>Email:</label>
-                                        <input id='email' name='email' defaultValue={email} disabled={!editEmail}
+                                        <input id='email' name='email' defaultValue={email} readonly={!editEmail}
                                                required/>
                                         <button onClick={() => setEditEmail(value => !value)} type='button'>
                                             <img src={(!editEmail) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
@@ -223,7 +225,7 @@ export default function ProfileEdit() {
                                     </div>
                                     <div>
                                         <label htmlFor='pass'>New password:</label>
-                                        <input id='pass' type='password' name='newPassword' disabled={!editPass}
+                                        <input id='pass' type='password' name='newPassword' readonly={!editPass}
                                                placeholder='*^*^*^*^*^*'/>
                                         <button onClick={() => setEditPass(value => !value)} type='button'>
                                             <img src={(!editPass) ? '/edit.svg' : '/NavBarElements/submit_filters.svg'}
