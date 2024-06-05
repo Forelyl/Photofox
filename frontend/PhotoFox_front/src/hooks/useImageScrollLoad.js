@@ -40,6 +40,7 @@ export default function useImageScrollLoad(lastImage, filters, tags, search, use
         }
         let search_string = ''
         if (!!search) {
+            filtersString = '&filters=useFind';
             search_string = '&find=' + search;
         }
         const controller = new AbortController();
