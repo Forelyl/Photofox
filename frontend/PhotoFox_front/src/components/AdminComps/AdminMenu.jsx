@@ -5,7 +5,7 @@ import { getToken } from "../../utils/auth.js";
 import {action as logOut} from "../../utils/logout.js";
 import {useNavigate} from "react-router-dom";
 
-export default function AdminMenu({ setFilters = undefined }) {
+export default function AdminMenu({hideSearch = false, setFilters = undefined }) {
     const token = getToken();
     const [openFilters, setOpenFilters] = useState(false);
     const navigate = useNavigate();
@@ -22,12 +22,15 @@ export default function AdminMenu({ setFilters = undefined }) {
                     <h1>PhotoFox admin</h1>
                 </div>
                 <div id='right'>
-                    <button onClick={handleOpenFilters}>
-                        <img
-                            src={(openFilters) ? '/NavBarElements/filter_opened.svg' : '/NavBarElements/filter_closed.svg'}
-                            alt={(openFilters) ? 'filter opened' : 'filter closed'}
-                        />
-                    </button>
+                    {!hideSearch && (<div id='search'>
+                        <img src='/NavBarElements/search_icon.svg' alt='search' />
+                        <input type='text' />
+                        <button onClick={handleOpenFilters}>
+                            <img src={(openFilters) ? '/NavBarElements/filter_opened.svg' : '/NavBarElements/filter_closed.svg'}
+                                 alt={(openFilters) ? 'filter opened' : 'filter closed'}
+                            />
+                        </button>
+                    </div>)}
                     <button onClick={() => logOut(null, navigate)}>
                         <img src='/DropdownElements/log_out.svg' alt='Log out'/>
                         <span>Log out</span>

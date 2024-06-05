@@ -45,6 +45,7 @@ export default function useImageScrollLoad(lastImage, filters, tags, search, use
         const controller = new AbortController();
         const signal = controller.signal;
         let fetch_string = `${import.meta.env.VITE_API_URL}/image/pc${userSpecific ? '/user' : ''}?last_image_id=${newStart}` + filtersString + tags_string + search_string;
+        console.log(fetch_string)
         let headersQuery = {'Content-Type': 'application/json'}
         if (userSpecific) {
             headersQuery = {

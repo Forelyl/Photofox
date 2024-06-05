@@ -58,13 +58,21 @@
       height: 50%;
       position: relative;
       transition: 1s ease-in-out;
-      > img {
+      > button:nth-child(1) {
+        cursor: pointer;
+        background: none;
+        outline: none;
         position: absolute;
         left: 5%;
         top: 25%;
         height: 50%;
+        > img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
       }
-      > button {
+      > button:nth-child(3) {
         cursor: pointer;
         position: absolute;
         right: 5%;

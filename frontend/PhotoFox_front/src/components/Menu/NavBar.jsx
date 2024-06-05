@@ -42,7 +42,9 @@ const NavBar = forwardRef( function NavBar( {hideSearch = false,
                 </Link>
                 <div id='right'>
                     {!hideSearch && (<div id='search'>
-                        <img src='/NavBarElements/search_icon.svg' alt='search' onClick={handleSearch}/>
+                        <button onClick={handleSearch}>
+                            <img src='/NavBarElements/search_icon.svg' alt='search'/>
+                        </button>
                         <input type='text' ref={inputRef}/>
                         <button onClick={handleOpenFilters}>
                             <img src={(openFilters) ? '/NavBarElements/filter_opened.svg' : '/NavBarElements/filter_closed.svg'}
