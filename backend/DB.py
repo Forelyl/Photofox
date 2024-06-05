@@ -16,7 +16,7 @@ class DB:
         self.__IP: str = "db"
         self.dbname: str = dbname
         self.user: str = user
-        self.password: str = password
+        self.password: str = 'qweasd123'
         self.__CONNECTION_MIN_SIZE: int = 10
         self.__CONNECTION_MAX_SIZE: int = 100
     
@@ -265,9 +265,11 @@ class PhotoFox:
     @staticmethod
     def __get_password() -> str:
         result: str = ""
+        print('reading password')
         with open('./database_pass.data', 'r') as file:
             result = file.readline()
             if len(result) == 0: raise RuntimeError("No password in backend/database_pass.data")
+            print(result)
         return result
 
     # INIT

@@ -28,6 +28,8 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+    volumes:
+      - ./backend/database_pass.data:/backend/database_pass.data
   
   nginx:
     depends_on:
