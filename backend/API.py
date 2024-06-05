@@ -222,7 +222,8 @@ async def delete_tag(tag_id: Annotated[int, Header(ge=1)]):
 @app.get('/image/pc', tags=['image'], response_model=list[DB_Returns.Image_PC])
 async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None, Query()] = None,
                         tags: Annotated[tuple[int] | None, Query()] = None,
-                        last_image_id: int = -1, author_login: str = '#'):
+                        last_image_id: int = -1, author_login: str = '#',
+                        find: str = '#'):
     """
     @param author_login - is for filter published
     """
@@ -232,42 +233,45 @@ async def get_images_pc(filters: Annotated[list[DB_Models.Image_filters] | None,
     if tags is not None: tags_r = tags
 
 
-    return await db.get_images_pc(filters, tags_r, last_image_id, author_login=author_login)
+    return await db.get_images_pc(filters, tags_r, last_image_id, author_login=author_login, find=find)
 
 @app.get('/image/pc/user', tags=['image'], response_model=list[DB_Returns.Image_PC])
 async def get_images_pc_with_user(user: Annotated[User, Depends(access_user)],
                         filters: Annotated[list[DB_Models.Image_filters] | None, Query()] = None,
                         tags: Annotated[tuple[int] | None, Query()] = None,
-                        last_image_id: int = -1, author_login: str = '#'):
+                        last_image_id: int = -1, author_login: str = '#',
+                        find: str = '#'):
     tags_r = tuple()
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
-    return await db.get_images_pc(filters, tags_r, last_image_id, user.id, author_login=author_login)
+    return await db.get_images_pc(filters, tags_r, last_image_id, user.id, author_login=author_login, find=find)
 
 
 @app.get('/image/mobile', tags=['image'], response_model=list[DB_Returns.Image_mobile])
 async def get_images_mobile(filters: list[DB_Models.Image_filters] | None = None,
                             tags: tuple[str] | None = None,
-                            last_image_id: int = -1, author_login: str = '#'):
+                            last_image_id: int = -1, author_login: str = '#',
+                            find: str = '#'):
 
     tags_r = tuple()
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
-    return await db.get_images_mobile(filters, tags_r, last_image_id, author_login=author_login)
+    return await db.get_images_mobile(filters, tags_r, last_image_id, author_login=author_login, find=find)
 
 @app.get('/image/mobile/user', tags=['image'], response_model=list[DB_Returns.Image_mobile])
 async def get_images_mobile_with_user(user: Annotated[User, Depends(access_user)],
                             filters: list[DB_Models.Image_filters] | None = None,
                             tags: tuple[str] | None = None,
-                            last_image_id: int = -1, author_login: str = '#'):
+                            last_image_id: int = -1, author_login: str = '#', 
+                            find: str = '#'):
 
     tags_r = tuple()
     if filters is None:  filters = []
     if tags is not None: tags_r = tags
 
-    return await db.get_images_mobile(filters, tags_r, last_image_id, user.id, author_login=author_login)
+    return await db.get_images_mobile(filters, tags_r, last_image_id, user.id, author_login=author_login, find=find)
 
 
 @app.get('/image', tags=['image'], response_model=DB_Returns.Image_full)
@@ -283,6 +287,7 @@ async def get_image_with_user(user: Annotated[User, Depends(access_user)], image
     if result is None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                            detail={"message": "Image wasn't found"})
     return result
+
 
 # WARNING: Potential danger due to UploadFile usage -> in some case(or maybe cases) it may store file on disk 
 @app.post('/image', tags=['image'], response_model=int)

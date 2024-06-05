@@ -156,6 +156,8 @@ class DB_Models:
         dateN = 'new',
         dateO = 'old'
 
+        useFind = 'useFind'
+
 def one_or_none(elements: set[Any], check_with: set[Any]) -> bool:
     """
     @returns true if there is no such element in elements, that is also in check_with, or only one such
@@ -193,10 +195,10 @@ def filters_is_ok (filters: set[DB_Models.Image_filters], user_id: int = -1) -> 
     return True
 
 
-def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, last_image_id: int = -1, limit: int = 0, author_login: str = '#') -> tuple[str, list[Any]]:
+def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, last_image_id: int = -1, limit: int = 0, author_login: str = '#', find: str = '%#%') -> tuple[str, list[Any]]:
     """
     @returns filter string and *args
-    the $1 is taken for usage 
+    the $1, $2 is taken for usage 
     """
     where_query: list[str] = list()
     args: list[Any] = list()
@@ -251,6 +253,9 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     elif DB_Models.Image_filters.sizeB in filters:
         where_query.append("(width >= 1200 OR height >= 1200)")
 
+    if DB_Models.Image_filters.useFind in filters:
+        where_query.append("title ILIKE $2")
+        args.append(find)
 
     # Return ==========================================================
     
@@ -346,36 +351,37 @@ class PhotoFox:
     async def get_images_pc(self,
                             filters_var: list[DB_Models.Image_filters],
                             tags: tuple, last_image_id: int, user_id: int = -1,
-                            author_login: str = '#') -> list[DB_Returns.Image_PC]:
+                            author_login: str = '#',
+                            find: str = '#') -> list[DB_Returns.Image_PC]:
+        find = f'#{find}#'
+
         tags_str: str = tags_to_sql(tags)
-        filters: tuple[str, list[Any]] = filters_to_sql(set(filters_var), user_id, last_image_id, 30, author_login)
+        filters: tuple[str, list[Any]] = filters_to_sql(set(filters_var), user_id, last_image_id, 30, author_login, find)
+
 
         query: str =  f"""
             SELECT id, image_url as path, width, height FROM image 
             WHERE {tags_str} {filters[0]};
         """
-        print('122222222222222222')
-        print('122222222222222222')
-        print('122222222222222222')
-        print(query, filters[1])
-        print('122222222222222222')
-        print('122222222222222222')
-        print('122222222222222222')
+
 
         if (len(filters[1]) != 0): result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, *filters[1]))
         else:                   result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         
         return list(DB_Returns.Image_PC(**x) for x in result)
+
     
     async def get_images_mobile(self,
                                 filters_var: list[DB_Models.Image_filters],
                                 tags: tuple, last_image_id: int, user_id: int = -1, 
-                                author_login: str = '#') -> list[DB_Returns.Image_mobile]:
+                                author_login: str = '#',
+                                find: str = '#') -> list[DB_Returns.Image_mobile]:
         #         is_liked: bool = False
-        # is_subscribed: bool = False
+        # is_subscribed: bool =title  Fals 
         tags_str: str = tags_to_sql(tags)
-        filters: tuple[str, list[Any]] = filters_to_sql(set(filters_var), user_id, last_image_id, 10, author_login)
-        
+        find = f'#{find}#'
+        filters: tuple[str, list[Any]] = filters_to_sql(set(filters_var), user_id, last_image_id, 10, author_login, find)
+
         query: str = f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
                "user".id as author_id, "user".login as author_login, "user".profile_image_url as author_picture,
