@@ -3,7 +3,8 @@ import ReportedImage from "../../components/AdminComps/ReportedImage.jsx";
 import {getToken} from "../../utils/auth.js";
 import {redirect} from "react-router-dom";
 import useAdminImageLoad from "../../hooks/useAdminImageLoad.js";
-import {useCallback, useRef, useState} from "react";
+import {useCallback, useRef, useState, useEffect} from "react";
+import {setBackground} from "../../utils/bannerChange.js";
 
 
 export default function AdminPage() {
@@ -26,9 +27,19 @@ export default function AdminPage() {
         if (node) lastRow.current.observe(node);
     }, [loading, imagesLeft]);
 
+
+    useEffect(() => {
+        setBackground();
+        function handleResize() {
+            setBackground();
+        }
+        window.addEventListener('resize', handleResize);
+    });
+
     return (
         <>
             <AdminMenu />
+            <div id='background' style={{'backgroundAttachment': 'fixed', 'height': '100%', 'backgroundColor': '#062551'}}>
             {(items.length !== 0) && <div className="images-container">
                 {items.map((image, index) => {
                     if (index + 1 === items.length) {
@@ -40,6 +51,7 @@ export default function AdminPage() {
                 })}
                 </div>
             }
+            </div>
         </>
     );
 }

@@ -1,4 +1,4 @@
-#background {
+.sign-login#background {
     background-color: #062551;
     background-size: 200%;
     width: 100vw;
@@ -192,7 +192,7 @@
 
 
 @media (max-width: 1000px) {
-    #background {
+    .sign-login#background {
         > form {
             width: 80%;
             > .input > input {
@@ -203,7 +203,7 @@
 }
 
 @media (max-width: 500px) {
-    #background {
+    .sign-login#background {
         > form {
             border-radius: 10px;
         }
@@ -211,7 +211,7 @@
 }
 
 @media (max-width: 160px) {
-    #background {
+    .sign-login#background {
         > form > #top > h1 {
             letter-spacing: 3px;
         }

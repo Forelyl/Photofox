@@ -27,7 +27,7 @@ export default function SignPage() {
     //TODO реалізувати скидання паролю
     // TODO: на реєстрацію за неправильних даних (s, 1, 1) - логін, пошта й пароль відповідно кидається помилка 500
     return (
-        <div id='background'>
+        <div id='background' className='sign-login'>
             <Form method="post" disabled={submitting}>
                 <div id='top'>
                     <Link to='/' onClick={handleBackClick}>

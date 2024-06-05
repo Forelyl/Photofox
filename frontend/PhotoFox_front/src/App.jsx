@@ -10,7 +10,7 @@ import PicturePage from "./pages/Picture/PicturePage.jsx";
 import AddPicturePage from "./pages/AddPicture/AddPicturePage.jsx";
 import { loader as loadEdit } from "./pages/Profile/ProfileEditPage.jsx";
 import {loaderCheckToken} from "./utils/auth.js";
-import InfoPage from "./pages/InfoPage.jsx";
+import InfoPage from "./pages/InfoPage/InfoPage.jsx";
 import PictureEditPage from "./pages/Picture/PictureEditPage.jsx";
 import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
 import AdminLogin, { action as adminAuthAction } from "./pages/Admin/AdminLogin.jsx";

@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
+import './InfoPage.css'
 
 export default function InfoPage() {
     const [searchParams] = useSearchParams();
@@ -75,7 +76,7 @@ export default function InfoPage() {
         </ul>
     
         <h3>6. Prohibited Activities</h3>
-        You agree not to engage in any of the following prohibited activities:
+        <p>You agree not to engage in any of the following prohibited activities:</p>
         <ul>
           <li>Using the Service for any illegal purpose or in violation of any local, state, national, or international law.</li>
           <li>Posting or transmitting any content that infringes any third party’s intellectual property or other rights.</li>
@@ -152,11 +153,11 @@ export default function InfoPage() {
     
     
         <h3>14. Contact Information</h3>
-        If you have any questions about these Terms, please contact us at:<br />
-        <br />
-        <b>Email</b>: <a href="mailto:email@example.com">support@photofox.com</a><br />
-        <b>Address</b>: PhotoFox, 123 Creative Lane, Imaginary City, IC 45678
-    
+        <p>If you have any questions about these Terms, please contact us at:</p>
+        <ul>
+          <li><b>Email</b>: <a href="mailto:email@example.com">support@photofox.com</a><br /></li>
+          <li><b>Address</b>: PhotoFox, 123 Creative Lane, Imaginary City, IC 45678</li>
+        </ul>
         <h3>15. Changes to Terms of Service</h3>
         <p>
           PhotoFox reserves the right to change these Terms of Service at any time. When we do, we will revise the "Last Updated" date at the top of these Terms. 
@@ -173,8 +174,7 @@ export default function InfoPage() {
         </p>
     
         <p>By using PhotoFox, you agree to these Terms of Service. If you do not agree, please do not use the Service.</p>
-    
-        <p>Thank you for using PhotoFox!</p>
+        <p><b>Thank you for using PhotoFox!</b></p>
     
       </>
     )
@@ -285,10 +285,11 @@ export default function InfoPage() {
           <p>We may update this Privacy Policy from time to time. When we do, we will revise the "Last Updated" date at the top of this Privacy Policy. If the changes are significant, we will provide a more prominent notice (such as adding a statement to our homepage or sending you an email notification). Your continued use of the Service following the posting of changes constitutes your acceptance of such changes.</p>
           
           <h3>10. Contact Us</h3>
-          <p>If you have any questions or concerns about this Privacy Policy, please contact us at:</p><br/>
-          <br/>
-          <p>Email: <a href="mailto:privacy@photofox.com">privacy@photofox.com</a></p><br/>
-          <p>Address: PhotoFox, 123 Creative Lane, Imaginary City, IC 45678</p>
+          <p>If you have any questions or concerns about this Privacy Policy, please contact us at:</p>
+          <ul>
+            <li><b>Email</b>: <a href="mailto:privacy@photofox.com">privacy@photofox.com</a></li>
+            <li><b>Address</b>: PhotoFox, 123 Creative Lane, Imaginary City, IC 45678</li>
+          </ul>
         </>
     )
 
@@ -319,47 +320,49 @@ export default function InfoPage() {
           
           <h3>Contact Information</h3>
           <p>If you have any questions or need support, please contact us at:</p>
-          <p>Email: <a href="mailto:support@photofox.com">support@photofox.com</a><br/>
-          Address: PhotoFox, 123 Creative Lane, Imaginary City, IC 45678</p>
+          <ul>
+            <li><b>Email</b>: <a href="mailto:privacy@photofox.com">privacy@photofox.com</a></li>
+            <li><b>Address</b>: PhotoFox, 123 Creative Lane, Imaginary City, IC 45678</li>
+          </ul>
         </>
     )
     
     switch (type) {
         case 'privacy':
             return (
-                <>
-                    <div id='top-of-users-pictures'>
+                <div id="info-page">
+                    <div id='top-of-info'>
                         <Link to='/'>
                             <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                         </Link>
                         {titlePage}
                     </div>
                     {privacy}
-                </>
+                </div>
             );
         case 'terms':
             return (
-                <>
-                    <div id='top-of-users-pictures'>
+                <div id="info-page">
+                    <div id='top-of-info'>
                         <Link to='/'>
                             <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                         </Link>
                         {titlePage}
                     </div>
                     {terms}
-                </>
+                </div>
             );
         default:
             return (
-                <>
-                    <div id='top-of-users-pictures'>
+                <div id="info-page">
+                    <div id='top-of-info'>
                         <Link to='/'>
                             <img src='/SignElements/back_arrow.svg' alt='return to home page'/>
                         </Link>
                         {titlePage}
                     </div>
                     {about_us}
-                </>
+                </div>
             );
     }
     

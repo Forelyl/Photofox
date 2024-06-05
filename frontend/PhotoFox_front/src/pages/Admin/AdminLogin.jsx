@@ -19,7 +19,7 @@ export default function AdminLogin() {
     //TODO реалізувати скидання паролю
     // TODO: на реєстрацію за неправильних даних (s, 1, 1) - логін, пошта й пароль відповідно кидається помилка 500
     return (
-        <div id='background'>
+        <div id='background' className="sign-login">
             <Form method="post" disabled={submitting}>
                 <div id='top'>
                     <h1>Log in as admin</h1>
@@ -38,8 +38,8 @@ export default function AdminLogin() {
                 </div>
 
                 <div id='action'>
-                    <button style={{'grid-column': '1 / 3'}}>
-                        {(submitting) ? 'In proses...' : 'Log in'}
+                    <button style={{'gridColumn': '1 / 3'}}>
+                        {(submitting) ? 'In process...' : 'Log in'}
                     </button>
                 </div>
             </Form>

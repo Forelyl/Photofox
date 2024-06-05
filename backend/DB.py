@@ -1,4 +1,4 @@
-#TODO redo filters cause they are unsafe to SQL injection also check other queries (especially with {str} or + str)
+#WARNING when using str type params don't forget to use ${param_number} notation instead to prevent sql injections instead of f"" string
 from enum import Enum
 
 import asyncpg as postgres
@@ -6,6 +6,7 @@ from typing import Any
 import asyncio
 from pydantic import BaseModel
 from fastapi import HTTPException, status
+from pydantic.types import AnyType
 from starlette.status import HTTP_400_BAD_REQUEST
 
 
@@ -192,8 +193,13 @@ def filters_is_ok (filters: set[DB_Models.Image_filters], user_id: int = -1) -> 
     return True
 
 
-def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, author_login: str = '#', last_image_id: int = -1, limit: int = 0) -> str:
+def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, last_image_id: int = -1, limit: int = 0, author_login: str = '#') -> tuple[str, list[Any]]:
+    """
+    @returns filter string and *args
+    the $1 is taken for usage 
+    """
     where_query: list[str] = list()
+    args: list[Any] = list()
 
     up_down_filter: str = ""
     order_filter:   str = ""
@@ -210,13 +216,15 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, au
     # last_image_id_query: str = "" if last_image_id == -1 else f" AND image_id {up_down_filter} {last_image_id}"
     last_id_image_query: str = "" if last_image_id == -1 else f" AND id_image {up_down_filter} {last_image_id}"
 
-    if not filters_is_ok(filters, user_id): return ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)' + last_id_query + order_filter
+    if not filters_is_ok(filters, user_id) or len(filters) == 0: 
+        return (' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)' + last_id_query + order_filter, [])
 
     # Add filters =====================================================
     if DB_Models.Image_filters.subscribed in filters:
         where_query.append(f"author_id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber={user_id})")
     elif DB_Models.Image_filters.published in filters:
-        where_query.append(f"""author_id=(SELECT id FROM "user" WHERE login='{author_login}')""")
+        where_query.append(f"""author_id=(SELECT id FROM "user" WHERE login=$1)""")
+        args.append(author_login)
     elif DB_Models.Image_filters.saved in filters:
         where_query.append(f"id in (SELECT id_image FROM saved WHERE id_user={user_id} {last_id_image_query})")
     elif DB_Models.Image_filters.liked in filters:
@@ -245,7 +253,6 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, au
 
 
     # Return ==========================================================
-    if len(filters) == 0: return ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)' + last_id_query + order_filter
     
     result: str = ' (SELECT NOT is_blocked FROM "user" WHERE "user".id=author_id)'
     if last_id_query != "": result += last_id_query
@@ -253,7 +260,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, au
     for filter_var in where_query:
         result += " AND " + filter_var
 
-    return result + order_filter
+    return (result + order_filter, args)
 
 def tags_to_sql(tags: tuple[int]) -> str:
     if len(tags) == 0: return ""
@@ -280,28 +287,6 @@ class PhotoFox:
     
     async def close(self):
         await self.__DB.close()
-
-    # SELECT
-    # TODO:
-    # -4) 🦊 email is exists
-    # -3) 🦊 login is exists
-    # -1) 🦊 hash, is_admin - user 
-    # 0)  🦊 select image with limit - last
-    # 1)  🦊 select image info without counter of reports
-    # 2)  🦊 select comment with limit without counter of reports
-    # 3)  select tag like str
-    # 4)  delete tag (admin privilege)
-    # 5)  🦊 insert tag
-    # 6)  🦊 select image with subcribed_on
-    # 7)  select image with size | None, tag | None, data | None, size_ratio | None, like | None
-    # 8)  select image with author
-    # 9)  change values of image 
-    # 10) 🦊 select image with complaints
-    # 11) 🦊 select profile with complaints
-    # 12) 🦊 select comments with complaints
-    # 13) 🦊 add subscribe and unsubscribe   
-    # 14) tag to id
-
 
     async def select_all_tags(self) -> list[dict[str, Any]]:
         return DB.process_return(await self.__DB.execute("SELECT * FROM tag;"))
@@ -359,34 +344,37 @@ class PhotoFox:
         return function_result
 
     async def get_images_pc(self,
-                            filters: list[DB_Models.Image_filters],
+                            filters_var: list[DB_Models.Image_filters],
                             tags: tuple, last_image_id: int, user_id: int = -1,
                             author_login: str = '#') -> list[DB_Returns.Image_PC]:
         tags_str: str = tags_to_sql(tags)
-        filters_line: str = filters_to_sql(set(filters), user_id, author_login, last_image_id, 30)
+        filters: tuple[str, list[Any]] = filters_to_sql(set(filters_var), user_id, last_image_id, 30, author_login)
 
         query: str =  f"""
             SELECT id, image_url as path, width, height FROM image 
-            WHERE {tags_str} {filters_line};
+            WHERE {tags_str} {filters[0]};
         """
-        print('---------------------------')
-        print('---------------------------')
-        print(query)
-        print('---------------------------')
-        print('---------------------------')
-        
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
+        print('122222222222222222')
+        print('122222222222222222')
+        print('122222222222222222')
+        print(query, filters[1])
+        print('122222222222222222')
+        print('122222222222222222')
+        print('122222222222222222')
 
+        if (len(filters[1]) != 0): result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, *filters[1]))
+        else:                   result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
+        
         return list(DB_Returns.Image_PC(**x) for x in result)
     
     async def get_images_mobile(self,
-                                filters: list[DB_Models.Image_filters],
+                                filters_var: list[DB_Models.Image_filters],
                                 tags: tuple, last_image_id: int, user_id: int = -1, 
                                 author_login: str = '#') -> list[DB_Returns.Image_mobile]:
         #         is_liked: bool = False
         # is_subscribed: bool = False
         tags_str: str = tags_to_sql(tags)
-        filters_line: str = filters_to_sql(set(filters), user_id,  author_login, last_image_id, 10)
+        filters: tuple[str, list[Any]] = filters_to_sql(set(filters_var), user_id, last_image_id, 10, author_login)
         
         query: str = f"""
         SELECT image.id, image.image_url as path, image.title, image.like_counter, image.comment_counter,
@@ -396,9 +384,11 @@ class PhotoFox:
                EXISTS(SELECT 1 FROM saved WHERE (saved.id_image=image.id AND saved.id_user={user_id})) AS is_saved
         FROM image 
         JOIN "user" ON image.author_id = "user".id 
-        WHERE {tags_str} {filters_line};
+        WHERE {tags_str} {filters[0]};
         """
-        result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
+        
+        if (len(filters[1]) != 0): result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, *filters[1]))
+        else:                   result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query))
         
         return list(DB_Returns.Image_mobile(**x) for x in result)
 
@@ -635,19 +625,6 @@ class PhotoFox:
         query: str = 'SELECT profile_image_url FROM "user" WHERE login=$1;'
         result: list[dict[str, Any]] = DB.process_return(await self.__DB.execute(query, login))
         return result[0]['profile_image_url']
-    
-    #     class Profile(BaseModel):
-    #     id: int
-    #     login: str
-    #     profile_image: str | None
-    #     is_blocked: bool = False
-
-    # class Profile_full(Profile):
-    #     description: str | None
-        
-    #     subscribed_on: int
-    #     subscribers: int
-
 
     async def get_user_profile(self, login: str, user_id: int = -1) -> DB_Returns.Profile_full:
         query: str = """

@@ -35,7 +35,7 @@ app = FastAPI(lifespan=lifespan)
 password_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
-origins = ["http://192.168.0.102:5173", "http://192.168.1.101:5173", "http://localhost:5174", "http://localhost:5173", "http://localhost:5175"]
+origins = ["http://192.168.0.105:5173", "http://192.168.1.101:5173", "http://localhost:5173"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -346,7 +346,7 @@ async def current_user_set_like_and_like_counter(user: Annotated[User, Depends(a
 # Comment
 #============================================
 @app.post('/comment', tags=['comment'])
-async def add_comment(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)], description: Annotated[str, Body()]):
+async def add_comment(user: Annotated[User, Depends(access_user)], image_id: Annotated[int, Param(ge=1)], description: Annotated[str, Body(max_length=500)]):
     await db.add_comment(user.id, image_id, description)
 
 @app.delete('/comment', tags=['comment'])
@@ -487,11 +487,11 @@ async def change_picture_profile(user: Annotated[User, Depends(access_user)], im
 
 
 @app.patch('/profile/login', tags=['profile', 'admin'])
-async def change_login_profile(user: Annotated[User, Depends(access_user)],  new_login: Annotated[str, Header(min_length=1, max_length=50, pattern=login_regex)]):
+async def change_login_profile(user: Annotated[User, Depends(access_user)],  new_login: Annotated[str, Header(min_length=1, max_length=100, pattern=login_regex)]):
     await db.update_profile_login(new_login, user.id)    
 
 @app.patch('/profile/description', tags=['profile', 'admin'])
-async def change_description_profile(user: Annotated[User, Depends(access_user)], new_description: Annotated[str, Header(min_length=0, max_length=255)] = ""):
+async def change_description_profile(user: Annotated[User, Depends(access_user)], new_description: Annotated[str, Header(min_length=0, max_length=500)] = ""):
     await db.update_profile_description(new_description, user.id)
 
 @app.patch('/profile/email', tags=['profile', 'admin'])
@@ -569,17 +569,17 @@ def i_am_user(user: Annotated[User, Depends(access_user)], image: Annotated[Uplo
 # async def log_request_body(request: Request, call_next):
 #     # Access the request body
 #     body_bytes = await request.body()
-#     body_str = body_bytes.decode("binary")
+#     # body_str = body_bytes.decode("binary")
 #     print('----------------------')
 #     print('----------------------')
-#     print(f"Request body: {body_str}")
+#     # print(f"Request body: {body_str}")
 #     print(f"Request header: {request.headers}")
 #     print(f"URL: f{request.url}")
 #     print('----------------------')
 #     print('----------------------')
 
-#     response = await call_next(request)
-#     return response
+    # response = await call_next(request)
+    # return response
 
 @app.get("/items/")
 async def read_items(q: Annotated[list[str] | None, Query()] = None):
