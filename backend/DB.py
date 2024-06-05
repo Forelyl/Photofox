@@ -225,7 +225,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
     if DB_Models.Image_filters.subscribed in filters:
         where_query.append(f"author_id IN (SELECT id_subscribed_on FROM subscribe WHERE id_subscriber={user_id})")
     elif DB_Models.Image_filters.published in filters:
-        where_query.append(f"""author_id=(SELECT id FROM "user" WHERE login=$1)""")
+        where_query.append(f"""author_id=(SELECT id FROM "user" WHERE login=${len(args) + 1}::varchar)""")
         args.append(author_login)
     elif DB_Models.Image_filters.saved in filters:
         where_query.append(f"id in (SELECT id_image FROM saved WHERE id_user={user_id} {last_id_image_query})")
@@ -254,7 +254,7 @@ def filters_to_sql (filters: set[DB_Models.Image_filters], user_id: int = -1, la
         where_query.append("(width >= 1200 OR height >= 1200)")
 
     if DB_Models.Image_filters.useFind in filters:
-        where_query.append("title ILIKE $2")
+        where_query.append(f"title ILIKE ${len(args) + 1}::text")
         args.append(find)
 
     # Return ==========================================================
@@ -353,7 +353,7 @@ class PhotoFox:
                             tags: tuple, last_image_id: int, user_id: int = -1,
                             author_login: str = '#',
                             find: str = '#') -> list[DB_Returns.Image_PC]:
-        find = f'#{find}#'
+        find = f'%{find}%'
 
         tags_str: str = tags_to_sql(tags)
         filters: tuple[str, list[Any]] = filters_to_sql(set(filters_var), user_id, last_image_id, 30, author_login, find)
@@ -379,7 +379,7 @@ class PhotoFox:
         #         is_liked: bool = False
         # is_subscribed: bool =title  Fals 
         tags_str: str = tags_to_sql(tags)
-        find = f'#{find}#'
+        find = f'%{find}%'
         filters: tuple[str, list[Any]] = filters_to_sql(set(filters_var), user_id, last_image_id, 10, author_login, find)
 
         query: str = f"""
